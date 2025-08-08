@@ -61,7 +61,7 @@
         <svg id="boss-svg" viewBox="0 0 260 220">
           <defs>
             <linearGradient id="gradBody" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%"  stop-color="#6622CC"/>
+              <stop offset="0%"   stop-color="#6622CC"/>
               <stop offset="50%" stop-color="#7A00F5"/>
               <stop offset="100%" stop-color="#300070"/>
             </linearGradient>
@@ -99,8 +99,8 @@
           <!-- 炎 -->
           <g class="fire-glow">
             <path id="flame" d="M210,115 C220,110 235,105 245,108
-                                C230,120 235,135 220,138
-                                C230,130 220,120 210,115 Z"
+                                 C230,120 235,135 220,138
+                                 C230,130 220,120 210,115 Z"
                   fill="url(#gradFire)" opacity="0.9">
               <animate attributeName="opacity" values="0.6;1;0.6" dur="0.9s" repeatCount="indefinite"/>
             </path>
@@ -161,7 +161,7 @@
 
   <script>
     // === GAS連携設定 ===
-    const GAS_URL = "https://script.googleusercontent.com/a/macros/slmt.jp/echo?user_content_key=AehSKLimVSV27kpM6AmBswEOjF72Afi4cYFmCJUZSc-cYq_2xupmBLgpu2H7oZHFCleVJm8CqxvNQ03MqfB6pREAX5-ZJYGN6pbOCR6Qqcx2VUhImldoZAKqSmOfpySD6_cJ3ajUAke8sowsr4ZDfHc_kNsurSc1jm0ONYNClnhiUmy3rQAUtK3Wg4ESD--2pGGT5m1vcssPtEHkldBy7gUfrrZvie_nSSk5ayfWb0uaj1AjLDCOmdhpdza61hx1XqjJqr8v8smm57ZpFoP4ZNn5JUiuyc4o1UobJ5-kaPe3J6yGh92Lb0c&lib=MxSLLNJFyQq6o5_mNtegqqjZeYG56Cb5i"; // ←自分のURLに！
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwqR71G0J89_Fu5vxA2S_Wea-v6XoquntHn8kwQ67YvhmgEkZw7DvPoTLEeftbZcPv9VQ/exec"; // ★ 正しいURLに更新済み！ ★
     const QUIZ_ID = "quiz-001";
 
     const msgEl = () => document.getElementById('msg');
@@ -234,7 +234,13 @@
 
     // --- イベント ---
     startButton.addEventListener('click', () => startGame());
-    restartButton.addEventListener('click', () => startGame());
+    restartButton.addEventListener('click', () => {
+        // restart is just an alias for start
+        startScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        document.getElementById('playerName').value = ''; // Clear name for next round
+    });
+
 
     // --- ロジック ---
     function shuffleArray(arr){
@@ -243,34 +249,37 @@
 
     async function startGame(){
       if(starting) return; starting = true;
-      startButton.style.pointerEvents = 'none';
+      startButton.disabled = true;
 
       setupAudio();
       clickSound();
 
       const name = (document.getElementById('playerName')?.value || "").trim();
-      if(!name){ showMsg("名前いれてな〜"); starting=false; startButton.style.pointerEvents=''; return; }
+      if(!name){ showMsg("名前いれてな〜"); starting=false; startButton.disabled=false; return; }
 
-      if(alreadyTakenLocal(name)){ showMsg("この端末ではその名前はもう受験済みやで🙅"); starting=false; startButton.style.pointerEvents=''; return; }
+      if(alreadyTakenLocal(name)){ showMsg("この端末ではその名前はもう受験済みやで🙅"); starting=false; startButton.disabled=false; return; }
 
       // 重複チェック
+      showMsg("サーバーと通信中…");
       try{
         const r = await fetch(`${GAS_URL}?action=check&quizId=${encodeURIComponent(QUIZ_ID)}&name=${encodeURIComponent(name)}`);
+        if (!r.ok) throw new Error(`Server check failed: ${r.status}`);
         const j = await r.json();
-        if(!j.ok){ showMsg("その名前はもう使われてるで！別名でお願い🙏"); starting=false; startButton.style.pointerEvents=''; return; }
-      }catch{ showMsg("サーバ確認ミス…少し待って🙏"); starting=false; startButton.style.pointerEvents=''; return; }
+        if(!j.ok){ showMsg("その名前はもう使われてるで！別名でお願い🙏"); starting=false; startButton.disabled=false; return; }
+      }catch(e){ console.error(e); showMsg("サーバ確認ミス…少し待って🙏"); starting=false; startButton.disabled=false; return; }
 
       // 登録
       try{
         const r2 = await fetch(`${GAS_URL}?action=register`,{
           method:"POST",
-          headers:{ "Content-Type":"application/json" },
+          // CORSプリフライトを避けるため、敢えてtext/plainで送るテクニック
+          headers:{ "Content-Type":"text/plain" },
           body: JSON.stringify({ quizId: QUIZ_ID, name })
         });
-        if(r2.status===409){ showMsg("同じ名前は1回だけやで🙅"); starting=false; startButton.style.pointerEvents=''; return; }
+        if(r2.status===409){ showMsg("同じ名前は1回だけやで🙅"); starting=false; startButton.disabled=false; return; }
         if(!r2.ok) throw new Error("register failed");
         markTakenLocal(name);
-      }catch{ showMsg("登録に失敗…もう一回🙏"); starting=false; startButton.style.pointerEvents=''; return; }
+      }catch(e){ console.error(e); showMsg("登録に失敗…もう一回🙏"); starting=false; startButton.disabled=false; return; }
 
       // いつもの初期化
       correctCount = 0;
@@ -295,7 +304,7 @@
       showMsg("");
       displayQuestion();
 
-      starting=false; startButton.style.pointerEvents='';
+      starting=false; startButton.disabled=false;
     }
 
     function displayQuestion(){
@@ -388,9 +397,9 @@
       if(name){
         fetch(`${GAS_URL}?action=finish`,{
           method:"POST",
-          headers:{ "Content-Type":"application/json" },
+          headers:{ "Content-Type":"text/plain" },
           body: JSON.stringify({ quizId: QUIZ_ID, name, score: correctCount })
-        }).catch(()=>{});
+        }).catch((e)=>{ console.error("Finish failed", e) });
       }
     }
   </script>
