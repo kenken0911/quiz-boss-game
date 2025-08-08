@@ -119,7 +119,7 @@
       <!-- スタート画面 -->
       <div id="start-screen" class="text-center">
         <h1 class="text-3xl sm:text-4xl font-bold mb-4">クイズの洞窟</h1>
-        <p class="text-lg mb-6">に炎竜が待ち構えている…！</p>
+        <p class="text-lg mb-6">奥に炎竜が待ち構えている…！</p>
 
         <div class="flex flex-col items-center gap-3 mb-4">
           <input id="playerName" type="text" maxlength="30" class="text-black px-3 py-2 w-64"
@@ -162,7 +162,7 @@
 
   <script>
     // === GAS連携設定 ===
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyVb1zDOoFLpjfS9D12uTyKthL8MeOgMjstYJ5mv2Id9csZtQ8NOaJpuToovFsXLslMsQ/exec"; // ★ 最新のURLに更新済み！ ★
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxCNZ1MqMYvPrJu3vSgJjbTsMXgeBmXchQGieziR8WZlhAAiv1DocSaC9J5Mhme-wWWCg/exec"; // ★ 最新のURLに更新済み！ ★
     const QUIZ_ID = "quiz-001";
 
     const msgEl = () => document.getElementById('msg');
@@ -292,10 +292,10 @@
 
       // 登録
       try{
-        const r2 = await fetch(`${GAS_URL}?action=register`,{
+        const r2 = await fetch(GAS_URL,{
           method:"POST",
-          headers:{ "Content-Type":"text/plain" },
-          body: JSON.stringify({ quizId: QUIZ_ID, name: name })
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ action: "register", quizId: QUIZ_ID, name: name })
         });
         if(r2.status===409){ 
           showMsg("同じ名前は1回だけやで🙅"); 
@@ -428,10 +428,10 @@
       // スコア送信
       const name = (document.getElementById('playerName')?.value || "").trim();
       if(name){
-        fetch(`${GAS_URL}?action=finish`,{
+        fetch(GAS_URL,{
           method:"POST",
-          headers:{ "Content-Type":"text/plain" }, // CORSプリフライトを避けるため
-          body: JSON.stringify({ quizId: QUIZ_ID, name, score: correctCount })
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ action: "finish", quizId: QUIZ_ID, name, score: correctCount })
         }).catch((e)=>{ console.error("Finish failed", e) });
       }
     }
