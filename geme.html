@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ボスバトルクイズゲーム</title>
+
+    <!-- Tailwind CSSの読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (DotGothic16) の読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+
+    <!-- Tone.js (効果音ライブラリ) の読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
+    <style>
+        /* カスタムフォントとスタイルを適用 */
+        body {
+            font-family: 'DotGothic16', sans-serif;
+            background-color: #000;
+            color: #fff;
+            image-rendering: pixelated; /* ドット絵のぼやけを防ぐ */
+        }
+
+        /* ドラクエ風ウィンドウ */
+        .dq-window {
+            border: 4px solid #fff;
+            background-color: #000088;
+            padding: 1rem;
+            box-shadow: 0 0 0 4px #000;
+        }
+
+        /* ボタンのスタイル */
+        .dq-button {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border: 2px solid #fff;
+            background-color: #000088;
+            text-align: center;
+        }
+        .dq-button:hover {
+            background-color: #4444CC;
+        }
+
+        /* HPバー */
+        .hp-bar-container {
+            border: 2px solid #fff;
+            height: 24px;
+            padding: 2px;
+            background-color: #333;
+        }
+        .hp-bar {
+            background-color: #33ff33;
+            height: 100%;
+            transition: width 0.5s ease-out;
+        }
+        .hp-bar.low {
+            background-color: #ff3333;
+        }
+
+        /* ボスのアニメーション */
+        .boss-idle {
+            animation: boss-idle 2s infinite ease-in-out;
+        }
+        @keyframes boss-idle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ダメージを受けた時のフラッシュアニメーション */
+        .damage-flash {
+            animation: damage-flash 0.3s 1;
+        }
+        @keyframes damage-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        
+        /* ダメージ数字のフローティングアニメーション */
+        .damage-text {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff4444;
+            text-shadow: 2px 2px #000;
+            animation: float-up 1s forwards;
+            pointer-events: none;
+        }
+        @keyframes float-up {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-60px); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-3xl mx-auto">
+        <!-- ボス表示エリア -->
+        <div id="boss-area" class="mb-4 h-48 flex justify-center items-end relative hidden">
+             <div id="boss-container" class="boss-idle">
+                <!-- ボスのSVG (スライム風) -->
+                <svg width="120" height="100" viewBox="0 0 120 100">
+                    <path d="M60 100C10 100 10 60 10 60C10 20 40 10 60 10C80 10 110 20 110 60C110 60 110 100 60 100Z" fill="#29B6F6"/>
+                    <circle cx="45" cy="55" r="8" fill="white"/>
+                    <circle cx="75" cy="55" r="8" fill="white"/>
+                    <circle cx="47" cy="57" r="4" fill="black"/>
+                    <circle cx="77" cy="57" r="4" fill="black"/>
+                    <path d="M40 75 Q60 90 80 75" stroke="white" stroke-width="4" fill="none"/>
+                </svg>
+             </div>
+        </div>
+
+        <!-- ゲームコンテナ -->
+        <div id="game-container" class="w-full dq-window">
+            <!-- スタート画面 -->
+            <div id="start-screen" class="text-center">
+                <h1 class="text-3xl sm:text-4xl font-bold mb-4">クイズの洞窟</h1>
+                <p class="text-lg mb-8">奥にボスがいるようだ...！</p>
+                <div id="start-button" class="dq-button inline-block">
+                    ▶ 冒険を始める
+                </div>
+            </div>
+
+            <!-- クイズ画面 (最初は非表示) -->
+            <div id="quiz-screen" class="hidden">
+                <!-- ステータス表示 -->
+                <div id="status-container" class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p>ゆうしゃ HP</p>
+                        <div class="hp-bar-container"><div id="player-hp-bar" class="hp-bar"></div></div>
+                    </div>
+                     <div>
+                        <p>ボス HP</p>
+                        <div class="hp-bar-container"><div id="boss-hp-bar" class="hp-bar"></div></div>
+                    </div>
+                </div>
+                
+                <!-- 質問コンテナ -->
+                <div id="question-container" class="mb-4 min-h-[80px] p-4 border-2 border-white">
+                    <p id="question-text" class="text-xl"></p>
+                </div>
+
+                <!-- 選択肢コンテナ -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 選択肢がここに表示されます -->
+                </div>
+            </div>
+
+            <!-- 結果画面 (最初は非表示) -->
+            <div id="result-screen" class="hidden text-center">
+                 <h2 id="result-title" class="text-3xl sm:text-4xl font-bold mb-4"></h2>
+                 <p id="result-message" class="text-xl mb-8"></p>
+                 <div id="restart-button" class="dq-button inline-block">
+                    ▶ もう一度挑戦する
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM要素の取得 ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const bossArea = document.getElementById('boss-area');
+        const bossContainer = document.getElementById('boss-container');
+
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+
+        const playerHpBar = document.getElementById('player-hp-bar');
+        const bossHpBar = document.getElementById('boss-hp-bar');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+
+        // --- クイズデータ ---
+        const quizData = [
+            { question: "HTMLでハイパーリンクを作成するタグはどれ？", options: ["<link>", "<a>", "<p>", "<h>"], answer: "<a>" },
+            { question: "CSSは何の略？", options: ["Creative Style Sheets", "Computer Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets"], answer: "Cascading Style Sheets" },
+            { question: "JavaScriptで変数を宣言するキーワードでないものは？", options: ["var", "let", "const", "def"], answer: "def" },
+            { question: "世界で最も高い山は？", options: ["K2", "富士山", "エベレスト", "カンチェンジュンガ"], answer: "エベレスト" },
+            { question: "日本の現在の首都は？", options: ["京都", "大阪", "奈良", "東京"], answer: "東京" },
+            { question: "太陽系で最も大きい惑星は？", options: ["地球", "木星", "土星", "火星"], answer: "木星"},
+            { question: "化学記号「Fe」が示す元素は？", options: ["金", "銀", "鉄", "銅"], answer: "鉄"}
+        ];
+        let shuffledQuizData = [];
+        let currentQuestionIndex = 0;
+
+        // --- ゲームの状態変数 ---
+        const PLAYER_MAX_HP = 100;
+        const BOSS_MAX_HP = 200;
+        let playerHP = PLAYER_MAX_HP;
+        let bossHP = BOSS_MAX_HP;
+        let audioStarted = false;
+
+        // --- 効果音の準備 (Tone.js) ---
+        let hitSound, damageSound, victorySound, defeatSound, clickSound;
+
+        function setupAudio() {
+            if (audioStarted) return;
+            Tone.start();
+            hitSound = () => new Tone.Synth({ oscillator: { type: "triangle" }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.0, release: 0.1 } }).toDestination().triggerAttackRelease("G5", "16n");
+            damageSound = () => new Tone.NoiseSynth({ noise: { type: "brown" }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination().triggerAttackRelease("8n");
+            victorySound = () => {
+                const synth = new Tone.Synth().toDestination();
+                const now = Tone.now();
+                synth.triggerAttackRelease("C5", "8n", now);
+                synth.triggerAttackRelease("E5", "8n", now + 0.2);
+                synth.triggerAttackRelease("G5", "8n", now + 0.4);
+                synth.triggerAttackRelease("C6", "4n", now + 0.6);
+            };
+            defeatSound = () => {
+                 const synth = new Tone.Synth().toDestination();
+                 const now = Tone.now();
+                 synth.triggerAttackRelease("C4", "4n", now);
+                 synth.triggerAttackRelease("B3", "4n", now + 0.3);
+                 synth.triggerAttackRelease("A#3", "4n", now + 0.6);
+                 synth.triggerAttackRelease("A3", "2n", now + 0.9);
+            };
+            clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.0006, decay: 0.2, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
+            audioStarted = true;
+        }
+
+        // --- イベントリスナー ---
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+
+        // --- ゲームロジック ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startGame() {
+            setupAudio();
+            clickSound();
+
+            playerHP = PLAYER_MAX_HP;
+            bossHP = BOSS_MAX_HP;
+            currentQuestionIndex = 0;
+            shuffledQuizData = [...quizData];
+            shuffleArray(shuffledQuizData);
+
+            updateHpBars();
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            bossArea.classList.remove('hidden');
+
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (playerHP <= 0 || bossHP <= 0) return;
+
+            optionsContainer.innerHTML = '';
+            
+            // インデックスが配列の長さを超えたら0に戻す
+            if (currentQuestionIndex >= shuffledQuizData.length) {
+                currentQuestionIndex = 0;
+            }
+            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const div = document.createElement('div');
+                div.textContent = `▶ ${option}`;
+                div.classList.add('dq-button');
+                div.dataset.answer = option;
+                div.addEventListener('click', handleAnswer);
+                optionsContainer.appendChild(div);
+            });
+            currentQuestionIndex++;
+        }
+
+        function handleAnswer(e) {
+            const selectedOption = e.target.dataset.answer;
+            const correctAnswer = shuffledQuizData[currentQuestionIndex - 1].answer;
+
+            optionsContainer.querySelectorAll('.dq-button').forEach(btn => btn.style.pointerEvents = 'none');
+
+            if (selectedOption === correctAnswer) {
+                hitSound();
+                const damage = Math.floor(Math.random() * 21) + 30; // 30-50
+                bossHP = Math.max(0, bossHP - damage);
+                showDamage(bossArea, damage);
+                bossContainer.classList.add('damage-flash');
+            } else {
+                damageSound();
+                const damage = Math.floor(Math.random() * 11) + 15; // 15-25
+                playerHP = Math.max(0, playerHP - damage);
+                showDamage(document.body, damage);
+                document.querySelector('.dq-window').classList.add('damage-flash');
+            }
+
+            updateHpBars();
+            
+            setTimeout(() => {
+                bossContainer.classList.remove('damage-flash');
+                document.querySelector('.dq-window').classList.remove('damage-flash');
+                
+                if (playerHP <= 0) {
+                    showEndScreen(false);
+                } else if (bossHP <= 0) {
+                    showEndScreen(true);
+                } else {
+                    displayQuestion();
+                }
+            }, 1000);
+        }
+
+        function updateHpBars() {
+            const playerHpPercent = (playerHP / PLAYER_MAX_HP) * 100;
+            playerHpBar.style.width = `${playerHpPercent}%`;
+            playerHpBar.classList.toggle('low', playerHpPercent < 30);
+
+            const bossHpPercent = (bossHP / BOSS_MAX_HP) * 100;
+            bossHpBar.style.width = `${bossHpPercent}%`;
+            bossHpBar.classList.toggle('low', bossHpPercent < 30);
+        }
+        
+        function showDamage(element, damage) {
+            const damageEl = document.createElement('div');
+            damageEl.textContent = damage;
+            damageEl.className = 'damage-text';
+            element.appendChild(damageEl);
+            setTimeout(() => damageEl.remove(), 1000);
+        }
+
+        function showEndScreen(isVictory) {
+            quizScreen.classList.add('hidden');
+            bossArea.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            if (isVictory) {
+                victorySound();
+                resultTitle.textContent = '勝利！';
+                resultMessage.textContent = 'ボスを倒した！洞窟に平和が戻った。';
+            } else {
+                defeatSound();
+                resultTitle.textContent = '敗北...';
+                resultMessage.textContent = 'ゆうしゃは力尽きた...。';
+            }
+        }
+
+    </script>
+</body>
+</html>
