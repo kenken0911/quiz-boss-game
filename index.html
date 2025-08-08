@@ -119,7 +119,7 @@
       <!-- スタート画面 -->
       <div id="start-screen" class="text-center">
         <h1 class="text-3xl sm:text-4xl font-bold mb-4">クイズの洞窟</h1>
-        <p class="text-lg mb-6">奥に炎竜が待ち構えている…！</p>
+        <p class="text-lg mb-6">に炎竜が待ち構えている…！</p>
 
         <div class="flex flex-col items-center gap-3 mb-4">
           <input id="playerName" type="text" maxlength="30" class="text-black px-3 py-2 w-64"
@@ -162,7 +162,7 @@
 
   <script>
     // === GAS連携設定 ===
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyMgfq6urfcwxFVf7FhOWfLPhNA2LSK3glPc_SJDmYnh-_d0aTyhTGo2PIZhRRhKxCMDA/exec"; // ★ 最新のURLに更新済み！ ★
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyVb1zDOoFLpjfS9D12uTyKthL8MeOgMjstYJ5mv2Id9csZtQ8NOaJpuToovFsXLslMsQ/exec"; // ★ 最新のURLに更新済み！ ★
     const QUIZ_ID = "quiz-001";
 
     const msgEl = () => document.getElementById('msg');
@@ -213,9 +213,9 @@
 
     // --- サウンド ---
     let hitSound, damageSound, victorySound, defeatSound, clickSound, roarSound;
-    function setupAudio(){
+    async function setupAudio(){
       if(audioStarted) return;
-      Tone.start();
+      await Tone.start();
       hitSound = ()=> new Tone.Synth({oscillator:{type:"triangle"},envelope:{attack:0.005,decay:0.1,sustain:0.0,release:0.1}}).toDestination().triggerAttackRelease("G5","16n");
       damageSound = ()=> new Tone.NoiseSynth({noise:{type:"brown"},envelope:{attack:0.005,decay:0.1,sustain:0,release:0.1}}).toDestination().triggerAttackRelease("8n");
       victorySound = ()=>{
@@ -252,7 +252,7 @@
       starting = true;
       startButton.disabled = true;
 
-      setupAudio();
+      await setupAudio(); 
       clickSound();
 
       const name = (document.getElementById('playerName')?.value || "").trim();
@@ -292,8 +292,10 @@
 
       // 登録
       try{
-        const r2 = await fetch(`${GAS_URL}?action=register&quizId=${encodeURIComponent(QUIZ_ID)}&name=${encodeURIComponent(name)}`,{
+        const r2 = await fetch(`${GAS_URL}?action=register`,{
           method:"POST",
+          headers:{ "Content-Type":"text/plain" },
+          body: JSON.stringify({ quizId: QUIZ_ID, name: name })
         });
         if(r2.status===409){ 
           showMsg("同じ名前は1回だけやで🙅"); 
