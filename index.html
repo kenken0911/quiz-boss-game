@@ -22,26 +22,93 @@
     .hp-bar-container{border:2px solid #fff;height:24px;padding:2px;background:#333}
     .hp-bar{background:#33ff33;height:100%;transition:width .5s ease-out}
     .hp-bar.low{background:#ff3333}
-    .boss-idle{animation:boss-idle 2s infinite ease-in-out}
-    @keyframes boss-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-    .damage-flash{animation:damage-flash .3s 1}
-    @keyframes damage-flash{0%,100%{opacity:1}50%{opacity:.2}}
-    .damage-text{position:absolute;font-size:2rem;font-weight:bold;color:#ff4444;text-shadow:2px 2px #000;animation:float-up 1s forwards;pointer-events:none}
+
+    /* ボス演出 */
+    .boss-idle{animation:boss-float 2.2s infinite ease-in-out}
+    @keyframes boss-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .boss-roar{animation:boss-roar .35s ease-in-out}
+    @keyframes boss-roar{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+    /* ダメージ＆シェイク */
+    .damage-flash{animation:damage-flash .28s 1}
+    @keyframes damage-flash{0%,100%{opacity:1}50%{opacity:.25}}
+    .shake{animation:shake .35s}
+    @keyframes shake{
+      10%{transform:translate(-2px, -2px)} 20%{transform:translate(2px, 1px)}
+      30%{transform:translate(-1px, 2px)} 40%{transform:translate(2px, -1px)}
+      50%{transform:translate(-2px, 1px)} 60%{transform:translate(1px, -2px)}
+      70%{transform:translate(-1px, 1px)} 80%{transform:translate(2px, 2px)}
+      90%{transform:translate(-2px, -1px)} 100%{transform:translate(0,0)}
+    }
+
+    /* ダメージ数字 */
+    .damage-text{position:absolute;font-size:2rem;font-weight:bold;color:#ff5555;text-shadow:2px 2px #000;animation:float-up 1s forwards;pointer-events:none}
     @keyframes float-up{from{transform:translateY(0);opacity:1}to{transform:translateY(-60px);opacity:0}}
+
+    /* 炎（SVG中のアニメで点滅） */
+    .fire-glow{filter:drop-shadow(0 0 6px #ff8a00) drop-shadow(0 0 12px #ff3b00)}
+
+    /* レスポンシブ */
+    #boss-svg{max-width:280px;width:60vw;height:auto}
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
   <div class="w-full max-w-3xl mx-auto">
     <!-- ボス表示 -->
-    <div id="boss-area" class="mb-4 h-48 flex justify-center items-end relative hidden">
+    <div id="boss-area" class="mb-4 h-60 flex justify-center items-end relative hidden">
       <div id="boss-container" class="boss-idle">
-        <svg width="120" height="100" viewBox="0 0 120 100">
-          <path d="M60 100C10 100 10 60 10 60C10 20 40 10 60 10C80 10 110 20 110 60C110 60 110 100 60 100Z" fill="#29B6F6"/>
-          <circle cx="45" cy="55" r="8" fill="white"/>
-          <circle cx="75" cy="55" r="8" fill="white"/>
-          <circle cx="47" cy="57" r="4" fill="black"/>
-          <circle cx="77" cy="57" r="4" fill="black"/>
-          <path d="M40 75 Q60 90 80 75" stroke="white" stroke-width="4" fill="none"/>
+        <!-- ───────── 迫力ボス：炎竜のSVG ───────── -->
+        <svg id="boss-svg" viewBox="0 0 260 220">
+          <defs>
+            <linearGradient id="gradBody" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"  stop-color="#6622CC"/>
+              <stop offset="50%" stop-color="#7A00F5"/>
+              <stop offset="100%" stop-color="#300070"/>
+            </linearGradient>
+            <linearGradient id="gradEye" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fff700"/>
+              <stop offset="100%" stop-color="#ff4d00"/>
+            </linearGradient>
+            <linearGradient id="gradFire" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fff7a1"/>
+              <stop offset="40%" stop-color="#ff8a00"/>
+              <stop offset="100%" stop-color="#ff3b00"/>
+            </linearGradient>
+          </defs>
+
+          <!-- 影 -->
+          <ellipse cx="130" cy="205" rx="70" ry="10" fill="#000" opacity="0.5"></ellipse>
+
+          <!-- 体 -->
+          <path d="M35,150 C20,120 40,60 95,55 C110,40 145,30 175,45 C210,40 240,70 230,110
+                   C225,125 200,145 180,155 C165,170 125,180 95,170 C70,170 45,165 35,150 Z"
+                fill="url(#gradBody)" stroke="#caa8ff" stroke-width="3"/>
+
+          <!-- 角 -->
+          <path d="M150,42 C152,22 175,10 185,8 C175,20 170,32 165,44 Z" fill="#caa8ff"/>
+          <path d="M128,38 C130,20 150,10 160,8 C150,20 145,30 140,42 Z" fill="#caa8ff"/>
+
+          <!-- 目 -->
+          <ellipse cx="160" cy="95" rx="15" ry="12" fill="black"/>
+          <ellipse cx="160" cy="95" rx="9"  ry="7"  fill="url(#gradEye)"/>
+          <circle  cx="162" cy="94" r="3" fill="#fff"/>
+
+          <!-- 口 -->
+          <path d="M120,120 C150,130 185,120 205,112" stroke="#ffd9d9" stroke-width="5" fill="none"/>
+
+          <!-- 炎 -->
+          <g class="fire-glow">
+            <path id="flame" d="M210,115 C220,110 235,105 245,108
+                                C230,120 235,135 220,138
+                                C230,130 220,120 210,115 Z"
+                  fill="url(#gradFire)" opacity="0.9">
+              <animate attributeName="opacity" values="0.6;1;0.6" dur="0.9s" repeatCount="indefinite"/>
+            </path>
+          </g>
+
+          <!-- 牙 -->
+          <path d="M148,118 l6,10 l-10,0 Z" fill="#fff"/>
+          <path d="M165,120 l6,10 l-10,0 Z" fill="#fff"/>
         </svg>
       </div>
     </div>
@@ -51,12 +118,14 @@
       <!-- スタート画面 -->
       <div id="start-screen" class="text-center">
         <h1 class="text-3xl sm:text-4xl font-bold mb-4">クイズの洞窟</h1>
-        <p class="text-lg mb-6">奥にボスがいるようだ...！</p>
+        <p class="text-lg mb-6">奥に炎竜が待ち構えている…！</p>
 
         <div class="flex flex-col items-center gap-3 mb-4">
           <input id="playerName" type="text" maxlength="30" class="text-black px-3 py-2 w-64"
                  placeholder="名前を入力（重複不可）"/>
-          <div id="start-button" class="dq-button inline-block">▶ 冒険を始める</div>
+          <button id="start-button" class="dq-button inline-flex items-center gap-2">
+            <span>▶</span><span>冒険を始める</span>
+          </button>
           <div id="msg" class="text-yellow-300 text-sm h-5"></div>
         </div>
       </div>
@@ -92,8 +161,8 @@
 
   <script>
     // === GAS連携設定 ===
-    const GAS_URL = "https://script.google.com/macros/s/AKfycby8RB_-Io-bwuMaCL6f0shgO9Spbn2-0_g7TnbS44jbACiD9aZ_jij13SHl4oYCksK-DA/exec"; // 例: https://script.google.com/macros/s/XXXX/exec
-    const QUIZ_ID = "quiz-001"; // クイズを分けたい時はここを変えてね
+    const GAS_URL = "https://script.googleusercontent.com/a/macros/slmt.jp/echo?user_content_key=AehSKLimVSV27kpM6AmBswEOjF72Afi4cYFmCJUZSc-cYq_2xupmBLgpu2H7oZHFCleVJm8CqxvNQ03MqfB6pREAX5-ZJYGN6pbOCR6Qqcx2VUhImldoZAKqSmOfpySD6_cJ3ajUAke8sowsr4ZDfHc_kNsurSc1jm0ONYNClnhiUmy3rQAUtK3Wg4ESD--2pGGT5m1vcssPtEHkldBy7gUfrrZvie_nSSk5ayfWb0uaj1AjLDCOmdhpdza61hx1XqjJqr8v8smm57ZpFoP4ZNn5JUiuyc4o1UobJ5-kaPe3J6yGh92Lb0c&lib=MxSLLNJFyQq6o5_mNtegqqjZeYG56Cb5i"; // ←自分のURLに！
+    const QUIZ_ID = "quiz-001";
 
     const msgEl = () => document.getElementById('msg');
     const showMsg = (t)=>{ if(msgEl()) msgEl().textContent=t; };
@@ -139,9 +208,10 @@
     let bossHP = BOSS_MAX_HP;
     let audioStarted = false;
     let correctCount = 0;
+    let starting = false; // 二重押し防止
 
     // --- サウンド ---
-    let hitSound, damageSound, victorySound, defeatSound, clickSound;
+    let hitSound, damageSound, victorySound, defeatSound, clickSound, roarSound;
     function setupAudio(){
       if(audioStarted) return;
       Tone.start();
@@ -158,12 +228,13 @@
         s.triggerAttackRelease("A#3","4n",n+0.6); s.triggerAttackRelease("A3","2n",n+0.9);
       };
       clickSound = ()=> new Tone.MembraneSynth({pitchDecay:0.008,octaves:2,envelope:{attack:0.0006,decay:0.2,sustain:0}}).toDestination().triggerAttackRelease("C2","8n");
+      roarSound = ()=> new Tone.MetalSynth({frequency:180, envelope:{attack:0.001,decay:1.2,release:0.4}}).toDestination().triggerAttackRelease("C3","8n");
       audioStarted = true;
     }
 
     // --- イベント ---
-    startButton.addEventListener('click', startGame);
-    restartButton.addEventListener('click', startGame);
+    startButton.addEventListener('click', () => startGame());
+    restartButton.addEventListener('click', () => startGame());
 
     // --- ロジック ---
     function shuffleArray(arr){
@@ -171,20 +242,23 @@
     }
 
     async function startGame(){
+      if(starting) return; starting = true;
+      startButton.style.pointerEvents = 'none';
+
       setupAudio();
       clickSound();
 
       const name = (document.getElementById('playerName')?.value || "").trim();
-      if(!name){ showMsg("名前いれてな〜"); return; }
+      if(!name){ showMsg("名前いれてな〜"); starting=false; startButton.style.pointerEvents=''; return; }
 
-      if(alreadyTakenLocal(name)){ showMsg("この端末ではその名前はもう受験済みやで🙅"); return; }
+      if(alreadyTakenLocal(name)){ showMsg("この端末ではその名前はもう受験済みやで🙅"); starting=false; startButton.style.pointerEvents=''; return; }
 
       // 重複チェック
       try{
         const r = await fetch(`${GAS_URL}?action=check&quizId=${encodeURIComponent(QUIZ_ID)}&name=${encodeURIComponent(name)}`);
         const j = await r.json();
-        if(!j.ok){ showMsg("その名前はもう使われてるで！別名でお願い🙏"); return; }
-      }catch{ showMsg("サーバ確認ミス…少し待って🙏"); return; }
+        if(!j.ok){ showMsg("その名前はもう使われてるで！別名でお願い🙏"); starting=false; startButton.style.pointerEvents=''; return; }
+      }catch{ showMsg("サーバ確認ミス…少し待って🙏"); starting=false; startButton.style.pointerEvents=''; return; }
 
       // 登録
       try{
@@ -193,10 +267,10 @@
           headers:{ "Content-Type":"application/json" },
           body: JSON.stringify({ quizId: QUIZ_ID, name })
         });
-        if(r2.status===409){ showMsg("同じ名前は1回だけやで🙅"); return; }
+        if(r2.status===409){ showMsg("同じ名前は1回だけやで🙅"); starting=false; startButton.style.pointerEvents=''; return; }
         if(!r2.ok) throw new Error("register failed");
         markTakenLocal(name);
-      }catch{ showMsg("登録に失敗…もう一回🙏"); return; }
+      }catch{ showMsg("登録に失敗…もう一回🙏"); starting=false; startButton.style.pointerEvents=''; return; }
 
       // いつもの初期化
       correctCount = 0;
@@ -213,8 +287,15 @@
       quizScreen.classList.remove('hidden');
       bossArea.classList.remove('hidden');
 
+      // ボス演出
+      bossContainer.classList.add('boss-roar','shake');
+      roarSound();
+      setTimeout(()=>{ bossContainer.classList.remove('boss-roar','shake'); }, 400);
+
       showMsg("");
       displayQuestion();
+
+      starting=false; startButton.style.pointerEvents='';
     }
 
     function displayQuestion(){
@@ -243,30 +324,30 @@
       optionsContainer.querySelectorAll('.dq-button').forEach(b=>b.style.pointerEvents='none');
 
       if(selected === correct){
-        correctCount++; // ★正解カウント
+        correctCount++;
         hitSound();
         const damage = Math.floor(Math.random()*21)+30; // 30-50
         bossHP = Math.max(0, bossHP - damage);
         showDamage(bossArea, damage);
-        bossContainer.classList.add('damage-flash');
+        bossContainer.classList.add('damage-flash','shake');
       }else{
         damageSound();
         const damage = Math.floor(Math.random()*11)+15; // 15-25
         playerHP = Math.max(0, playerHP - damage);
         showDamage(document.body, damage);
-        document.querySelector('.dq-window').classList.add('damage-flash');
+        document.querySelector('.dq-window').classList.add('damage-flash','shake');
       }
 
       updateHpBars();
 
       setTimeout(()=>{
-        bossContainer.classList.remove('damage-flash');
-        document.querySelector('.dq-window').classList.remove('damage-flash');
+        bossContainer.classList.remove('damage-flash','shake');
+        document.querySelector('.dq-window').classList.remove('damage-flash','shake');
 
         if(playerHP<=0){ showEndScreen(false); }
         else if(bossHP<=0){ showEndScreen(true); }
         else{ displayQuestion(); }
-      }, 1000);
+      }, 900);
     }
 
     function updateHpBars(){
@@ -295,14 +376,14 @@
       if(isVictory){
         victorySound();
         resultTitle.textContent = '勝利！';
-        resultMessage.textContent = 'ボスを倒した！洞窟に平和が戻った。';
+        resultMessage.textContent = '炎竜を討伐した！洞窟に平和が戻った。';
       }else{
         defeatSound();
         resultTitle.textContent = '敗北...';
-        resultMessage.textContent = 'ゆうしゃは力尽きた...。';
+        resultMessage.textContent = 'ゆうしゃは力尽きた…次は勝つ！';
       }
 
-      // ★スコア送信
+      // スコア送信
       const name = (document.getElementById('playerName')?.value || "").trim();
       if(name){
         fetch(`${GAS_URL}?action=finish`,{
