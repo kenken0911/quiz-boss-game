@@ -17,6 +17,9 @@
     .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
     .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
     .dq-button:disabled { background: #555; color: #999; cursor: not-allowed; }
+    /* ★追加: 正解・不正解のスタイル */
+    .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
+    .incorrect-answer { background-image: linear-gradient(to bottom, #888888, #555555) !important; opacity: 0.7; }
     .boss-hp-container { border: 2px solid #fff; height: 30px; padding: 3px; background: #333; border-radius: 5px; box-shadow: inset 0 0 5px #000; }
     .boss-hp-bar { background-image: linear-gradient(to right, #ff3333, #ff8833); height: 100%; transition: width .5s ease-out; border-radius: 2px; }
     .boss-hp-bar.low { background-image: linear-gradient(to right, #cc0000, #ff3333); }
@@ -27,7 +30,6 @@
     .damage-text { position: absolute; font-size: 2.5rem; font-weight: bold; color: #ffcc00; text-shadow: 2px 2px #000, -2px -2px #000; animation: float-up 1.2s forwards; pointer-events: none; }
     @keyframes float-up { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-80px) scale(1.5); opacity: 0; } }
     .fire-glow { filter: drop-shadow(0 0 8px #ff8a00) drop-shadow(0 0 16px #ff3b00) contrast(1.5); }
-    /* ★変更点: 画像用のスタイル */
     #boss-img { width: 100%; max-width: 320px; height: auto; }
   </style>
 </head>
@@ -35,11 +37,10 @@
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
       <div id="boss-container" class="boss-idle">
-        <!-- ★変更点: SVGから画像に変更 -->
         <img id="boss-img" src="./dragon_cutout.png" alt="ボスの画像" class="fire-glow"/>
       </div>
     </div>
-    <div id="game-container" class="w-full dq-window">
+    <div id="game-container" class="w-full dq-window relative">
       <div id="language-screen" class="text-center">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
         <div class="flex justify-center gap-4"><button id="lang-ja" class="dq-button">日本語</button><button id="lang-en" class="dq-button">English</button></div>
@@ -64,16 +65,24 @@
         <p id="submission-status" class="text-yellow-300 mb-8"></p>
         <div id="restart-button" class="dq-button inline-block"></div>
       </div>
+      <!-- ★追加: 解説用モーダル -->
+      <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
+        <div class="dq-window w-full max-w-2xl text-center">
+          <h2 id="explanation-title" class="text-4xl font-bold mb-4"></h2>
+          <p id="explanation-text" class="text-lg mb-6 text-left h-48 overflow-y-auto p-2 border"></p>
+          <button id="next-question-button" class="dq-button"></button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ★追加: BGM用のaudioタグ -->
   <audio id="bgm" src="./boss_bgm_8bit.wav" loop></audio>
 
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzL7tXBIsRkd-YH3q7RuVHJq4AiTNKDpYI2gAWQe5FUQhZtfQrdd2fGBBejGGSh4GuQig/exec';
     const STAGE_NUMBER = '1';
 
+    // ★★★ 変更点: 解説(ex)を追加 ★★★
     const TEXTS = {
       ja: {
         title: "ステージ1：地球環境",
@@ -90,12 +99,15 @@
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
         restartButton: "最初の画面に戻る",
+        correct: "正解！",
+        incorrect: "不正解...",
+        nextButton: "次へ",
         quiz: [
-          { q: "気候変動対策として誤っているものは次のうちどれ？", o: ["省エネや再生可能エネルギーの使用", "森林保全", "気候変動への適応", "海や川のゴミ拾い"], a: "海や川のゴミ拾い" },
-          { q: "廃棄物の発生抑制や資源の有効活用のための考え方「5R」。これに含まれないものは？", o: ["リフューズ(断る)", "リデュース(減らす)", "リペア(修理する)", "リメイン(留まる)"], a: "リメイン(留まる)" },
-          { q: "生物多様性に含まれる「3つのレベルの多様性」に当てはまらないものは？", o: ["生態系の多様性", "種の多様性", "遺伝子の多様性", "文化の多様性"], a: "文化の多様性" },
-          { q: "ユニクロが実施している、服を回収し難民などに寄贈する活動名は？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO" },
-          { q: "フェアトレード製品を買うことが貧困問題の解決に繋がる主な理由は？", o: ["製品が無料で配布されるから", "製品の価格が安いから", "売上が全て寄付されるから", "生産者に公正な賃金が支払われるから"], a: "生産者に公正な賃金が支払われるから" }
+          { q: "気候変動対策として誤っているものは次のうちどれ？", o: ["省エネや再生可能エネルギーの使用", "森林保全", "気候変動への適応", "海や川のゴミ拾い"], a: "海や川のゴミ拾い", ex: "気候変動対策には、温室効果ガス排出量を削減する「緩和」と、気候変動の影響を軽減する「適応」があります。ゴミ拾いは直接的な気候変動対策にはなりませんが、海洋汚染対策として価値のある活動です。" },
+          { q: "廃棄物の発生抑制や資源の有効活用のための考え方「5R」。これに含まれないものは？", o: ["リフューズ(断る)", "リデュース(減らす)", "リペア(修理する)", "リメイン(留まる)"], a: "リメイン(留まる)", ex: "廃棄物抑制の考え方として3R(リデュース、リユース、リサイクル)が提唱され、最近ではリフューズ(断る)、リペア(修理する)を加えた「5R」にまで広がっています。「リメイン(留まる)」は含まれません。" },
+          { q: "生物多様性に含まれる「3つのレベルの多様性」に当てはまらないものは？", o: ["生態系の多様性", "種の多様性", "遺伝子の多様性", "文化の多様性"], a: "文化の多様性", ex: "生物多様性とは、地球上の生物が互いに繋がり合って生きている状態のことです。具体的には、「生態系の多様性」、「種の多様性」、「遺伝子の多様性」の3つのレベルでの多様性を含みます。" },
+          { q: "ユニクロが実施している、服を回収し難民などに寄贈する活動名は？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "ユニクロは「RE.UNIQLO」という活動を通じて、お客様が着なくなった服を回収し、最大限に活用しています。まだ着られる服は、UNHCRと協力して世界中の難民や被災者に届けられます。" },
+          { q: "フェアトレード製品を買うことが貧困問題の解決に繋がる主な理由は？", o: ["製品が無料で配布されるから", "製品の価格が安いから", "売上が全て寄付されるから", "生産者に公正な賃金が支払われるから"], a: "生産者に公正な賃金が支払われるから", ex: "フェアトレードの最も重要な原則の一つは、生産者に公正な価格を保証し、安定した収入を提供することです。これにより、彼らは生活を改善し、教育や医療に投資できるようになります。" }
         ]
       },
       en: {
@@ -113,30 +125,79 @@
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
         restartButton: "Back to Title",
+        correct: "Correct!",
+        incorrect: "Incorrect...",
+        nextButton: "Next",
         quiz: [
-          { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers" },
-          { q: "Which is NOT included in the '5Rs' for waste reduction and resource utilization?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain" },
-          { q: "Which is NOT one of the 'three levels of diversity' included in biodiversity?", o: ["Ecosystem diversity", "Species diversity", "Genetic diversity", "Cultural diversity"], a: "Cultural diversity" },
-          { q: "What is the name of UNIQLO's initiative to collect and donate clothes to refugees?", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO" },
-          { q: "What is the main reason buying Fair Trade products helps solve poverty?", o: ["Products are distributed for free", "Products are cheaper", "All sales are donated", "Producers are paid a fair wage"], a: "Producers are paid a fair wage" }
+          { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers", ex: "Climate change countermeasures include 'mitigation' to reduce greenhouse gas emissions and 'adaptation' to reduce the impacts of climate change. Picking up trash is not a direct countermeasure, but it is a valuable activity for ocean pollution control." },
+          { q: "Which is NOT included in the '5Rs' for waste reduction and resource utilization?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "The 3Rs (Reduce, Reuse, Recycle) have been proposed for waste reduction, and recently it has expanded to the '5Rs' by adding Refuse and Repair. 'Remain' is not included." },
+          { q: "Which is NOT one of the 'three levels of diversity' included in biodiversity?", o: ["Ecosystem diversity", "Species diversity", "Genetic diversity", "Cultural diversity"], a: "Cultural diversity", ex: "Biodiversity is the state in which various organisms on Earth live in connection with each other in their respective environments. Specifically, it includes diversity at three levels: 'ecosystem diversity,' 'species diversity,' and 'genetic diversity.'" },
+          { q: "What is the name of UNIQLO's initiative to collect and donate clothes to refugees?", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "Through the 'RE.UNIQLO' initiative, UNIQLO collects clothes that customers no longer wear and makes the most of them. Clothes that can still be worn are delivered to refugees and disaster victims around the world in cooperation with UNHCR." },
+          { q: "What is the main reason buying Fair Trade products helps solve poverty?", o: ["Products are distributed for free", "Products are cheaper", "All sales are donated", "Producers are paid a fair wage"], a: "Producers are paid a fair wage", ex: "One of the most important principles of Fair Trade is to guarantee a fair price to producers and provide them with a stable income. This allows them to improve their lives and invest in education and healthcare." }
         ]
       }
     };
     let currentLang = 'ja';
-    const langScreen = document.getElementById('language-screen'), startScreen = document.getElementById('start-screen'), quizScreen = document.getElementById('quiz-screen'), resultScreen = document.getElementById('result-screen'), bossArea = document.getElementById('boss-area'), bossContainer = document.getElementById('boss-container'), startButton = document.getElementById('start-button'), restartButton = document.getElementById('restart-button'), bossHpBar = document.getElementById('boss-hp-bar'), questionText = document.getElementById('question-text'), optionsContainer = document.getElementById('options-container'), employeeIdInput = document.getElementById('employeeIdInput'), msgEl = document.getElementById('msg'), bgm = document.getElementById('bgm');
+    const langScreen = document.getElementById('language-screen'), startScreen = document.getElementById('start-screen'), quizScreen = document.getElementById('quiz-screen'), resultScreen = document.getElementById('result-screen'), bossArea = document.getElementById('boss-area'), bossContainer = document.getElementById('boss-container'), startButton = document.getElementById('start-button'), restartButton = document.getElementById('restart-button'), bossHpBar = document.getElementById('boss-hp-bar'), questionText = document.getElementById('question-text'), optionsContainer = document.getElementById('options-container'), employeeIdInput = document.getElementById('employeeIdInput'), msgEl = document.getElementById('msg'), bgm = document.getElementById('bgm'), explanationModal = document.getElementById('explanation-modal'), nextQuestionButton = document.getElementById('next-question-button');
     let currentQuestionIndex, bossHP, audioStarted = false, isGameInProgress = false, correctCount;
     const BOSS_MAX_HP = 100;
     function updateUIText() {const t=TEXTS[currentLang];document.body.lang=currentLang;document.getElementById('title-text').textContent=t.title;document.getElementById('subtitle-text').textContent=t.subtitle;employeeIdInput.placeholder=t.employeeIdPlaceholder;document.getElementById('start-button-text').textContent=t.startButton;document.getElementById('boss-hp-label').textContent=t.bossHp;restartButton.textContent=t.restartButton}
     document.getElementById('lang-ja').addEventListener('click',()=>selectLanguage('ja'));document.getElementById('lang-en').addEventListener('click',()=>selectLanguage('en'));startButton.addEventListener('click',startGame);restartButton.addEventListener('click',()=>{resultScreen.classList.add('hidden');langScreen.classList.remove('hidden');employeeIdInput.value=''});
     function selectLanguage(lang){currentLang=lang;updateUIText();langScreen.classList.add('hidden');startScreen.classList.remove('hidden')}
     async function startGame(){if(isGameInProgress)return;isGameInProgress=true;startButton.disabled=true;if(!audioStarted){await Tone.start();setupAudio()}
-      // ★変更点: BGM再生
       bgm.play().catch(e => console.error("BGM play failed:", e));
       clickSound();const employeeId=employeeIdInput.value.trim();if(!employeeId){msgEl.textContent=TEXTS[currentLang].msgEnterId;isGameInProgress=false;startButton.disabled=false;return}bossHP=BOSS_MAX_HP;currentQuestionIndex=0;correctCount=0;updateHpBars();startScreen.classList.add('hidden');quizScreen.classList.remove('hidden');bossArea.classList.remove('hidden');msgEl.textContent="";displayQuestion();startButton.disabled=false}
-    function displayQuestion(){const quizData=TEXTS[currentLang].quiz;if(currentQuestionIndex>=quizData.length){showEndScreen();return}optionsContainer.innerHTML='';const current=quizData[currentQuestionIndex];questionText.textContent=`Q${currentQuestionIndex+1}: ${current.q}`;current.o.forEach(opt=>{const div=document.createElement('div');div.textContent=`▶ ${opt}`;div.classList.add('dq-button');div.addEventListener('click',()=>handleAnswer(opt,current.a));optionsContainer.appendChild(div)})}
-    function handleAnswer(selectedAnswer,correctAnswer){optionsContainer.querySelectorAll('.dq-button').forEach(b=>b.style.pointerEvents='none');if(selectedAnswer===correctAnswer){correctCount++;hitSound();bossHP=Math.max(0,bossHP-(BOSS_MAX_HP/5));showDamage();bossContainer.classList.add('shake')}else{damageSound();document.querySelector('.dq-window').classList.add('shake')}currentQuestionIndex++;updateHpBars();setTimeout(()=>{bossContainer.classList.remove('shake');document.querySelector('.dq-window').classList.remove('shake');if(bossHP<=0||currentQuestionIndex>=5){showEndScreen()}else{displayQuestion()}},900)}
+    function displayQuestion(){const quizData=TEXTS[currentLang].quiz;if(currentQuestionIndex>=quizData.length){showEndScreen();return}optionsContainer.innerHTML='';const current=quizData[currentQuestionIndex];questionText.textContent=`Q${currentQuestionIndex+1}: ${current.q}`;current.o.forEach(opt=>{const div=document.createElement('div');div.textContent=`▶ ${opt}`;div.classList.add('dq-button');div.addEventListener('click',()=>handleAnswer(opt,current));optionsContainer.appendChild(div)})}
+    
+    // ★★★ 変更点: handleAnswerのロジックを更新 ★★★
+    function handleAnswer(selectedAnswer, currentQuiz) {
+      const isCorrect = selectedAnswer === currentQuiz.a;
+      optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
+        btn.style.pointerEvents = 'none';
+        if (btn.textContent.includes(currentQuiz.a)) {
+          btn.classList.add('correct-answer');
+        } else {
+          btn.classList.add('incorrect-answer');
+        }
+      });
+
+      if (isCorrect) {
+        correctCount++;
+        hitSound();
+        bossHP = Math.max(0, bossHP - (BOSS_MAX_HP / 5));
+        showDamage();
+        bossContainer.classList.add('shake');
+        document.getElementById('explanation-title').textContent = TEXTS[currentLang].correct;
+      } else {
+        damageSound();
+        document.querySelector('.dq-window').classList.add('shake');
+        document.getElementById('explanation-title').textContent = TEXTS[currentLang].incorrect;
+      }
+      
+      updateHpBars();
+      
+      document.getElementById('explanation-text').textContent = currentQuiz.ex;
+      nextQuestionButton.textContent = TEXTS[currentLang].nextButton;
+      
+      setTimeout(() => {
+        explanationModal.style.display = 'flex';
+      }, 800);
+    }
+
+    nextQuestionButton.addEventListener('click', () => {
+      explanationModal.style.display = 'none';
+      bossContainer.classList.remove('shake');
+      document.querySelector('.dq-window').classList.remove('shake');
+      
+      currentQuestionIndex++;
+      if (bossHP <= 0 || currentQuestionIndex >= 5) {
+        showEndScreen();
+      } else {
+        displayQuestion();
+      }
+    });
+
     function showEndScreen(){
-      // ★変更点: BGM停止
       bgm.pause();
       bgm.currentTime = 0;
       quizScreen.classList.add('hidden');bossArea.classList.add('hidden');resultScreen.classList.remove('hidden');const t=TEXTS[currentLang];if(correctCount>=4){victorySound();document.getElementById('result-title').textContent=t.resultWinTitle;document.getElementById('result-message').textContent=t.resultWinMsg}else{defeatSound();document.getElementById('result-title').textContent=t.resultLoseTitle;document.getElementById('result-message').textContent=t.resultLoseMsg}submitResults();isGameInProgress=false}
