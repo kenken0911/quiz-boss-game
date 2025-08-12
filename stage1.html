@@ -4,43 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz Boss Battle - Stage 1</title>
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <!-- Tone.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-
   <style>
-    /* 日本語はドットゴシック、英語はPress Start 2P */
     body[lang="ja"] { font-family: 'DotGothic16', sans-serif; }
     body[lang="en"] { font-family: 'Press Start 2P', cursive; }
     body { background: #000; color: #fff; image-rendering: pixelated; }
-
     .dq-window { border: 4px solid #fff; background: rgba(0,0,80,0.8); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0,128,255,0.5); backdrop-filter: blur(2px); }
     .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
     .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
     .dq-button:disabled { background: #555; color: #999; cursor: not-allowed; }
-    
     .boss-hp-container { border: 2px solid #fff; height: 30px; padding: 3px; background: #333; border-radius: 5px; box-shadow: inset 0 0 5px #000; }
     .boss-hp-bar { background-image: linear-gradient(to right, #ff3333, #ff8833); height: 100%; transition: width .5s ease-out; border-radius: 2px; }
     .boss-hp-bar.low { background-image: linear-gradient(to right, #cc0000, #ff3333); }
-
     .boss-idle { animation: boss-float 2.5s infinite ease-in-out; }
     @keyframes boss-float{ 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-    
     .shake { animation: shake .35s; }
-    @keyframes shake {
-      10%,90% { transform: translate(-2px, -2px); } 20%,80% { transform: translate(3px, 2px); }
-      30%,50%,70% { transform: translate(-3px, 3px); } 40%,60% { transform: translate(3px, -2px); }
-    }
-    
+    @keyframes shake { 10%,90% { transform: translate(-2px, -2px); } 20%,80% { transform: translate(3px, 2px); } 30%,50%,70% { transform: translate(-3px, 3px); } 40%,60% { transform: translate(3px, -2px); } }
     .damage-text { position: absolute; font-size: 2.5rem; font-weight: bold; color: #ffcc00; text-shadow: 2px 2px #000, -2px -2px #000; animation: float-up 1.2s forwards; pointer-events: none; }
     @keyframes float-up { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-80px) scale(1.5); opacity: 0; } }
-    
     .fire-glow { filter: drop-shadow(0 0 8px #ff8a00) drop-shadow(0 0 16px #ff3b00) contrast(1.5); }
     #boss-svg { width: 100%; max-width: 320px; height: auto; }
   </style>
@@ -49,63 +34,28 @@
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
       <div id="boss-container" class="boss-idle">
-        <!-- ★変更点: よりリッチになった炎竜のSVG -->
-        <svg id="boss-svg" viewBox="0 0 300 240">
-          <defs>
-            <radialGradient id="gradBody" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#9c27b0"/><stop offset="60%" stop-color="#6a1b9a"/><stop offset="100%" stop-color="#38006b"/></radialGradient>
-            <radialGradient id="gradWing" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#7c1fa2"/><stop offset="100%" stop-color="#4a0072"/></radialGradient>
-            <linearGradient id="gradHorn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fceabb"/><stop offset="100%" stop-color="#f8b500"/></linearGradient>
-            <radialGradient id="gradEye" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffeb3b"/><stop offset="100%" stop-color="#f57f17"/></radialGradient>
-            <linearGradient id="gradFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff7a1"/><stop offset="40%" stop-color="#ff8a00"/><stop offset="100%" stop-color="#ff3b00"/></linearGradient>
-          </defs>
-          <g class="fire-glow"><path d="M250 145 c 10 -5, 25 -10, 35 -7 c -15 12, -10 27, -25 30 c 10 -10, 0 -20, -10 -23z" fill="url(#gradFire)"><animate attributeName="d" values="M250 145 c 10 -5, 25 -10, 35 -7 c -15 12, -10 27, -25 30 c 10 -10, 0 -20, -10 -23z; M250 145 c 12 -4, 28 -8, 38 -5 c -17 10, -12 25, -28 28 c 12 -8, 2 -18, -10 -23z; M250 145 c 10 -5, 25 -10, 35 -7 c -15 12, -10 27, -25 30 c 10 -10, 0 -20, -10 -23z" dur="1s" repeatCount="indefinite"/></path></g>
-          <path d="M 50 180 q 50 -120 150 0" fill="url(#gradWing)" stroke="#d1c4e9" stroke-width="2"/>
-          <path d="M 250 180 q -50 -120 -150 0" fill="url(#gradWing)" stroke="#d1c4e9" stroke-width="2"/>
-          <ellipse cx="150" cy="225" rx="100" ry="15" fill="rgba(0,0,0,0.6)"/>
-          <path d="M 80 160 c -15 -30, 0 -90, 70 -100 c 20 -10, 60 -10, 80 0 c 70 10, 85 70, 70 100 q -50 40 -100 50 q -50 -10 -120 -50 z" fill="url(#gradBody)" stroke="#b39ddb" stroke-width="3"/>
-          <path d="M 170 65 c 0 -20, 20 -45, 30 -50 c -5 15, -10 30, -15 45 z" fill="url(#gradHorn)"/><path d="M 130 65 c 0 -20, -20 -45, -30 -50 c 5 15, 10 30, 15 45 z" fill="url(#gradHorn)"/>
-          <ellipse cx="180" cy="125" rx="18" ry="15" fill="#1a237e"/><ellipse cx="180" cy="125" rx="10" ry="8" fill="url(#gradEye)"/><circle cx="182" cy="123" r="4" fill="#fff"/>
-          <ellipse cx="120" cy="125" rx="18" ry="15" fill="#1a237e"/><ellipse cx="120" cy="125" rx="10" ry="8" fill="url(#gradEye)"/><circle cx="122" cy="123" r="4" fill="#fff"/>
-          <path d="M 120 160 q 30 15 60 0" stroke="#ffcdd2" stroke-width="4" fill="none"/>
-        </svg>
+        <svg id="boss-svg" viewBox="0 0 300 240"><defs><radialGradient id="gradBody" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#9c27b0"/><stop offset="60%" stop-color="#6a1b9a"/><stop offset="100%" stop-color="#38006b"/></radialGradient><radialGradient id="gradWing" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#7c1fa2"/><stop offset="100%" stop-color="#4a0072"/></radialGradient><linearGradient id="gradHorn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fceabb"/><stop offset="100%" stop-color="#f8b500"/></linearGradient><radialGradient id="gradEye" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffeb3b"/><stop offset="100%" stop-color="#f57f17"/></radialGradient><linearGradient id="gradFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff7a1"/><stop offset="40%" stop-color="#ff8a00"/><stop offset="100%" stop-color="#ff3b00"/></linearGradient></defs><g class="fire-glow"><path d="M250 145 c 10 -5, 25 -10, 35 -7 c -15 12, -10 27, -25 30 c 10 -10, 0 -20, -10 -23z" fill="url(#gradFire)"><animate attributeName="d" values="M250 145 c 10 -5, 25 -10, 35 -7 c -15 12, -10 27, -25 30 c 10 -10, 0 -20, -10 -23z; M250 145 c 12 -4, 28 -8, 38 -5 c -17 10, -12 25, -28 28 c 12 -8, 2 -18, -10 -23z; M250 145 c 10 -5, 25 -10, 35 -7 c -15 12, -10 27, -25 30 c 10 -10, 0 -20, -10 -23z" dur="1s" repeatCount="indefinite"/></path></g><path d="M 50 180 q 50 -120 150 0" fill="url(#gradWing)" stroke="#d1c4e9" stroke-width="2"/><path d="M 250 180 q -50 -120 -150 0" fill="url(#gradWing)" stroke="#d1c4e9" stroke-width="2"/><ellipse cx="150" cy="225" rx="100" ry="15" fill="rgba(0,0,0,0.6)"/><path d="M 80 160 c -15 -30, 0 -90, 70 -100 c 20 -10, 60 -10, 80 0 c 70 10, 85 70, 70 100 q -50 40 -100 50 q -50 -10 -120 -50 z" fill="url(#gradBody)" stroke="#b39ddb" stroke-width="3"/><path d="M 170 65 c 0 -20, 20 -45, 30 -50 c -5 15, -10 30, -15 45 z" fill="url(#gradHorn)"/><path d="M 130 65 c 0 -20, -20 -45, -30 -50 c 5 15, 10 30, 15 45 z" fill="url(#gradHorn)"/><ellipse cx="180" cy="125" rx="18" ry="15" fill="#1a237e"/><ellipse cx="180" cy="125" rx="10" ry="8" fill="url(#gradEye)"/><circle cx="182" cy="123" r="4" fill="#fff"/><ellipse cx="120" cy="125" rx="18" ry="15" fill="#1a237e"/><ellipse cx="120" cy="125" rx="10" ry="8" fill="url(#gradEye)"/><circle cx="122" cy="123" r="4" fill="#fff"/><path d="M 120 160 q 30 15 60 0" stroke="#ffcdd2" stroke-width="4" fill="none"/></svg>
       </div>
     </div>
-
     <div id="game-container" class="w-full dq-window">
-      <!-- ★追加: 言語選択画面 -->
       <div id="language-screen" class="text-center">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <div class="flex justify-center gap-4">
-          <button id="lang-ja" class="dq-button">日本語</button>
-          <button id="lang-en" class="dq-button">English</button>
-        </div>
+        <div class="flex justify-center gap-4"><button id="lang-ja" class="dq-button">日本語</button><button id="lang-en" class="dq-button">English</button></div>
       </div>
-
-      <!-- スタート画面 -->
       <div id="start-screen" class="text-center hidden">
         <h1 id="title-text" class="text-3xl font-bold mb-4"></h1>
         <p id="subtitle-text" class="text-lg mb-6"></p>
         <div class="flex flex-col items-center gap-3 mb-4">
           <input id="employeeIdInput" type="text" class="text-black px-3 py-2 w-64 text-center"/>
-          <button id="start-button" class="dq-button inline-flex items-center gap-2">
-            <span id="start-button-text"></span>
-          </button>
+          <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
           <div id="msg" class="text-yellow-300 text-sm h-5"></div>
         </div>
       </div>
-
-      <!-- クイズ画面 -->
       <div id="quiz-screen" class="hidden">
-        <!-- ★変更点: 敵HPのみ表示 -->
-        <div class="mb-4">
-          <p id="boss-hp-label">ボス HP</p>
-          <div class="boss-hp-container"><div id="boss-hp-bar" class="boss-hp-bar"></div></div>
-        </div>
+        <div class="mb-4"><p id="boss-hp-label"></p><div class="boss-hp-container"><div id="boss-hp-bar" class="boss-hp-bar"></div></div></div>
         <div class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
         <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
-
-      <!-- 結果画面 -->
       <div id="result-screen" class="hidden text-center">
         <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
         <p id="result-message" class="text-xl mb-6"></p>
@@ -114,247 +64,74 @@
       </div>
     </div>
   </div>
-
   <script>
-    // === 設定 ===
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzL7tXBIsRkd-YH3q7RuVHJq4AiTNKDpYI2gAWQe5FUQhZtfQrdd2fGBBejGGSh4GuQig/exec'; // ★新しいURLに更新
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzL7tXBIsRkd-YH3q7RuVHJq4AiTNKDpYI2gAWQe5FUQhZtfQrdd2fGBBejGGSh4GuQig/exec';
     const STAGE_NUMBER = '1';
 
-    // ★★★ 多言語対応テキスト ★★★
+    // ★★★ 多言語対応テキスト (ステージ1) ★★★
     const TEXTS = {
       ja: {
-        title: "ステージ1：炎の試練",
-        subtitle: "炎竜が待ち構えている…！",
+        title: "ステージ1：地球環境",
+        subtitle: "環境問題の知識で竜を討て！",
         employeeIdPlaceholder: "社員番号を入力",
-        startButton: "冒険を始める",
+        startButton: "挑戦する",
         msgEnterId: "社員番号を入力してください",
         bossHp: "ボス HP",
         resultWinTitle: "勝利！",
-        resultWinMsg: "炎竜を討伐した！ステージクリア！",
+        resultWinMsg: "ステージクリア！環境への意識が高まった！",
         resultLoseTitle: "敗北...",
-        resultLoseMsg: "ゆうしゃは力尽きた…",
+        resultLoseMsg: "竜の力は強大だった…",
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
         restartButton: "最初の画面に戻る",
         quiz: [
-          { q: "HTMLでハイパーリンクを作成するタグはどれ？", o: ["<link>", "<a>", "<p>", "<h>"], a: "<a>" },
-          { q: "CSSは何の略？", o: ["Creative Style Sheets", "Computer Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets"], a: "Cascading Style Sheets" },
-          { q: "JavaScriptで変数を宣言するキーワードでないものは？", o: ["var", "let", "const", "def"], a: "def" },
-          { q: "世界で最も高い山は？", o: ["K2", "富士山", "エベレスト", "カンチェンジュンガ"], a: "エベレスト" },
-          { q: "日本の現在の首都は？", o: ["京都", "大阪", "奈良", "東京"], a: "東京" }
+          { q: "気候変動対策として誤っているものは次のうちどれ？", o: ["省エネや再生可能エネルギーの使用", "森林保全", "気候変動への適応", "海や川のゴミ拾い"], a: "海や川のゴミ拾い" },
+          { q: "廃棄物の発生抑制や資源の有効活用のための考え方「5R」。これに含まれないものは？", o: ["リフューズ(断る)", "リデュース(減らす)", "リペア(修理する)", "リメイン(留まる)"], a: "リメイン(留まる)" },
+          { q: "生物多様性に含まれる「3つのレベルの多様性」に当てはまらないものは？", o: ["生態系の多様性", "種の多様性", "遺伝子の多様性", "文化の多様性"], a: "文化の多様性" },
+          { q: "ユニクロが実施している、服を回収し難民などに寄贈する活動名は？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO" },
+          { q: "フェアトレード製品を買うことが貧困問題の解決に繋がる主な理由は？", o: ["製品が無料で配布されるから", "製品の価格が安いから", "売上が全て寄付されるから", "生産者に公正な賃金が支払われるから"], a: "生産者に公正な賃金が支払われるから" }
         ]
       },
       en: {
-        title: "Stage 1: The Fiery Trial",
-        subtitle: "A Flame Dragon awaits...!",
+        title: "Stage 1: Global Environment",
+        subtitle: "Defeat the dragon with your environmental knowledge!",
         employeeIdPlaceholder: "Enter Employee ID",
-        startButton: "Start Adventure",
+        startButton: "Challenge",
         msgEnterId: "Please enter your Employee ID",
         bossHp: "Boss HP",
         resultWinTitle: "Victory!",
-        resultWinMsg: "You have defeated the Flame Dragon! Stage Clear!",
+        resultWinMsg: "Stage Clear! Your environmental awareness has increased!",
         resultLoseTitle: "Defeat...",
-        resultLoseMsg: "The hero has fallen...",
+        resultLoseMsg: "The dragon's power was too great...",
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
         restartButton: "Back to Title",
         quiz: [
-          { q: "Which tag creates a hyperlink in HTML?", o: ["<link>", "<a>", "<p>", "<h>"], a: "<a>" },
-          { q: "What does CSS stand for?", o: ["Creative Style Sheets", "Computer Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets"], a: "Cascading Style Sheets" },
-          { q: "Which is NOT a keyword to declare a variable in JavaScript?", o: ["var", "let", "const", "def"], a: "def" },
-          { q: "What is the highest mountain in the world?", o: ["K2", "Mt. Fuji", "Mt. Everest", "Kangchenjunga"], a: "Mt. Everest" },
-          { q: "What is the current capital of Japan?", o: ["Kyoto", "Osaka", "Nara", "Tokyo"], a: "Tokyo" }
+          { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers" },
+          { q: "Which is NOT included in the '5Rs' for waste reduction and resource utilization?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain" },
+          { q: "Which is NOT one of the 'three levels of diversity' included in biodiversity?", o: ["Ecosystem diversity", "Species diversity", "Genetic diversity", "Cultural diversity"], a: "Cultural diversity" },
+          { q: "What is the name of UNIQLO's initiative to collect and donate clothes to refugees?", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO" },
+          { q: "What is the main reason buying Fair Trade products helps solve poverty?", o: ["Products are distributed for free", "Products are cheaper", "All sales are donated", "Producers are paid a fair wage"], a: "Producers are paid a fair wage" }
         ]
       }
     };
-    let currentLang = 'ja'; // デフォルト言語
-
-    // --- DOM要素 ---
-    const langScreen = document.getElementById('language-screen');
-    const startScreen = document.getElementById('start-screen');
-    const quizScreen = document.getElementById('quiz-screen');
-    const resultScreen = document.getElementById('result-screen');
-    const bossArea = document.getElementById('boss-area');
-    const bossContainer = document.getElementById('boss-container');
-    const startButton = document.getElementById('start-button');
-    const restartButton = document.getElementById('restart-button');
-    const bossHpBar = document.getElementById('boss-hp-bar');
-    const questionText = document.getElementById('question-text');
-    const optionsContainer = document.getElementById('options-container');
-    const employeeIdInput = document.getElementById('employeeIdInput');
-    const msgEl = document.getElementById('msg');
-
-    // --- ゲーム状態 ---
+    let currentLang = 'ja';
+    const langScreen = document.getElementById('language-screen'), startScreen = document.getElementById('start-screen'), quizScreen = document.getElementById('quiz-screen'), resultScreen = document.getElementById('result-screen'), bossArea = document.getElementById('boss-area'), bossContainer = document.getElementById('boss-container'), startButton = document.getElementById('start-button'), restartButton = document.getElementById('restart-button'), bossHpBar = document.getElementById('boss-hp-bar'), questionText = document.getElementById('question-text'), optionsContainer = document.getElementById('options-container'), employeeIdInput = document.getElementById('employeeIdInput'), msgEl = document.getElementById('msg');
     let currentQuestionIndex, bossHP, audioStarted = false, isGameInProgress = false, correctCount;
     const BOSS_MAX_HP = 100;
-
-    // --- UIテキスト更新関数 ---
-    function updateUIText() {
-      const t = TEXTS[currentLang];
-      document.body.lang = currentLang;
-      document.getElementById('title-text').textContent = t.title;
-      document.getElementById('subtitle-text').textContent = t.subtitle;
-      employeeIdInput.placeholder = t.employeeIdPlaceholder;
-      document.getElementById('start-button-text').textContent = t.startButton;
-      document.getElementById('boss-hp-label').textContent = t.bossHp;
-      restartButton.textContent = t.restartButton;
-    }
-
-    // --- イベントリスナー ---
-    document.getElementById('lang-ja').addEventListener('click', () => selectLanguage('ja'));
-    document.getElementById('lang-en').addEventListener('click', () => selectLanguage('en'));
-    startButton.addEventListener('click', startGame);
-    restartButton.addEventListener('click', () => {
-      resultScreen.classList.add('hidden');
-      langScreen.classList.remove('hidden');
-      employeeIdInput.value = '';
-    });
-
-    // --- ロジック ---
-    function selectLanguage(lang) {
-      currentLang = lang;
-      updateUIText();
-      langScreen.classList.add('hidden');
-      startScreen.classList.remove('hidden');
-    }
-
-    async function startGame() {
-      if (isGameInProgress) return;
-      isGameInProgress = true;
-      startButton.disabled = true;
-      if (!audioStarted) {
-        await Tone.start();
-        setupAudio();
-      }
-      clickSound();
-
-      const employeeId = employeeIdInput.value.trim();
-      if (!employeeId) {
-        msgEl.textContent = TEXTS[currentLang].msgEnterId;
-        isGameInProgress = false;
-        startButton.disabled = false;
-        return;
-      }
-
-      bossHP = BOSS_MAX_HP;
-      currentQuestionIndex = 0;
-      correctCount = 0;
-      updateHpBars();
-
-      startScreen.classList.add('hidden');
-      quizScreen.classList.remove('hidden');
-      bossArea.classList.remove('hidden');
-      
-      msgEl.textContent = "";
-      displayQuestion();
-      startButton.disabled = false;
-    }
-
-    function displayQuestion() {
-      const quizData = TEXTS[currentLang].quiz;
-      if (currentQuestionIndex >= quizData.length) {
-        showEndScreen();
-        return;
-      }
-      optionsContainer.innerHTML = '';
-      const current = quizData[currentQuestionIndex];
-      questionText.textContent = `Q${currentQuestionIndex + 1}: ${current.q}`;
-      current.o.forEach(opt => {
-        const div = document.createElement('div');
-        div.textContent = `▶ ${opt}`;
-        div.classList.add('dq-button');
-        div.addEventListener('click', () => handleAnswer(opt, current.a));
-        optionsContainer.appendChild(div);
-      });
-    }
-
-    function handleAnswer(selectedAnswer, correctAnswer) {
-      optionsContainer.querySelectorAll('.dq-button').forEach(b => b.style.pointerEvents = 'none');
-      if (selectedAnswer === correctAnswer) {
-        correctCount++;
-        hitSound();
-        bossHP = Math.max(0, bossHP - (BOSS_MAX_HP / 5));
-        showDamage();
-        bossContainer.classList.add('shake');
-      } else {
-        damageSound();
-        document.querySelector('.dq-window').classList.add('shake');
-      }
-      currentQuestionIndex++;
-      updateHpBars();
-      setTimeout(() => {
-        bossContainer.classList.remove('shake');
-        document.querySelector('.dq-window').classList.remove('shake');
-        if (bossHP <= 0 || currentQuestionIndex >= 5) {
-          showEndScreen();
-        } else {
-          displayQuestion();
-        }
-      }, 900);
-    }
-
-    function showEndScreen() {
-      quizScreen.classList.add('hidden');
-      bossArea.classList.add('hidden');
-      resultScreen.classList.remove('hidden');
-      const t = TEXTS[currentLang];
-      if (correctCount >= 4) { // 4問以上正解で勝利
-        victorySound();
-        document.getElementById('result-title').textContent = t.resultWinTitle;
-        document.getElementById('result-message').textContent = t.resultWinMsg;
-      } else {
-        defeatSound();
-        document.getElementById('result-title').textContent = t.resultLoseTitle;
-        document.getElementById('result-message').textContent = t.resultLoseMsg;
-      }
-      submitResults();
-      isGameInProgress = false;
-    }
-
-    function submitResults() {
-      const employeeId = employeeIdInput.value.trim();
-      const statusEl = document.getElementById('submission-status');
-      if (!employeeId) return;
-      const payload = { employeeId: employeeId, stage: STAGE_NUMBER, score: correctCount };
-      statusEl.textContent = TEXTS[currentLang].submitting;
-      fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'success') {
-            statusEl.textContent = TEXTS[currentLang].submitSuccess;
-          } else { throw new Error(data.message); }
-        })
-        .catch(err => {
-          statusEl.textContent = TEXTS[currentLang].submitError;
-          console.error('Error:', err);
-        });
-    }
-
-    function updateHpBars() {
-      const b = (bossHP / BOSS_MAX_HP) * 100;
-      bossHpBar.style.width = `${b}%`;
-      bossHpBar.classList.toggle('low', b < 30);
-    }
-    
-    function showDamage() {
-      const d = document.createElement('div');
-      d.textContent = Math.floor(Math.random() * 50) + 200; // ダメージ数字はランダム
-      d.className = 'damage-text';
-      bossArea.appendChild(d);
-      setTimeout(() => d.remove(), 1200);
-    }
-
-    let hitSound, damageSound, victorySound, defeatSound, clickSound;
-    function setupAudio() {
-      hitSound = () => new Tone.Synth({ oscillator: { type: "fmsquare" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.1 } }).toDestination().triggerAttackRelease("C5", "16n");
-      damageSound = () => new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination().triggerAttackRelease("8n");
-      victorySound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C5", "8n", n); s.triggerAttackRelease("E5", "8n", n + 0.2); s.triggerAttackRelease("G5", "8n", n + 0.4); s.triggerAttackRelease("C6", "4n", n + 0.6); };
-      defeatSound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C4", "4n", n); s.triggerAttackRelease("B3", "4n", n + 0.3); s.triggerAttackRelease("A#3", "4n", n + 0.6); s.triggerAttackRelease("A3", "2n", n + 0.9); };
-      clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
-      audioStarted = true;
-    }
+    function updateUIText() {const t=TEXTS[currentLang];document.body.lang=currentLang;document.getElementById('title-text').textContent=t.title;document.getElementById('subtitle-text').textContent=t.subtitle;employeeIdInput.placeholder=t.employeeIdPlaceholder;document.getElementById('start-button-text').textContent=t.startButton;document.getElementById('boss-hp-label').textContent=t.bossHp;restartButton.textContent=t.restartButton}
+    document.getElementById('lang-ja').addEventListener('click',()=>selectLanguage('ja'));document.getElementById('lang-en').addEventListener('click',()=>selectLanguage('en'));startButton.addEventListener('click',startGame);restartButton.addEventListener('click',()=>{resultScreen.classList.add('hidden');langScreen.classList.remove('hidden');employeeIdInput.value=''});
+    function selectLanguage(lang){currentLang=lang;updateUIText();langScreen.classList.add('hidden');startScreen.classList.remove('hidden')}
+    async function startGame(){if(isGameInProgress)return;isGameInProgress=true;startButton.disabled=true;if(!audioStarted){await Tone.start();setupAudio()}clickSound();const employeeId=employeeIdInput.value.trim();if(!employeeId){msgEl.textContent=TEXTS[currentLang].msgEnterId;isGameInProgress=false;startButton.disabled=false;return}bossHP=BOSS_MAX_HP;currentQuestionIndex=0;correctCount=0;updateHpBars();startScreen.classList.add('hidden');quizScreen.classList.remove('hidden');bossArea.classList.remove('hidden');msgEl.textContent="";displayQuestion();startButton.disabled=false}
+    function displayQuestion(){const quizData=TEXTS[currentLang].quiz;if(currentQuestionIndex>=quizData.length){showEndScreen();return}optionsContainer.innerHTML='';const current=quizData[currentQuestionIndex];questionText.textContent=`Q${currentQuestionIndex+1}: ${current.q}`;current.o.forEach(opt=>{const div=document.createElement('div');div.textContent=`▶ ${opt}`;div.classList.add('dq-button');div.addEventListener('click',()=>handleAnswer(opt,current.a));optionsContainer.appendChild(div)})}
+    function handleAnswer(selectedAnswer,correctAnswer){optionsContainer.querySelectorAll('.dq-button').forEach(b=>b.style.pointerEvents='none');if(selectedAnswer===correctAnswer){correctCount++;hitSound();bossHP=Math.max(0,bossHP-(BOSS_MAX_HP/5));showDamage();bossContainer.classList.add('shake')}else{damageSound();document.querySelector('.dq-window').classList.add('shake')}currentQuestionIndex++;updateHpBars();setTimeout(()=>{bossContainer.classList.remove('shake');document.querySelector('.dq-window').classList.remove('shake');if(bossHP<=0||currentQuestionIndex>=5){showEndScreen()}else{displayQuestion()}},900)}
+    function showEndScreen(){quizScreen.classList.add('hidden');bossArea.classList.add('hidden');resultScreen.classList.remove('hidden');const t=TEXTS[currentLang];if(correctCount>=4){victorySound();document.getElementById('result-title').textContent=t.resultWinTitle;document.getElementById('result-message').textContent=t.resultWinMsg}else{defeatSound();document.getElementById('result-title').textContent=t.resultLoseTitle;document.getElementById('result-message').textContent=t.resultLoseMsg}submitResults();isGameInProgress=false}
+    function submitResults(){const employeeId=employeeIdInput.value.trim();const statusEl=document.getElementById('submission-status');if(!employeeId)return;const payload={employeeId:employeeId,stage:STAGE_NUMBER,score:correctCount};statusEl.textContent=TEXTS[currentLang].submitting;fetch(GAS_URL,{method:'POST',body:JSON.stringify(payload)}).then(res=>res.json()).then(data=>{if(data.status==='success'){statusEl.textContent=TEXTS[currentLang].submitSuccess}else{throw new Error(data.message)}}).catch(err=>{statusEl.textContent=TEXTS[currentLang].submitError;console.error('Error:',err)})}
+    function updateHpBars(){const b=(bossHP/BOSS_MAX_HP)*100;bossHpBar.style.width=`${b}%`;bossHpBar.classList.toggle('low',b<30)}
+    function showDamage(){const d=document.createElement('div');d.textContent=Math.floor(Math.random()*50)+200;d.className='damage-text';bossArea.appendChild(d);setTimeout(()=>d.remove(),1200)}
+    let hitSound,damageSound,victorySound,defeatSound,clickSound;function setupAudio(){hitSound=()=>new Tone.Synth({oscillator:{type:"fmsquare"},envelope:{attack:0.01,decay:0.2,sustain:0.0,release:0.1}}).toDestination().triggerAttackRelease("C5","16n");damageSound=()=>new Tone.NoiseSynth({noise:{type:"pink"},envelope:{attack:0.01,decay:0.3,sustain:0,release:0.2}}).toDestination().triggerAttackRelease("8n");victorySound=()=>{const s=new Tone.Synth().toDestination(),n=Tone.now();s.triggerAttackRelease("C5","8n",n);s.triggerAttackRelease("E5","8n",n+0.2);s.triggerAttackRelease("G5","8n",n+0.4);s.triggerAttackRelease("C6","4n",n+0.6)};defeatSound=()=>{const s=new Tone.Synth().toDestination(),n=Tone.now();s.triggerAttackRelease("C4","4n",n);s.triggerAttackRelease("B3","4n",n+0.3);s.triggerAttackRelease("A#3","4n",n+0.6);s.triggerAttackRelease("A3","2n",n+0.9)};clickSound=()=>new Tone.MembraneSynth({pitchDecay:0.01,octaves:3,envelope:{attack:0.001,decay:0.3,sustain:0}}).toDestination().triggerAttackRelease("C2","8n");audioStarted=true}
   </script>
 </body>
 </html>
