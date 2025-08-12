@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ボスバトルクイズゲーム</title>
+  <title>ステージ1：ボスバトルクイズ</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,14 +23,10 @@
     .hp-bar-container{border:2px solid #fff;height:24px;padding:2px;background:#333}
     .hp-bar{background:#33ff33;height:100%;transition:width .5s ease-out}
     .hp-bar.low{background:#ff3333}
-
-    /* ボス演出 */
     .boss-idle{animation:boss-float 2.2s infinite ease-in-out}
     @keyframes boss-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
     .boss-roar{animation:boss-roar .35s ease-in-out}
     @keyframes boss-roar{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-
-    /* ダメージ＆シェイク */
     .damage-flash{animation:damage-flash .28s 1}
     @keyframes damage-flash{0%,100%{opacity:1}50%{opacity:.25}}
     .shake{animation:shake .35s}
@@ -41,15 +37,9 @@
       70%{transform:translate(-1px, 1px)} 80%{transform:translate(2px, 2px)}
       90%{transform:translate(-2px, -1px)} 100%{transform:translate(0,0)}
     }
-
-    /* ダメージ数字 */
     .damage-text{position:absolute;font-size:2rem;font-weight:bold;color:#ff5555;text-shadow:2px 2px #000;animation:float-up 1s forwards;pointer-events:none}
     @keyframes float-up{from{transform:translateY(0);opacity:1}to{transform:translateY(-60px);opacity:0}}
-
-    /* 炎（SVG中のアニメで点滅） */
     .fire-glow{filter:drop-shadow(0 0 6px #ff8a00) drop-shadow(0 0 12px #ff3b00)}
-
-    /* レスポンシブ */
     #boss-svg{max-width:280px;width:60vw;height:auto}
   </style>
 </head>
@@ -58,58 +48,20 @@
     <!-- ボス表示 -->
     <div id="boss-area" class="mb-4 h-60 flex justify-center items-end relative hidden">
       <div id="boss-container" class="boss-idle">
-        <!-- ───────── 迫力ボス：炎竜のSVG ───────── -->
+        <!-- 迫力ボス：炎竜のSVG -->
         <svg id="boss-svg" viewBox="0 0 260 220">
           <defs>
-            <linearGradient id="gradBody" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%"   stop-color="#6622CC"/>
-              <stop offset="50%" stop-color="#7A00F5"/>
-              <stop offset="100%" stop-color="#300070"/>
-            </linearGradient>
-            <linearGradient id="gradEye" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#fff700"/>
-              <stop offset="100%" stop-color="#ff4d00"/>
-            </linearGradient>
-            <linearGradient id="gradFire" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#fff7a1"/>
-              <stop offset="40%" stop-color="#ff8a00"/>
-              <stop offset="100%" stop-color="#ff3b00"/>
-            </linearGradient>
+            <linearGradient id="gradBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6622CC"/><stop offset="50%" stop-color="#7A00F5"/><stop offset="100%" stop-color="#300070"/></linearGradient>
+            <linearGradient id="gradEye" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff700"/><stop offset="100%" stop-color="#ff4d00"/></linearGradient>
+            <linearGradient id="gradFire" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff7a1"/><stop offset="40%" stop-color="#ff8a00"/><stop offset="100%" stop-color="#ff3b00"/></linearGradient>
           </defs>
-
-          <!-- 影 -->
           <ellipse cx="130" cy="205" rx="70" ry="10" fill="#000" opacity="0.5"></ellipse>
-
-          <!-- 体 -->
-          <path d="M35,150 C20,120 40,60 95,55 C110,40 145,30 175,45 C210,40 240,70 230,110
-                   C225,125 200,145 180,155 C165,170 125,180 95,170 C70,170 45,165 35,150 Z"
-                fill="url(#gradBody)" stroke="#caa8ff" stroke-width="3"/>
-
-          <!-- 角 -->
-          <path d="M150,42 C152,22 175,10 185,8 C175,20 170,32 165,44 Z" fill="#caa8ff"/>
-          <path d="M128,38 C130,20 150,10 160,8 C150,20 145,30 140,42 Z" fill="#caa8ff"/>
-
-          <!-- 目 -->
-          <ellipse cx="160" cy="95" rx="15" ry="12" fill="black"/>
-          <ellipse cx="160" cy="95" rx="9"  ry="7"  fill="url(#gradEye)"/>
-          <circle  cx="162" cy="94" r="3" fill="#fff"/>
-
-          <!-- 口 -->
+          <path d="M35,150 C20,120 40,60 95,55 C110,40 145,30 175,45 C210,40 240,70 230,110 C225,125 200,145 180,155 C165,170 125,180 95,170 C70,170 45,165 35,150 Z" fill="url(#gradBody)" stroke="#caa8ff" stroke-width="3"/>
+          <path d="M150,42 C152,22 175,10 185,8 C175,20 170,32 165,44 Z" fill="#caa8ff"/><path d="M128,38 C130,20 150,10 160,8 C150,20 145,30 140,42 Z" fill="#caa8ff"/>
+          <ellipse cx="160" cy="95" rx="15" ry="12" fill="black"/><ellipse cx="160" cy="95" rx="9" ry="7" fill="url(#gradEye)"/><circle cx="162" cy="94" r="3" fill="#fff"/>
           <path d="M120,120 C150,130 185,120 205,112" stroke="#ffd9d9" stroke-width="5" fill="none"/>
-
-          <!-- 炎 -->
-          <g class="fire-glow">
-            <path id="flame" d="M210,115 C220,110 235,105 245,108
-                                 C230,120 235,135 220,138
-                                 C230,130 220,120 210,115 Z"
-                  fill="url(#gradFire)" opacity="0.9">
-              <animate attributeName="opacity" values="0.6;1;0.6" dur="0.9s" repeatCount="indefinite"/>
-            </path>
-          </g>
-
-          <!-- 牙 -->
-          <path d="M148,118 l6,10 l-10,0 Z" fill="#fff"/>
-          <path d="M165,120 l6,10 l-10,0 Z" fill="#fff"/>
+          <g class="fire-glow"><path id="flame" d="M210,115 C220,110 235,105 245,108 C230,120 235,135 220,138 C230,130 220,120 210,115 Z" fill="url(#gradFire)" opacity="0.9"><animate attributeName="opacity" values="0.6;1;0.6" dur="0.9s" repeatCount="indefinite"/></path></g>
+          <path d="M148,118 l6,10 l-10,0 Z" fill="#fff"/><path d="M165,120 l6,10 l-10,0 Z" fill="#fff"/>
         </svg>
       </div>
     </div>
@@ -118,12 +70,11 @@
     <div id="game-container" class="w-full dq-window">
       <!-- スタート画面 -->
       <div id="start-screen" class="text-center">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-4">クイズの洞窟</h1>
+        <h1 class="text-3xl sm:text-4xl font-bold mb-4">ステージ1：クイズの洞窟</h1>
         <p class="text-lg mb-6">奥に炎竜が待ち構えている…！</p>
-
         <div class="flex flex-col items-center gap-3 mb-4">
-          <input id="playerName" type="text" maxlength="30" class="text-black px-3 py-2 w-64"
-                 placeholder="名前を入力（重複不可）"/>
+          <!-- ★変更点: 「名前」から「社員番号」へ -->
+          <input id="employeeIdInput" type="text" class="text-black px-3 py-2 w-64" placeholder="社員番号を入力"/>
           <button id="start-button" class="dq-button inline-flex items-center gap-2">
             <span>▶</span><span>冒険を始める</span>
           </button>
@@ -134,82 +85,65 @@
       <!-- クイズ画面 -->
       <div id="quiz-screen" class="hidden">
         <div id="status-container" class="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <p>ゆうしゃ HP</p>
-            <div class="hp-bar-container"><div id="player-hp-bar" class="hp-bar"></div></div>
-          </div>
-          <div>
-            <p>ボス HP</p>
-            <div class="hp-bar-container"><div id="boss-hp-bar" class="hp-bar"></div></div>
-          </div>
+          <div><p>ゆうしゃ HP</p><div class="hp-bar-container"><div id="player-hp-bar" class="hp-bar"></div></div></div>
+          <div><p>ボス HP</p><div class="hp-bar-container"><div id="boss-hp-bar" class="hp-bar"></div></div></div>
         </div>
-
-        <div id="question-container" class="mb-4 min-h-[80px] p-4 border-2 border-white">
-          <p id="question-text" class="text-xl"></p>
-        </div>
-
+        <div id="question-container" class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
         <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
       <!-- 結果画面 -->
       <div id="result-screen" class="hidden text-center">
         <h2 id="result-title" class="text-3xl sm:text-4xl font-bold mb-4"></h2>
-        <p id="result-message" class="text-xl mb-8"></p>
-        <div id="restart-button" class="dq-button inline-block">▶ もう一度挑戦する</div>
+        <p id="result-message" class="text-xl mb-6"></p>
+        <p id="submission-status" class="text-yellow-300 mb-8"></p>
+        <div id="restart-button" class="dq-button inline-block">▶ 最初の画面に戻る</div>
       </div>
     </div>
   </div>
 
   <script>
     // === GAS連携設定 ===
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxCNZ1MqMYvPrJu3vSgJjbTsMXgeBmXchQGieziR8WZlhAAiv1DocSaC9J5Mhme-wWWCg/exec"; // ★ 最新のURLに更新済み！ ★
-    const QUIZ_ID = "quiz-001";
+    // ★★★★★ あなたのGASウェブアプリのURLに書き換えてください ★★★★★
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzImtoOQkOhFN8wLPANWzNbdGhNrpUl16L9xF3y4v9taWEvRdVfvHFIFzusx_OG7NQHVQ/exec';
+    const STAGE_NUMBER = '1'; // このファイルはステージ1です
 
-    const msgEl = () => document.getElementById('msg');
-    const showMsg = (t)=>{ if(msgEl()) msgEl().textContent=t; };
-    function alreadyTakenLocal(name){ return localStorage.getItem(`quiz_taken_${QUIZ_ID}_${name}`)==="1"; }
-    function markTakenLocal(name){ localStorage.setItem(`quiz_taken_${QUIZ_ID}_${name}`,"1"); }
-
-    // --- DOM ---
+    // --- DOM要素の取得 ---
     const startScreen = document.getElementById('start-screen');
     const quizScreen = document.getElementById('quiz-screen');
     const resultScreen = document.getElementById('result-screen');
     const bossArea = document.getElementById('boss-area');
     const bossContainer = document.getElementById('boss-container');
-
     const startButton = document.getElementById('start-button');
     const restartButton = document.getElementById('restart-button');
-
     const playerHpBar = document.getElementById('player-hp-bar');
     const bossHpBar = document.getElementById('boss-hp-bar');
-
     const questionText = document.getElementById('question-text');
     const optionsContainer = document.getElementById('options-container');
-
     const resultTitle = document.getElementById('result-title');
     const resultMessage = document.getElementById('result-message');
+    const submissionStatus = document.getElementById('submission-status');
+    const employeeIdInput = document.getElementById('employeeIdInput');
+    const msgEl = document.getElementById('msg');
 
-    // --- クイズデータ ---
+    // --- クイズデータ (ステージ1) ---
+    // ★変更点: 5問に限定
     const quizData = [
       { question: "HTMLでハイパーリンクを作成するタグはどれ？", options: ["<link>", "<a>", "<p>", "<h>"], answer: "<a>" },
       { question: "CSSは何の略？", options: ["Creative Style Sheets", "Computer Style Sheets", "Cascading Style Sheets", "Colorful Style Sheets"], answer: "Cascading Style Sheets" },
       { question: "JavaScriptで変数を宣言するキーワードでないものは？", options: ["var", "let", "const", "def"], answer: "def" },
       { question: "世界で最も高い山は？", options: ["K2", "富士山", "エベレスト", "カンチェンジュンガ"], answer: "エベレスト" },
-      { question: "日本の現在の首都は？", options: ["京都", "大阪", "奈良", "東京"], answer: "東京" },
-      { question: "太陽系で最も大きい惑星は？", options: ["地球", "木星", "土星", "火星"], answer: "木星"},
-      { question: "化学記号「Fe」が示す元素は？", options: ["金", "銀", "鉄", "銅"], answer: "鉄"}
+      { question: "日本の現在の首都は？", options: ["京都", "大阪", "奈良", "東京"], answer: "東京" }
     ];
-    let shuffledQuizData = [];
     let currentQuestionIndex = 0;
 
     // --- ゲーム状態 ---
     const PLAYER_MAX_HP = 100;
-    const BOSS_MAX_HP = 200;
-    let playerHP = PLAYER_MAX_HP;
-    let bossHP = BOSS_MAX_HP;
+    const BOSS_MAX_HP = 100; // ボスHPを調整して5問で倒せるように
+    let playerHP, bossHP;
     let audioStarted = false;
-    let correctCount = 0;
-    let starting = false; // 二重押し防止
+    let playerAnswers = []; // ★追加: プレイヤーの回答を保存する配列
+    let isGameInProgress = false;
 
     // --- サウンド ---
     let hitSound, damageSound, victorySound, defeatSound, clickSound, roarSound;
@@ -218,137 +152,75 @@
       await Tone.start();
       hitSound = ()=> new Tone.Synth({oscillator:{type:"triangle"},envelope:{attack:0.005,decay:0.1,sustain:0.0,release:0.1}}).toDestination().triggerAttackRelease("G5","16n");
       damageSound = ()=> new Tone.NoiseSynth({noise:{type:"brown"},envelope:{attack:0.005,decay:0.1,sustain:0,release:0.1}}).toDestination().triggerAttackRelease("8n");
-      victorySound = ()=>{
-        const s=new Tone.Synth().toDestination(); const n=Tone.now();
-        s.triggerAttackRelease("C5","8n",n); s.triggerAttackRelease("E5","8n",n+0.2);
-        s.triggerAttackRelease("G5","8n",n+0.4); s.triggerAttackRelease("C6","4n",n+0.6);
-      };
-      defeatSound = ()=>{
-        const s=new Tone.Synth().toDestination(); const n=Tone.now();
-        s.triggerAttackRelease("C4","4n",n); s.triggerAttackRelease("B3","4n",n+0.3);
-        s.triggerAttackRelease("A#3","4n",n+0.6); s.triggerAttackRelease("A3","2n",n+0.9);
-      };
+      victorySound = ()=>{const s=new Tone.Synth().toDestination(); const n=Tone.now(); s.triggerAttackRelease("C5","8n",n); s.triggerAttackRelease("E5","8n",n+0.2); s.triggerAttackRelease("G5","8n",n+0.4); s.triggerAttackRelease("C6","4n",n+0.6);};
+      defeatSound = ()=>{const s=new Tone.Synth().toDestination(); const n=Tone.now(); s.triggerAttackRelease("C4","4n",n); s.triggerAttackRelease("B3","4n",n+0.3); s.triggerAttackRelease("A#3","4n",n+0.6); s.triggerAttackRelease("A3","2n",n+0.9);};
       clickSound = ()=> new Tone.MembraneSynth({pitchDecay:0.008,octaves:2,envelope:{attack:0.0006,decay:0.2,sustain:0}}).toDestination().triggerAttackRelease("C2","8n");
       roarSound = ()=> new Tone.MetalSynth({frequency:180, envelope:{attack:0.001,decay:1.2,release:0.4}}).toDestination().triggerAttackRelease("C3","8n");
       audioStarted = true;
     }
 
-    // --- イベント ---
-    startButton.addEventListener('click', () => startGame());
+    // --- イベントリスナー ---
+    startButton.addEventListener('click', startGame);
     restartButton.addEventListener('click', () => {
-        startScreen.classList.remove('hidden');
-        resultScreen.classList.add('hidden');
-        document.getElementById('playerName').value = ''; 
+      startScreen.classList.remove('hidden');
+      resultScreen.classList.add('hidden');
+      employeeIdInput.value = '';
     });
 
-
-    // --- ロジック ---
-    function shuffleArray(arr){
-      for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-    }
-
+    // --- ゲームロジック ---
     async function startGame(){
-      if(starting) return; 
-      starting = true;
+      if(isGameInProgress) return;
+      isGameInProgress = true;
       startButton.disabled = true;
 
-      await setupAudio(); 
+      await setupAudio();
       clickSound();
 
-      const name = (document.getElementById('playerName')?.value || "").trim();
-      if(!name){ 
-        showMsg("名前いれてな〜"); 
-        starting=false; 
-        startButton.disabled=false; 
-        return; 
+      // ★変更点: 社員番号のチェック
+      const employeeId = employeeIdInput.value.trim();
+      if(!employeeId){
+        msgEl.textContent = "社員番号を入力してください";
+        isGameInProgress = false;
+        startButton.disabled = false;
+        return;
       }
 
-      if(alreadyTakenLocal(name)){ 
-        showMsg("この端末ではその名前はもう受験済みやで🙅"); 
-        starting=false; 
-        startButton.disabled=false; 
-        return; 
-      }
-
-      // 重複チェック
-      showMsg("サーバーと通信中…");
-      try{
-        const r = await fetch(`${GAS_URL}?action=check&quizId=${encodeURIComponent(QUIZ_ID)}&name=${encodeURIComponent(name)}`);
-        if (!r.ok) throw new Error(`Server check failed: ${r.status}`);
-        const j = await r.json();
-        if(!j.ok){ 
-          showMsg("その名前はもう使われてるで！別名でお願い🙏"); 
-          starting=false; 
-          startButton.disabled=false; 
-          return; 
-        }
-      }catch(e){ 
-        console.error("Check failed:", e); 
-        showMsg("サーバ確認ミス…少し待って🙏"); 
-        starting=false; 
-        startButton.disabled=false; 
-        return; 
-      }
-
-      // 登録
-      try{
-        const r2 = await fetch(GAS_URL,{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ action: "register", quizId: QUIZ_ID, name: name })
-        });
-        if(r2.status===409){ 
-          showMsg("同じ名前は1回だけやで🙅"); 
-          starting=false; 
-          startButton.disabled=false; 
-          return; 
-        }
-        if(!r2.ok) throw new Error("Register failed");
-        markTakenLocal(name);
-      }catch(e){ 
-        console.error("Register failed:", e); 
-        showMsg("登録に失敗…もう一回🙏"); 
-        starting=false; 
-        startButton.disabled=false; 
-        return; 
-      }
-
-      // 初期化
-      correctCount = 0;
+      // ゲーム状態を初期化
       playerHP = PLAYER_MAX_HP;
       bossHP = BOSS_MAX_HP;
       currentQuestionIndex = 0;
-      shuffledQuizData = [...quizData];
-      shuffleArray(shuffledQuizData);
-
+      playerAnswers = []; // 回答配列をリセット
       updateHpBars();
 
+      // 画面切り替え
       startScreen.classList.add('hidden');
       resultScreen.classList.add('hidden');
       quizScreen.classList.remove('hidden');
       bossArea.classList.remove('hidden');
 
-      // ボス演出
+      // ボス登場演出
       bossContainer.classList.add('boss-roar','shake');
       roarSound();
-      setTimeout(()=>{ bossContainer.classList.remove('boss-roar','shake'); }, 400);
+      setTimeout(() => bossContainer.classList.remove('boss-roar','shake'), 400);
 
-      showMsg("");
+      msgEl.textContent = "";
       displayQuestion();
 
-      starting=false; 
-      startButton.disabled=false;
+      startButton.disabled = false; // isGameInProgressフラグで二重起動を防止
     }
 
     function displayQuestion(){
-      if(playerHP<=0 || bossHP<=0) return;
+      if(currentQuestionIndex >= quizData.length){
+        // 5問終わったら強制的に終了画面へ
+        showEndScreen(bossHP <= 0);
+        return;
+      }
 
       optionsContainer.innerHTML = '';
-      if(currentQuestionIndex >= shuffledQuizData.length){ currentQuestionIndex = 0; }
-      const current = shuffledQuizData[currentQuestionIndex];
-      questionText.textContent = current.question;
+      const current = quizData[currentQuestionIndex];
+      questionText.textContent = `Q${currentQuestionIndex + 1}: ${current.question}`;
 
-      current.options.forEach(opt=>{
+      current.options.forEach(opt => {
         const div = document.createElement('div');
         div.textContent = `▶ ${opt}`;
         div.classList.add('dq-button');
@@ -356,39 +228,44 @@
         div.addEventListener('click', handleAnswer);
         optionsContainer.appendChild(div);
       });
-      currentQuestionIndex++;
     }
 
     function handleAnswer(e){
-      const selected = e.target.dataset.answer;
-      const correct = shuffledQuizData[currentQuestionIndex-1].answer;
+      const selectedAnswer = e.target.dataset.answer;
+      const correctAnswer = quizData[currentQuestionIndex].answer;
 
-      optionsContainer.querySelectorAll('.dq-button').forEach(b=>b.style.pointerEvents='none');
+      // ★追加: 回答を記録
+      playerAnswers.push(selectedAnswer);
 
-      if(selected === correct){
-        correctCount++;
+      // ボタンを一時的に無効化
+      optionsContainer.querySelectorAll('.dq-button').forEach(b => b.style.pointerEvents = 'none');
+
+      if(selectedAnswer === correctAnswer){
         hitSound();
-        const damage = Math.floor(Math.random()*21)+30; // 30-50
+        const damage = 25; // ボスへのダメージを固定
         bossHP = Math.max(0, bossHP - damage);
         showDamage(bossArea, damage);
         bossContainer.classList.add('damage-flash','shake');
-      }else{
+      } else {
         damageSound();
-        const damage = Math.floor(Math.random()*11)+15; // 15-25
+        const damage = 20; // プレイヤーへのダメージ
         playerHP = Math.max(0, playerHP - damage);
         showDamage(document.body, damage);
         document.querySelector('.dq-window').classList.add('damage-flash','shake');
       }
 
+      currentQuestionIndex++;
       updateHpBars();
 
-      setTimeout(()=>{
+      setTimeout(() => {
         bossContainer.classList.remove('damage-flash','shake');
         document.querySelector('.dq-window').classList.remove('damage-flash','shake');
 
-        if(playerHP<=0){ showEndScreen(false); }
-        else if(bossHP<=0){ showEndScreen(true); }
-        else{ displayQuestion(); }
+        if(playerHP <= 0 || bossHP <= 0 || currentQuestionIndex >= quizData.length) {
+          showEndScreen(bossHP <= 0 && playerHP > 0);
+        } else {
+          displayQuestion();
+        }
       }, 900);
     }
 
@@ -396,7 +273,6 @@
       const p = (playerHP/PLAYER_MAX_HP)*100;
       playerHpBar.style.width = `${p}%`;
       playerHpBar.classList.toggle('low', p<30);
-
       const b = (bossHP/BOSS_MAX_HP)*100;
       bossHpBar.style.width = `${b}%`;
       bossHpBar.classList.toggle('low', b<30);
@@ -418,22 +294,55 @@
       if(isVictory){
         victorySound();
         resultTitle.textContent = '勝利！';
-        resultMessage.textContent = '炎竜を討伐した！洞窟に平和が戻った。';
-      }else{
+        resultMessage.textContent = '炎竜を討伐した！ステージクリア！';
+      } else {
         defeatSound();
         resultTitle.textContent = '敗北...';
-        resultMessage.textContent = 'ゆうしゃは力尽きた…次は勝つ！';
+        resultMessage.textContent = 'ゆうしゃは力尽きた…';
+      }
+      
+      // ★★★ 変更点: ここでGASにデータを送信 ★★★
+      submitResults();
+      isGameInProgress = false; // ゲーム終了
+    }
+
+    function submitResults() {
+      const employeeId = employeeIdInput.value.trim();
+      if(!employeeId) {
+        submissionStatus.textContent = "社員番号が不明なため、結果を送信できませんでした。";
+        return;
+      }
+      
+      // 5問に満たない場合、残りを空文字で埋める
+      while(playerAnswers.length < 5) {
+        playerAnswers.push("");
       }
 
-      // スコア送信
-      const name = (document.getElementById('playerName')?.value || "").trim();
-      if(name){
-        fetch(GAS_URL,{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ action: "finish", quizId: QUIZ_ID, name, score: correctCount })
-        }).catch((e)=>{ console.error("Finish failed", e) });
-      }
+      const payload = {
+        employeeId: employeeId,
+        stage: STAGE_NUMBER,
+        answers: playerAnswers
+      };
+
+      submissionStatus.textContent = "結果を送信中...";
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === 'success'){
+          submissionStatus.textContent = "結果を送信しました！";
+          console.log('Success:', data);
+        } else {
+          throw new Error(data.message || 'Unknown error');
+        }
+      })
+      .catch(error => {
+        submissionStatus.textContent = "エラー：結果を送信できませんでした。";
+        console.error('Error:', error);
+      });
     }
   </script>
 </body>
