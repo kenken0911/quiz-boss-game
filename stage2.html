@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ステージ2：ボスバトルクイズ</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <!-- Tone.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
+  <style>
+    body{font-family:'DotGothic16',sans-serif;background:#000;color:#fff;image-rendering:pixelated}
+    .dq-window{border:4px solid #fff;background:#000055;padding:1rem;box-shadow:0 0 0 4px #000} /* 背景色を少し変更 */
+    .dq-button{cursor:pointer;padding:.5rem 1rem;border:2px solid #fff;background:#000088;text-align:center}
+    .dq-button:hover{background:#4444CC}
+    .dq-button:disabled{background:#555;color:#999;cursor:not-allowed}
+    .hp-bar-container{border:2px solid #fff;height:24px;padding:2px;background:#333}
+    .hp-bar{background:#33ff33;height:100%;transition:width .5s ease-out}
+    .hp-bar.low{background:#ff3333}
+    .boss-idle{animation:boss-float 2.2s infinite ease-in-out}
+    @keyframes boss-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .boss-roar{animation:boss-roar .35s ease-in-out}
+    @keyframes boss-roar{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+    .damage-flash{animation:damage-flash .28s 1}
+    @keyframes damage-flash{0%,100%{opacity:1}50%{opacity:.25}}
+    .shake{animation:shake .35s}
+    @keyframes shake{
+      10%{transform:translate(-2px, -2px)} 20%{transform:translate(2px, 1px)}
+      30%{transform:translate(-1px, 2px)} 40%{transform:translate(2px, -1px)}
+      50%{transform:translate(-2px, 1px)} 60%{transform:translate(1px, -2px)}
+      70%{transform:translate(-1px, 1px)} 80%{transform:translate(2px, 2px)}
+      90%{transform:translate(-2px, -1px)} 100%{transform:translate(0,0)}
+    }
+    .damage-text{position:absolute;font-size:2rem;font-weight:bold;color:#ff5555;text-shadow:2px 2px #000;animation:float-up 1s forwards;pointer-events:none}
+    @keyframes float-up{from{transform:translateY(0);opacity:1}to{transform:translateY(-60px);opacity:0}}
+    .ice-glow{filter:drop-shadow(0 0 6px #00e5ff) drop-shadow(0 0 12px #00aeff)} /* エフェクト色を変更 */
+    #boss-svg{max-width:280px;width:60vw;height:auto}
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-3xl mx-auto">
+    <!-- ボス表示 -->
+    <div id="boss-area" class="mb-4 h-60 flex justify-center items-end relative hidden">
+      <div id="boss-container" class="boss-idle">
+        <!-- ★変更点: 氷竜のSVG -->
+        <svg id="boss-svg" viewBox="0 0 260 220">
+          <defs>
+            <linearGradient id="gradBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#A8D5E2"/><stop offset="50%" stop-color="#7AC5F5"/><stop offset="100%" stop-color="#306B70"/></linearGradient>
+            <linearGradient id="gradEye" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00fff7"/><stop offset="100%" stop-color="#0084ff"/></linearGradient>
+            <linearGradient id="gradIce" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e6f7ff"/><stop offset="40%" stop-color="#91d5ff"/><stop offset="100%" stop-color="#40a9ff"/></linearGradient>
+          </defs>
+          <ellipse cx="130" cy="205" rx="70" ry="10" fill="#000" opacity="0.5"></ellipse>
+          <path d="M35,150 C20,120 40,60 95,55 C110,40 145,30 175,45 C210,40 240,70 230,110 C225,125 200,145 180,155 C165,170 125,180 95,170 C70,170 45,165 35,150 Z" fill="url(#gradBody)" stroke="#a8e2ff" stroke-width="3"/>
+          <path d="M150,42 C152,22 175,10 185,8 C175,20 170,32 165,44 Z" fill="#a8e2ff"/><path d="M128,38 C130,20 150,10 160,8 C150,20 145,30 140,42 Z" fill="#a8e2ff"/>
+          <ellipse cx="160" cy="95" rx="15" ry="12" fill="black"/><ellipse cx="160" cy="95" rx="9" ry="7" fill="url(#gradEye)"/><circle cx="162" cy="94" r="3" fill="#fff"/>
+          <path d="M120,120 C150,130 185,120 205,112" stroke="#d9f1ff" stroke-width="5" fill="none"/>
+          <g class="ice-glow"><path id="ice-breath" d="M210,115 C220,110 235,105 245,108 C230,120 235,135 220,138 C230,130 220,120 210,115 Z" fill="url(#gradIce)" opacity="0.9"><animate attributeName="opacity" values="0.6;1;0.6" dur="0.9s" repeatCount="indefinite"/></path></g>
+          <path d="M148,118 l6,10 l-10,0 Z" fill="#fff"/><path d="M165,120 l6,10 l-10,0 Z" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ゲーム本体 -->
+    <div id="game-container" class="w-full dq-window">
+      <!-- スタート画面 -->
+      <div id="start-screen" class="text-center">
+        <h1 class="text-3xl sm:text-4xl font-bold mb-4">ステージ2：氷の城</h1>
+        <p class="text-lg mb-6">奥に氷竜が待ち構えている…！</p>
+        <div class="flex flex-col items-center gap-3 mb-4">
+          <input id="employeeIdInput" type="text" class="text-black px-3 py-2 w-64" placeholder="社員番号を入力"/>
+          <button id="start-button" class="dq-button inline-flex items-center gap-2">
+            <span>▶</span><span>冒険を始める</span>
+          </button>
+          <div id="msg" class="text-yellow-300 text-sm h-5"></div>
+        </div>
+      </div>
+
+      <!-- クイズ画面 -->
+      <div id="quiz-screen" class="hidden">
+        <div id="status-container" class="grid grid-cols-2 gap-4 mb-4">
+          <div><p>ゆうしゃ HP</p><div class="hp-bar-container"><div id="player-hp-bar" class="hp-bar"></div></div></div>
+          <div><p>ボス HP</p><div class="hp-bar-container"><div id="boss-hp-bar" class="hp-bar"></div></div></div>
+        </div>
+        <div id="question-container" class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
+        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- 結果画面 -->
+      <div id="result-screen" class="hidden text-center">
+        <h2 id="result-title" class="text-3xl sm:text-4xl font-bold mb-4"></h2>
+        <p id="result-message" class="text-xl mb-6"></p>
+        <p id="submission-status" class="text-yellow-300 mb-8"></p>
+        <div id="restart-button" class="dq-button inline-block">▶ 最初の画面に戻る</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === GAS連携設定 ===
+    // ★★★★★ あなたのGASウェブアプリのURLに書き換えてください ★★★★★
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzImtoOQkOhFN8wLPANWzNbdGhNrpUl16L9xF3y4v9taWEvRdVfvHFIFzusx_OG7NQHVQ/exec';
+    const STAGE_NUMBER = '2'; // ★変更点: このファイルはステージ2です
+
+    // --- DOM要素の取得 ---
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const bossArea = document.getElementById('boss-area');
+    const bossContainer = document.getElementById('boss-container');
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('restart-button');
+    const playerHpBar = document.getElementById('player-hp-bar');
+    const bossHpBar = document.getElementById('boss-hp-bar');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const resultTitle = document.getElementById('result-title');
+    const resultMessage = document.getElementById('result-message');
+    const submissionStatus = document.getElementById('submission-status');
+    const employeeIdInput = document.getElementById('employeeIdInput');
+    const msgEl = document.getElementById('msg');
+
+    // --- クイズデータ (ステージ2) ---
+    // ★変更点: ステージ2の問題
+    const quizData = [
+      { question: "日本で一番大きい湖は？", options: ["浜名湖", "サロマ湖", "琵琶湖", "霞ヶ浦"], answer: "琵琶湖" },
+      { question: "「鳴かぬなら殺してしまえホトトギス」で知られる戦国武将は誰？", options: ["豊臣秀吉", "徳川家康", "織田信長", "武田信玄"], answer: "織田信長" },
+      { question: "寿司ネタで「ガリ」と呼ばれるものは何？", options: ["わさび", "甘酢生姜", "大葉", "醤油"], answer: "甘酢生姜" },
+      { question: "漫画『DRAGON BALL』の主人公の名前は？", options: ["ベジータ", "孫悟空", "ピッコロ", "クリリン"], answer: "孫悟空" },
+      { question: "水が氷になる温度は摂氏何度？", options: ["100度", "10度", "0度", "-10度"], answer: "0度" }
+    ];
+    let currentQuestionIndex = 0;
+
+    // --- ゲーム状態 ---
+    const PLAYER_MAX_HP = 100;
+    const BOSS_MAX_HP = 100;
+    let playerHP, bossHP;
+    let audioStarted = false;
+    let playerAnswers = [];
+    let isGameInProgress = false;
+
+    // --- サウンド ---
+    let hitSound, damageSound, victorySound, defeatSound, clickSound, roarSound;
+    async function setupAudio(){
+      if(audioStarted) return;
+      await Tone.start();
+      hitSound = ()=> new Tone.Synth({oscillator:{type:"triangle"},envelope:{attack:0.005,decay:0.1,sustain:0.0,release:0.1}}).toDestination().triggerAttackRelease("G5","16n");
+      damageSound = ()=> new Tone.NoiseSynth({noise:{type:"brown"},envelope:{attack:0.005,decay:0.1,sustain:0,release:0.1}}).toDestination().triggerAttackRelease("8n");
+      victorySound = ()=>{const s=new Tone.Synth().toDestination(); const n=Tone.now(); s.triggerAttackRelease("C5","8n",n); s.triggerAttackRelease("E5","8n",n+0.2); s.triggerAttackRelease("G5","8n",n+0.4); s.triggerAttackRelease("C6","4n",n+0.6);};
+      defeatSound = ()=>{const s=new Tone.Synth().toDestination(); const n=Tone.now(); s.triggerAttackRelease("C4","4n",n); s.triggerAttackRelease("B3","4n",n+0.3); s.triggerAttackRelease("A#3","4n",n+0.6); s.triggerAttackRelease("A3","2n",n+0.9);};
+      clickSound = ()=> new Tone.MembraneSynth({pitchDecay:0.008,octaves:2,envelope:{attack:0.0006,decay:0.2,sustain:0}}).toDestination().triggerAttackRelease("C2","8n");
+      roarSound = ()=> new Tone.MetalSynth({frequency:180, envelope:{attack:0.001,decay:1.2,release:0.4}}).toDestination().triggerAttackRelease("C3","8n");
+      audioStarted = true;
+    }
+
+    // --- イベントリスナー ---
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', () => {
+      startScreen.classList.remove('hidden');
+      resultScreen.classList.add('hidden');
+      employeeIdInput.value = '';
+    });
+
+    // --- ゲームロジック ---
+    async function startGame(){
+      if(isGameInProgress) return;
+      isGameInProgress = true;
+      startButton.disabled = true;
+
+      await setupAudio();
+      clickSound();
+
+      const employeeId = employeeIdInput.value.trim();
+      if(!employeeId){
+        msgEl.textContent = "社員番号を入力してください";
+        isGameInProgress = false;
+        startButton.disabled = false;
+        return;
+      }
+
+      playerHP = PLAYER_MAX_HP;
+      bossHP = BOSS_MAX_HP;
+      currentQuestionIndex = 0;
+      playerAnswers = [];
+      updateHpBars();
+
+      startScreen.classList.add('hidden');
+      resultScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      bossArea.classList.remove('hidden');
+
+      bossContainer.classList.add('boss-roar','shake');
+      roarSound();
+      setTimeout(() => bossContainer.classList.remove('boss-roar','shake'), 400);
+
+      msgEl.textContent = "";
+      displayQuestion();
+
+      startButton.disabled = false;
+    }
+
+    function displayQuestion(){
+      if(currentQuestionIndex >= quizData.length){
+        showEndScreen(bossHP <= 0);
+        return;
+      }
+
+      optionsContainer.innerHTML = '';
+      const current = quizData[currentQuestionIndex];
+      questionText.textContent = `Q${currentQuestionIndex + 1}: ${current.question}`;
+
+      current.options.forEach(opt => {
+        const div = document.createElement('div');
+        div.textContent = `▶ ${opt}`;
+        div.classList.add('dq-button');
+        div.dataset.answer = opt;
+        div.addEventListener('click', handleAnswer);
+        optionsContainer.appendChild(div);
+      });
+    }
+
+    function handleAnswer(e){
+      const selectedAnswer = e.target.dataset.answer;
+      const correctAnswer = quizData[currentQuestionIndex].answer;
+
+      playerAnswers.push(selectedAnswer);
+
+      optionsContainer.querySelectorAll('.dq-button').forEach(b => b.style.pointerEvents = 'none');
+
+      if(selectedAnswer === correctAnswer){
+        hitSound();
+        const damage = 25;
+        bossHP = Math.max(0, bossHP - damage);
+        showDamage(bossArea, damage);
+        bossContainer.classList.add('damage-flash','shake');
+      } else {
+        damageSound();
+        const damage = 20;
+        playerHP = Math.max(0, playerHP - damage);
+        showDamage(document.body, damage);
+        document.querySelector('.dq-window').classList.add('damage-flash','shake');
+      }
+
+      currentQuestionIndex++;
+      updateHpBars();
+
+      setTimeout(() => {
+        bossContainer.classList.remove('damage-flash','shake');
+        document.querySelector('.dq-window').classList.remove('damage-flash','shake');
+
+        if(playerHP <= 0 || bossHP <= 0 || currentQuestionIndex >= quizData.length) {
+          showEndScreen(bossHP <= 0 && playerHP > 0);
+        } else {
+          displayQuestion();
+        }
+      }, 900);
+    }
+
+    function updateHpBars(){
+      const p = (playerHP/PLAYER_MAX_HP)*100;
+      playerHpBar.style.width = `${p}%`;
+      playerHpBar.classList.toggle('low', p<30);
+      const b = (bossHP/BOSS_MAX_HP)*100;
+      bossHpBar.style.width = `${b}%`;
+      bossHpBar.classList.toggle('low', b<30);
+    }
+
+    function showDamage(el, dmg){
+      const d = document.createElement('div');
+      d.textContent = dmg;
+      d.className = 'damage-text';
+      el.appendChild(d);
+      setTimeout(()=>d.remove(), 1000);
+    }
+
+    function showEndScreen(isVictory){
+      quizScreen.classList.add('hidden');
+      bossArea.classList.add('hidden');
+      resultScreen.classList.remove('hidden');
+
+      if(isVictory){
+        victorySound();
+        resultTitle.textContent = '勝利！';
+        resultMessage.textContent = '氷竜を討伐した！ステージクリア！';
+      } else {
+        defeatSound();
+        resultTitle.textContent = '敗北...';
+        resultMessage.textContent = 'ゆうしゃは力尽きた…';
+      }
+      
+      submitResults();
+      isGameInProgress = false;
+    }
+
+    function submitResults() {
+      const employeeId = employeeIdInput.value.trim();
+      if(!employeeId) {
+        submissionStatus.textContent = "社員番号が不明なため、結果を送信できませんでした。";
+        return;
+      }
+      
+      while(playerAnswers.length < 5) {
+        playerAnswers.push("");
+      }
+
+      const payload = {
+        employeeId: employeeId,
+        stage: STAGE_NUMBER,
+        answers: playerAnswers
+      };
+
+      submissionStatus.textContent = "結果を送信中...";
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === 'success'){
+          submissionStatus.textContent = "結果を送信しました！";
+          console.log('Success:', data);
+        } else {
+          throw new Error(data.message || 'Unknown error');
+        }
+      })
+      .catch(error => {
+        submissionStatus.textContent = "エラー：結果を送信できませんでした。";
+        console.error('Error:', error);
+      });
+    }
+  </script>
+</body>
+</html>
