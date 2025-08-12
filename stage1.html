@@ -17,7 +17,6 @@
     .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
     .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
     .dq-button:disabled { background: #555; color: #999; cursor: not-allowed; }
-    /* ★追加: 正解・不正解のスタイル */
     .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
     .incorrect-answer { background-image: linear-gradient(to bottom, #888888, #555555) !important; opacity: 0.7; }
     .boss-hp-container { border: 2px solid #fff; height: 30px; padding: 3px; background: #333; border-radius: 5px; box-shadow: inset 0 0 5px #000; }
@@ -49,7 +48,8 @@
         <h1 id="title-text" class="text-3xl font-bold mb-4"></h1>
         <p id="subtitle-text" class="text-lg mb-6"></p>
         <div class="flex flex-col items-center gap-3 mb-4">
-          <input id="employeeIdInput" type="text" class="text-black px-3 py-2 w-64 text-center"/>
+          <!-- ★変更点: 5桁の数字入力を強制 -->
+          <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は5桁の数字で入力してください" class="text-black px-3 py-2 w-64 text-center" />
           <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
           <div id="msg" class="text-yellow-300 text-sm h-5"></div>
         </div>
@@ -65,7 +65,6 @@
         <p id="submission-status" class="text-yellow-300 mb-8"></p>
         <div id="restart-button" class="dq-button inline-block"></div>
       </div>
-      <!-- ★追加: 解説用モーダル -->
       <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
         <div class="dq-window w-full max-w-2xl text-center">
           <h2 id="explanation-title" class="text-4xl font-bold mb-4"></h2>
@@ -82,14 +81,13 @@
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzL7tXBIsRkd-YH3q7RuVHJq4AiTNKDpYI2gAWQe5FUQhZtfQrdd2fGBBejGGSh4GuQig/exec';
     const STAGE_NUMBER = '1';
 
-    // ★★★ 変更点: 解説(ex)を追加 ★★★
     const TEXTS = {
       ja: {
         title: "ステージ1：地球環境",
         subtitle: "環境問題の知識で竜を討て！",
-        employeeIdPlaceholder: "社員番号を入力",
+        employeeIdPlaceholder: "社員番号(5桁)を入力",
         startButton: "挑戦する",
-        msgEnterId: "社員番号を入力してください",
+        msgEnterId: "5桁の社員番号を入力してください",
         bossHp: "ボス HP",
         resultWinTitle: "勝利！",
         resultWinMsg: "ステージクリア！環境への意識が高まった！",
@@ -113,9 +111,9 @@
       en: {
         title: "Stage 1: Global Environment",
         subtitle: "Defeat the dragon with your environmental knowledge!",
-        employeeIdPlaceholder: "Enter Employee ID",
+        employeeIdPlaceholder: "Enter 5-digit Employee ID",
         startButton: "Challenge",
-        msgEnterId: "Please enter your Employee ID",
+        msgEnterId: "Please enter your 5-digit Employee ID",
         bossHp: "Boss HP",
         resultWinTitle: "Victory!",
         resultWinMsg: "Stage Clear! Your environmental awareness has increased!",
@@ -144,12 +142,16 @@
     function updateUIText() {const t=TEXTS[currentLang];document.body.lang=currentLang;document.getElementById('title-text').textContent=t.title;document.getElementById('subtitle-text').textContent=t.subtitle;employeeIdInput.placeholder=t.employeeIdPlaceholder;document.getElementById('start-button-text').textContent=t.startButton;document.getElementById('boss-hp-label').textContent=t.bossHp;restartButton.textContent=t.restartButton}
     document.getElementById('lang-ja').addEventListener('click',()=>selectLanguage('ja'));document.getElementById('lang-en').addEventListener('click',()=>selectLanguage('en'));startButton.addEventListener('click',startGame);restartButton.addEventListener('click',()=>{resultScreen.classList.add('hidden');langScreen.classList.remove('hidden');employeeIdInput.value=''});
     function selectLanguage(lang){currentLang=lang;updateUIText();langScreen.classList.add('hidden');startScreen.classList.remove('hidden')}
-    async function startGame(){if(isGameInProgress)return;isGameInProgress=true;startButton.disabled=true;if(!audioStarted){await Tone.start();setupAudio()}
+    async function startGame(event){
+      // ★変更点: フォームのバリデーションをチェック
+      if (!employeeIdInput.checkValidity()) {
+        employeeIdInput.reportValidity();
+        return;
+      }
+      if(isGameInProgress)return;isGameInProgress=true;startButton.disabled=true;if(!audioStarted){await Tone.start();setupAudio()}
       bgm.play().catch(e => console.error("BGM play failed:", e));
       clickSound();const employeeId=employeeIdInput.value.trim();if(!employeeId){msgEl.textContent=TEXTS[currentLang].msgEnterId;isGameInProgress=false;startButton.disabled=false;return}bossHP=BOSS_MAX_HP;currentQuestionIndex=0;correctCount=0;updateHpBars();startScreen.classList.add('hidden');quizScreen.classList.remove('hidden');bossArea.classList.remove('hidden');msgEl.textContent="";displayQuestion();startButton.disabled=false}
     function displayQuestion(){const quizData=TEXTS[currentLang].quiz;if(currentQuestionIndex>=quizData.length){showEndScreen();return}optionsContainer.innerHTML='';const current=quizData[currentQuestionIndex];questionText.textContent=`Q${currentQuestionIndex+1}: ${current.q}`;current.o.forEach(opt=>{const div=document.createElement('div');div.textContent=`▶ ${opt}`;div.classList.add('dq-button');div.addEventListener('click',()=>handleAnswer(opt,current));optionsContainer.appendChild(div)})}
-    
-    // ★★★ 変更点: handleAnswerのロジックを更新 ★★★
     function handleAnswer(selectedAnswer, currentQuiz) {
       const isCorrect = selectedAnswer === currentQuiz.a;
       optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
@@ -160,7 +162,6 @@
           btn.classList.add('incorrect-answer');
         }
       });
-
       if (isCorrect) {
         correctCount++;
         hitSound();
@@ -173,22 +174,17 @@
         document.querySelector('.dq-window').classList.add('shake');
         document.getElementById('explanation-title').textContent = TEXTS[currentLang].incorrect;
       }
-      
       updateHpBars();
-      
       document.getElementById('explanation-text').textContent = currentQuiz.ex;
       nextQuestionButton.textContent = TEXTS[currentLang].nextButton;
-      
       setTimeout(() => {
         explanationModal.style.display = 'flex';
       }, 800);
     }
-
     nextQuestionButton.addEventListener('click', () => {
       explanationModal.style.display = 'none';
       bossContainer.classList.remove('shake');
       document.querySelector('.dq-window').classList.remove('shake');
-      
       currentQuestionIndex++;
       if (bossHP <= 0 || currentQuestionIndex >= 5) {
         showEndScreen();
@@ -196,7 +192,6 @@
         displayQuestion();
       }
     });
-
     function showEndScreen(){
       bgm.pause();
       bgm.currentTime = 0;
