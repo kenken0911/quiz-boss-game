@@ -39,10 +39,16 @@
     @keyframes pulseButton { 0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(0,170,255,0.5); } 50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 40px rgba(0,170,255,0.8); } }
 
     /* --- アンケート画面のスタイル --- */
-    .star-rating { display: flex; justify-content: center; gap: 0.5rem; font-size: 2.5rem; cursor: pointer; }
-    .star-rating .star { color: #888; transition: color 0.2s, transform 0.2s; }
-    .star-rating .star:hover { transform: scale(1.2); }
-    .star-rating .star.selected, .star-rating .star.hovered { color: #ffcc00; text-shadow: 0 0 5px #ffcc00; }
+    /* ★変更点: 新しい評価ボタンのスタイル */
+    .rating-button {
+        padding: 0.5rem 1rem;
+        font-size: 1.2rem;
+    }
+    .rating-button.selected {
+        background-image: linear-gradient(to bottom, #ffdd00, #ffaa00);
+        color: #000;
+        border-color: #fff;
+    }
     #feedback-textarea { width: 100%; height: 100px; background: rgba(0,0,0,0.5); border: 2px solid #fff; padding: 0.5rem; resize: vertical; }
 
     /* --- その他のゲーム内スタイル --- */
@@ -103,17 +109,17 @@
         <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
-      <!-- ★変更点: アンケート画面を「評価」と「感想」に分割 -->
       <!-- ① 評価画面 -->
       <div id="rating-screen" class="hidden text-center">
         <h2 id="survey-title" class="text-2xl font-bold mb-4"></h2>
         <p id="survey-rating-label" class="mb-4"></p>
-        <div id="star-rating-container" class="star-rating mb-4">
-          <span class="star" data-value="1">★</span>
-          <span class="star" data-value="2">★</span>
-          <span class="star" data-value="3">★</span>
-          <span class="star" data-value="4">★</span>
-          <span class="star" data-value="5">★</span>
+        <!-- ★変更点: 星のタップ方式からボタン選択方式に変更 -->
+        <div id="rating-buttons-container" class="flex justify-center gap-2 mb-4">
+            <button class="rating-button dq-button" data-value="1">★ 1</button>
+            <button class="rating-button dq-button" data-value="2">★ 2</button>
+            <button class="rating-button dq-button" data-value="3">★ 3</button>
+            <button class="rating-button dq-button" data-value="4">★ 4</button>
+            <button class="rating-button dq-button" data-value="5">★ 5</button>
         </div>
       </div>
 
@@ -151,8 +157,9 @@
 
     const TEXTS = {
       ja: {
+        // ★変更点: アンケートの文言を修正
         surveyTitle: "アンケートにご協力ください",
-        surveyRatingLabel: "この取り組みはいかがでしたか？（星をタップ）",
+        surveyRatingLabel: "「Sustainable Quest」の取り組みはいかがでしたか？",
         feedbackTitle: "ご意見・ご感想",
         surveyFeedbackLabel: "ご意見・ご感想をお聞かせください",
         feedbackOptionalLabel: "（任意）",
@@ -162,7 +169,7 @@
       },
       en: {
         surveyTitle: "Please give us your feedback",
-        surveyRatingLabel: "How was this initiative? (Tap a star)",
+        surveyRatingLabel: "How was the 'Sustainable Quest' initiative?",
         feedbackTitle: "Feedback & Comments",
         surveyFeedbackLabel: "Please share your opinions/thoughts",
         feedbackOptionalLabel: "(Optional)",
@@ -197,7 +204,7 @@
     const bgm = document.getElementById('bgm');
     const explanationModal = document.getElementById('explanation-modal');
     const nextQuestionButton = document.getElementById('next-question-button');
-    const starRatingContainer = document.getElementById('star-rating-container');
+    const ratingButtonsContainer = document.getElementById('rating-buttons-container');
     const submitSurveyButton = document.getElementById('submit-survey-button');
 
     let currentQuestionIndex, bossHP, audioStarted = false, isGameInProgress = false, correctCount;
@@ -234,16 +241,22 @@
         employeeIdInput.value = '';
         document.getElementById('feedback-textarea').value = '';
         selectedRating = 0;
-        updateStars(0);
+        // リセット時にボタンの選択状態も解除
+        const buttons = ratingButtonsContainer.querySelectorAll('.rating-button');
+        buttons.forEach(btn => btn.classList.remove('selected'));
     });
 
-    // ★変更点: 星の選択ロジックを改善
-    starRatingContainer.addEventListener('mouseover', e => { if (e.target.classList.contains('star')) { updateStars(parseInt(e.target.dataset.value, 10), 'hover'); }});
-    starRatingContainer.addEventListener('mouseout', () => { updateStars(selectedRating); });
-    starRatingContainer.addEventListener('click', e => {
-      if (e.target.classList.contains('star')) {
-        selectedRating = parseInt(e.target.dataset.value, 10);
-        updateStars(selectedRating);
+    // ★変更点: 新しい評価ボタンのイベントリスナー
+    ratingButtonsContainer.addEventListener('click', e => {
+      const button = e.target.closest('.rating-button');
+      if (button) {
+        selectedRating = parseInt(button.dataset.value, 10);
+        
+        // 選択状態を更新
+        const allButtons = ratingButtonsContainer.querySelectorAll('.rating-button');
+        allButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+
         // 評価を選択したら、次の感想画面へ
         setTimeout(() => {
           ratingScreen.classList.add('hidden');
@@ -266,19 +279,6 @@
       submitResults(selectedRating, feedback, ipAddress);
       submitSurveyButton.disabled = false;
     });
-
-    function updateStars(rating, type = 'select') {
-      const stars = starRatingContainer.querySelectorAll('.star');
-      stars.forEach(star => {
-        const value = parseInt(star.dataset.value, 10);
-        if (type === 'select') {
-            star.classList.toggle('selected', value <= rating);
-            star.classList.remove('hovered');
-        } else { // hover
-            star.classList.toggle('hovered', value <= rating);
-        }
-      });
-    }
 
     function selectLanguage(lang) {
         currentLang = lang; updateUIText(); languageScreen.classList.add('hidden'); document.body.style.backgroundImage = 'none'; videoBackgroundContainer.classList.remove('hidden'); gameBgVideo.play().catch(e => console.error("Video play failed:", e)); startScreen.classList.remove('hidden');
@@ -313,7 +313,6 @@
 
     function showEndScreen() {
       bgm.pause(); bgm.currentTime = 0; quizScreen.classList.add('hidden'); bossArea.classList.add('hidden');
-      // ★変更点: 結果画面ではなく、まず評価画面を表示
       ratingScreen.classList.remove('hidden');
       const t = TEXTS[currentLang];
       if (correctCount >= 4) { victorySound(); document.getElementById('result-title').textContent = t.resultWinTitle; document.getElementById('result-message').textContent = t.resultWinMsg; } else { defeatSound(); document.getElementById('result-title').textContent = t.resultLoseTitle; document.getElementById('result-message').textContent = t.resultLoseMsg; }
