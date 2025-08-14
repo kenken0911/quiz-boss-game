@@ -3,20 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quiz Boss Battle - Stage 1</title>
+  <title>Sustainable Quest 🗡️ - Stage 1</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
   <style>
-    body[lang="ja"] { font-family: 'DotGothic16', sans-serif; }
-    body[lang="en"] { font-family: 'Press Start 2P', cursive; }
-    body { background: #000; color: #fff; image-rendering: pixelated; }
-    .dq-window { border: 4px solid #fff; background: rgba(0,0,80,0.8); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0,128,255,0.5); backdrop-filter: blur(2px); }
-    .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
-    .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
+    /* --- 全体スタイル --- */
+    body {
+      font-family: 'DotGothic16', sans-serif;
+      /* 迫力を出すため、背景に暗く壮大な画像を設定 */
+      background-image: url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      image-rendering: pixelated;
+      overflow: hidden; /* スクロールバーを隠す */
+    }
+    .dq-window {
+      border: 4px solid #fff;
+      background: rgba(0, 0, 80, 0.85); /* 背景を少し濃くして可読性を上げる */
+      padding: 1.5rem;
+      box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0, 128, 255, 0.6);
+      backdrop-filter: blur(3px); /* ぼかし効果を少し強く */
+    }
+
+    /* --- ボタンのスタイル --- */
+    .dq-button {
+      cursor: pointer;
+      padding: .75rem 1.5rem;
+      border: 2px solid #fff;
+      background-image: linear-gradient(to bottom, #0055dd, #0033aa);
+      text-shadow: 1px 1px 2px #000;
+      transition: all 0.2s;
+    }
+    .dq-button:hover {
+      background-image: linear-gradient(to bottom, #4488ff, #0055dd);
+      box-shadow: 0 0 10px #fff;
+    }
     .dq-button:disabled { background: #555; color: #999; cursor: not-allowed; }
+
+    /* --- タイトル画面の迫力演出 --- */
+    #title-screen h1 {
+      font-size: 2.5rem; /* タイトルを大きく */
+      font-weight: bold;
+      /* 炎のようなテキストシャドウで迫力を追加 */
+      text-shadow: 0 0 5px #fff, 0 0 10px #ff8a00, 0 0 15px #ff3b00;
+      /* フェードインしてスケールアップするアニメーション */
+      animation: fadeInTitle 2s ease-out forwards;
+    }
+    #show-employee-id-screen-button {
+      /* ボタンが脈動するように光るアニメーション */
+      animation: pulseButton 2.5s infinite ease-in-out;
+    }
+
+    /* --- アニメーション定義 --- */
+    @keyframes fadeInTitle {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes pulseButton {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255,255,255,0.7), 0 0 20px rgba(0,170,255,0.5);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 40px rgba(0,170,255,0.8);
+      }
+    }
+
+    /* --- その他のゲーム内スタイル --- */
     .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
     .incorrect-answer { background-image: linear-gradient(to bottom, #888888, #555555) !important; opacity: 0.7; }
     .boss-hp-container { border: 2px solid #fff; height: 30px; padding: 3px; background: #333; border-radius: 5px; box-shadow: inset 0 0 5px #000; }
@@ -32,39 +90,42 @@
     #boss-img { width: 100%; max-width: 320px; height: auto; }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 bg-black">
+<body class="flex items-center justify-center min-h-screen p-4">
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
       <div id="boss-container" class="boss-idle">
-        <img id="boss-img" src="./dragon_cutout.png" alt="ボスの画像" class="fire-glow"/>
+        <img id="boss-img" src="https://placehold.co/320x240/000000/ff8a00?text=DRAGON&font=gothic" onerror="this.onerror=null;this.src='https://placehold.co/320x240/000000/ffffff?text=Boss+Image+Error';" alt="ボスの画像" class="fire-glow"/>
       </div>
     </div>
     <div id="game-container" class="w-full dq-window relative">
-      <div id="language-screen" class="text-center">
-        <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <div class="flex justify-center gap-4"><button id="lang-ja" class="dq-button">日本語</button><button id="lang-en" class="dq-button">English</button></div>
+      <div id="title-screen" class="text-center py-8">
+        <h1 class="mb-10">Sustainable Quest 🗡️ Stage１</h1>
+        <button id="show-employee-id-screen-button" class="dq-button">スタート</button>
       </div>
+
       <div id="start-screen" class="text-center hidden">
         <h1 id="title-text" class="text-3xl font-bold mb-4"></h1>
         <p id="subtitle-text" class="text-lg mb-6"></p>
         <div class="flex flex-col items-center gap-3 mb-4">
-          <!-- ★変更点: 5桁の数字入力を強制 -->
-          <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は5桁の数字で入力してください" class="text-black px-3 py-2 w-64 text-center" />
+          <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は5桁の数字で入力してください" class="text-black px-3 py-2 w-64 text-center rounded" />
           <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
           <div id="msg" class="text-yellow-300 text-sm h-5"></div>
         </div>
       </div>
+
       <div id="quiz-screen" class="hidden">
         <div class="mb-4"><p id="boss-hp-label"></p><div class="boss-hp-container"><div id="boss-hp-bar" class="boss-hp-bar"></div></div></div>
         <div class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
         <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
+
       <div id="result-screen" class="hidden text-center">
         <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
         <p id="result-message" class="text-xl mb-6"></p>
         <p id="submission-status" class="text-yellow-300 mb-8"></p>
         <div id="restart-button" class="dq-button inline-block"></div>
       </div>
+
       <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
         <div class="dq-window w-full max-w-2xl text-center">
           <h2 id="explanation-title" class="text-4xl font-bold mb-4"></h2>
@@ -75,7 +136,7 @@
     </div>
   </div>
 
-  <audio id="bgm" src="./boss_bgm_8bit.wav" loop></audio>
+  <audio id="bgm" src="https://cdn.jsdelivr.net/gh/planethiker/codepen-assets@main/games/dragon-quest-quiz/boss_bgm_8bit.wav" loop></audio>
 
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzL7tXBIsRkd-YH3q7RuVHJq4AiTNKDpYI2gAWQe5FUQhZtfQrdd2fGBBejGGSh4GuQig/exec';
@@ -107,51 +168,113 @@
           { q: "ユニクロが実施している、服を回収し難民などに寄贈する活動名は？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "ユニクロは「RE.UNIQLO」という活動を通じて、お客様が着なくなった服を回収し、最大限に活用しています。まだ着られる服は、UNHCRと協力して世界中の難民や被災者に届けられます。" },
           { q: "フェアトレード製品を買うことが貧困問題の解決に繋がる主な理由は？", o: ["製品が無料で配布されるから", "製品の価格が安いから", "売上が全て寄付されるから", "生産者に公正な賃金が支払われるから"], a: "生産者に公正な賃金が支払われるから", ex: "フェアトレードの最も重要な原則の一つは、生産者に公正な価格を保証し、安定した収入を提供することです。これにより、彼らは生活を改善し、教育や医療に投資できるようになります。" }
         ]
-      },
-      en: {
-        title: "Stage 1: Global Environment",
-        subtitle: "Defeat the dragon with your environmental knowledge!",
-        employeeIdPlaceholder: "Enter 5-digit Employee ID",
-        startButton: "Challenge",
-        msgEnterId: "Please enter your 5-digit Employee ID",
-        bossHp: "Boss HP",
-        resultWinTitle: "Victory!",
-        resultWinMsg: "Stage Clear! Your environmental awareness has increased!",
-        resultLoseTitle: "Defeat...",
-        resultLoseMsg: "The dragon's power was too great...",
-        submitting: "Submitting results...",
-        submitSuccess: "Results submitted!",
-        submitError: "Error: Could not submit results.",
-        restartButton: "Back to Title",
-        correct: "Correct!",
-        incorrect: "Incorrect...",
-        nextButton: "Next",
-        quiz: [
-          { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers", ex: "Climate change countermeasures include 'mitigation' to reduce greenhouse gas emissions and 'adaptation' to reduce the impacts of climate change. Picking up trash is not a direct countermeasure, but it is a valuable activity for ocean pollution control." },
-          { q: "Which is NOT included in the '5Rs' for waste reduction and resource utilization?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "The 3Rs (Reduce, Reuse, Recycle) have been proposed for waste reduction, and recently it has expanded to the '5Rs' by adding Refuse and Repair. 'Remain' is not included." },
-          { q: "Which is NOT one of the 'three levels of diversity' included in biodiversity?", o: ["Ecosystem diversity", "Species diversity", "Genetic diversity", "Cultural diversity"], a: "Cultural diversity", ex: "Biodiversity is the state in which various organisms on Earth live in connection with each other in their respective environments. Specifically, it includes diversity at three levels: 'ecosystem diversity,' 'species diversity,' and 'genetic diversity.'" },
-          { q: "What is the name of UNIQLO's initiative to collect and donate clothes to refugees?", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "Through the 'RE.UNIQLO' initiative, UNIQLO collects clothes that customers no longer wear and makes the most of them. Clothes that can still be worn are delivered to refugees and disaster victims around the world in cooperation with UNHCR." },
-          { q: "What is the main reason buying Fair Trade products helps solve poverty?", o: ["Products are distributed for free", "Products are cheaper", "All sales are donated", "Producers are paid a fair wage"], a: "Producers are paid a fair wage", ex: "One of the most important principles of Fair Trade is to guarantee a fair price to producers and provide them with a stable income. This allows them to improve their lives and invest in education and healthcare." }
-        ]
       }
     };
-    let currentLang = 'ja';
-    const langScreen = document.getElementById('language-screen'), startScreen = document.getElementById('start-screen'), quizScreen = document.getElementById('quiz-screen'), resultScreen = document.getElementById('result-screen'), bossArea = document.getElementById('boss-area'), bossContainer = document.getElementById('boss-container'), startButton = document.getElementById('start-button'), restartButton = document.getElementById('restart-button'), bossHpBar = document.getElementById('boss-hp-bar'), questionText = document.getElementById('question-text'), optionsContainer = document.getElementById('options-container'), employeeIdInput = document.getElementById('employeeIdInput'), msgEl = document.getElementById('msg'), bgm = document.getElementById('bgm'), explanationModal = document.getElementById('explanation-modal'), nextQuestionButton = document.getElementById('next-question-button');
+
+    const currentLang = 'ja';
+
+    const titleScreen = document.getElementById('title-screen');
+    const showEmployeeIdScreenButton = document.getElementById('show-employee-id-screen-button');
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const bossArea = document.getElementById('boss-area');
+    const bossContainer = document.getElementById('boss-container');
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('restart-button');
+    const bossHpBar = document.getElementById('boss-hp-bar');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const employeeIdInput = document.getElementById('employeeIdInput');
+    const msgEl = document.getElementById('msg');
+    const bgm = document.getElementById('bgm');
+    const explanationModal = document.getElementById('explanation-modal');
+    const nextQuestionButton = document.getElementById('next-question-button');
+
     let currentQuestionIndex, bossHP, audioStarted = false, isGameInProgress = false, correctCount;
     const BOSS_MAX_HP = 100;
-    function updateUIText() {const t=TEXTS[currentLang];document.body.lang=currentLang;document.getElementById('title-text').textContent=t.title;document.getElementById('subtitle-text').textContent=t.subtitle;employeeIdInput.placeholder=t.employeeIdPlaceholder;document.getElementById('start-button-text').textContent=t.startButton;document.getElementById('boss-hp-label').textContent=t.bossHp;restartButton.textContent=t.restartButton}
-    document.getElementById('lang-ja').addEventListener('click',()=>selectLanguage('ja'));document.getElementById('lang-en').addEventListener('click',()=>selectLanguage('en'));startButton.addEventListener('click',startGame);restartButton.addEventListener('click',()=>{resultScreen.classList.add('hidden');langScreen.classList.remove('hidden');employeeIdInput.value=''});
-    function selectLanguage(lang){currentLang=lang;updateUIText();langScreen.classList.add('hidden');startScreen.classList.remove('hidden')}
-    async function startGame(event){
-      // ★変更点: フォームのバリデーションをチェック
+
+    function updateUIText() {
+      const t = TEXTS[currentLang];
+      document.body.lang = currentLang;
+      document.getElementById('title-text').textContent = t.title;
+      document.getElementById('subtitle-text').textContent = t.subtitle;
+      employeeIdInput.placeholder = t.employeeIdPlaceholder;
+      document.getElementById('start-button-text').textContent = t.startButton;
+      document.getElementById('boss-hp-label').textContent = t.bossHp;
+      restartButton.textContent = t.restartButton;
+    }
+
+    showEmployeeIdScreenButton.addEventListener('click', () => {
+        if (!audioStarted) {
+            Tone.start().then(setupAudio);
+        }
+        clickSound();
+        titleScreen.classList.add('hidden');
+        startScreen.classList.remove('hidden');
+    });
+
+    startButton.addEventListener('click', startGame);
+
+    restartButton.addEventListener('click', () => {
+        resultScreen.classList.add('hidden');
+        titleScreen.classList.remove('hidden');
+        employeeIdInput.value = '';
+    });
+
+    async function startGame(event) {
       if (!employeeIdInput.checkValidity()) {
         employeeIdInput.reportValidity();
         return;
       }
-      if(isGameInProgress)return;isGameInProgress=true;startButton.disabled=true;if(!audioStarted){await Tone.start();setupAudio()}
+      if (isGameInProgress) return;
+      isGameInProgress = true;
+      startButton.disabled = true;
+
+      if (!audioStarted) {
+        await Tone.start();
+        setupAudio();
+      }
+
       bgm.play().catch(e => console.error("BGM play failed:", e));
-      clickSound();const employeeId=employeeIdInput.value.trim();if(!employeeId){msgEl.textContent=TEXTS[currentLang].msgEnterId;isGameInProgress=false;startButton.disabled=false;return}bossHP=BOSS_MAX_HP;currentQuestionIndex=0;correctCount=0;updateHpBars();startScreen.classList.add('hidden');quizScreen.classList.remove('hidden');bossArea.classList.remove('hidden');msgEl.textContent="";displayQuestion();startButton.disabled=false}
-    function displayQuestion(){const quizData=TEXTS[currentLang].quiz;if(currentQuestionIndex>=quizData.length){showEndScreen();return}optionsContainer.innerHTML='';const current=quizData[currentQuestionIndex];questionText.textContent=`Q${currentQuestionIndex+1}: ${current.q}`;current.o.forEach(opt=>{const div=document.createElement('div');div.textContent=`▶ ${opt}`;div.classList.add('dq-button');div.addEventListener('click',()=>handleAnswer(opt,current));optionsContainer.appendChild(div)})}
+      clickSound();
+      const employeeId = employeeIdInput.value.trim();
+      if (!employeeId) {
+        msgEl.textContent = TEXTS[currentLang].msgEnterId;
+        isGameInProgress = false;
+        startButton.disabled = false;
+        return;
+      }
+      bossHP = BOSS_MAX_HP;
+      currentQuestionIndex = 0;
+      correctCount = 0;
+      updateHpBars();
+      startScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      bossArea.classList.remove('hidden');
+      msgEl.textContent = "";
+      displayQuestion();
+      startButton.disabled = false;
+    }
+
+    function displayQuestion() {
+      const quizData = TEXTS[currentLang].quiz;
+      if (currentQuestionIndex >= quizData.length) {
+        showEndScreen();
+        return;
+      }
+      optionsContainer.innerHTML = '';
+      const current = quizData[currentQuestionIndex];
+      questionText.textContent = `Q${currentQuestionIndex + 1}: ${current.q}`;
+      current.o.forEach(opt => {
+        const div = document.createElement('div');
+        div.textContent = `▶ ${opt}`;
+        div.classList.add('dq-button');
+        div.addEventListener('click', () => handleAnswer(opt, current));
+        optionsContainer.appendChild(div);
+      });
+    }
+
     function handleAnswer(selectedAnswer, currentQuiz) {
       const isCorrect = selectedAnswer === currentQuiz.a;
       optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
@@ -162,6 +285,7 @@
           btn.classList.add('incorrect-answer');
         }
       });
+
       if (isCorrect) {
         correctCount++;
         hitSound();
@@ -181,6 +305,7 @@
         explanationModal.style.display = 'flex';
       }, 800);
     }
+
     nextQuestionButton.addEventListener('click', () => {
       explanationModal.style.display = 'none';
       bossContainer.classList.remove('shake');
@@ -192,14 +317,69 @@
         displayQuestion();
       }
     });
-    function showEndScreen(){
+
+    function showEndScreen() {
       bgm.pause();
       bgm.currentTime = 0;
-      quizScreen.classList.add('hidden');bossArea.classList.add('hidden');resultScreen.classList.remove('hidden');const t=TEXTS[currentLang];if(correctCount>=4){victorySound();document.getElementById('result-title').textContent=t.resultWinTitle;document.getElementById('result-message').textContent=t.resultWinMsg}else{defeatSound();document.getElementById('result-title').textContent=t.resultLoseTitle;document.getElementById('result-message').textContent=t.resultLoseMsg}submitResults();isGameInProgress=false}
-    function submitResults(){const employeeId=employeeIdInput.value.trim();const statusEl=document.getElementById('submission-status');if(!employeeId)return;const payload={employeeId:employeeId,stage:STAGE_NUMBER,score:correctCount};statusEl.textContent=TEXTS[currentLang].submitting;fetch(GAS_URL,{method:'POST',body:JSON.stringify(payload)}).then(res=>res.json()).then(data=>{if(data.status==='success'){statusEl.textContent=TEXTS[currentLang].submitSuccess}else{throw new Error(data.message)}}).catch(err=>{statusEl.textContent=TEXTS[currentLang].submitError;console.error('Error:',err)})}
-    function updateHpBars(){const b=(bossHP/BOSS_MAX_HP)*100;bossHpBar.style.width=`${b}%`;bossHpBar.classList.toggle('low',b<30)}
-    function showDamage(){const d=document.createElement('div');d.textContent=Math.floor(Math.random()*50)+200;d.className='damage-text';bossArea.appendChild(d);setTimeout(()=>d.remove(),1200)}
-    let hitSound,damageSound,victorySound,defeatSound,clickSound;function setupAudio(){hitSound=()=>new Tone.Synth({oscillator:{type:"fmsquare"},envelope:{attack:0.01,decay:0.2,sustain:0.0,release:0.1}}).toDestination().triggerAttackRelease("C5","16n");damageSound=()=>new Tone.NoiseSynth({noise:{type:"pink"},envelope:{attack:0.01,decay:0.3,sustain:0,release:0.2}}).toDestination().triggerAttackRelease("8n");victorySound=()=>{const s=new Tone.Synth().toDestination(),n=Tone.now();s.triggerAttackRelease("C5","8n",n);s.triggerAttackRelease("E5","8n",n+0.2);s.triggerAttackRelease("G5","8n",n+0.4);s.triggerAttackRelease("C6","4n",n+0.6)};defeatSound=()=>{const s=new Tone.Synth().toDestination(),n=Tone.now();s.triggerAttackRelease("C4","4n",n);s.triggerAttackRelease("B3","4n",n+0.3);s.triggerAttackRelease("A#3","4n",n+0.6);s.triggerAttackRelease("A3","2n",n+0.9)};clickSound=()=>new Tone.MembraneSynth({pitchDecay:0.01,octaves:3,envelope:{attack:0.001,decay:0.3,sustain:0}}).toDestination().triggerAttackRelease("C2","8n");audioStarted=true}
+      quizScreen.classList.add('hidden');
+      bossArea.classList.add('hidden');
+      resultScreen.classList.remove('hidden');
+      const t = TEXTS[currentLang];
+      if (correctCount >= 4) {
+        victorySound();
+        document.getElementById('result-title').textContent = t.resultWinTitle;
+        document.getElementById('result-message').textContent = t.resultWinMsg;
+      } else {
+        defeatSound();
+        document.getElementById('result-title').textContent = t.resultLoseTitle;
+        document.getElementById('result-message').textContent = t.resultLoseMsg;
+      }
+      submitResults();
+      isGameInProgress = false;
+    }
+
+    function submitResults() {
+      const employeeId = employeeIdInput.value.trim();
+      const statusEl = document.getElementById('submission-status');
+      if (!employeeId) return;
+      const payload = { employeeId: employeeId, stage: STAGE_NUMBER, score: correctCount };
+      statusEl.textContent = TEXTS[currentLang].submitting;
+      fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' })
+        .then(res => {
+            statusEl.textContent = TEXTS[currentLang].submitSuccess;
+        })
+        .catch(err => {
+            statusEl.textContent = TEXTS[currentLang].submitError;
+            console.error('Error:', err);
+        });
+    }
+
+    function updateHpBars() {
+      const b = (bossHP / BOSS_MAX_HP) * 100;
+      bossHpBar.style.width = `${b}%`;
+      bossHpBar.classList.toggle('low', b < 30);
+    }
+
+    function showDamage() {
+      const d = document.createElement('div');
+      d.textContent = Math.floor(Math.random() * 50) + 200;
+      d.className = 'damage-text';
+      bossArea.appendChild(d);
+      setTimeout(() => d.remove(), 1200);
+    }
+
+    let hitSound, damageSound, victorySound, defeatSound, clickSound;
+    function setupAudio() {
+      if (audioStarted) return;
+      hitSound = () => new Tone.Synth({ oscillator: { type: "fmsquare" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.1 } }).toDestination().triggerAttackRelease("C5", "16n");
+      damageSound = () => new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination().triggerAttackRelease("8n");
+      victorySound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C5", "8n", n); s.triggerAttackRelease("E5", "8n", n + 0.2); s.triggerAttackRelease("G5", "8n", n + 0.4); s.triggerAttackRelease("C6", "4n", n + 0.6) };
+      defeatSound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C4", "4n", n); s.triggerAttackRelease("B3", "4n", n + 0.3); s.triggerAttackRelease("A#3", "4n", n + 0.6); s.triggerAttackRelease("A3", "2n", n + 0.9) };
+      clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
+      audioStarted = true;
+    }
+
+    updateUIText();
   </script>
 </body>
 </html>
