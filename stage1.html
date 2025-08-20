@@ -41,12 +41,12 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-  <!-- ★変更点: 背景動画コンテナを2つに分割 -->
   <div id="opening-video-container" class="video-container">
-    <video id="opening-video" src="./opening_movie.mp4" autoplay muted loop playsinline></video>
+    <!-- ★修正点: muted属性を削除 -->
+    <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline></video>
   </div>
   <div id="game-video-container" class="video-container hidden">
-    <video id="game-bg-video" src="./GameBackground.mp4" autoplay muted loop playsinline></video>
+    <video id="game-bg-video" class="bg-video" src="./GameBackground.mp4" autoplay muted loop playsinline></video>
   </div>
 
   <div class="w-full max-w-3xl mx-auto">
@@ -54,7 +54,6 @@
       <div id="boss-container"><img id="boss-img" src="./dragon_cutout.png" alt="ボスの画像" class="fire-glow"/></div>
     </div>
     <div id="game-container" class="w-full dq-window relative">
-      <!-- ★追加: タイトル画面 -->
       <div id="title-screen" class="text-center py-8">
         <h1 class="mb-10">Sustainable Quest</h1>
         <button id="title-start-button" class="dq-button">START</button>
@@ -398,14 +397,16 @@
 
     // --- イベントリスナー設定 ---
     document.getElementById('title-start-button').addEventListener('click', async () => {
+      // ★修正点: 音声再生の前にTone.jsを初期化
       if (!audioStarted) { 
         await Tone.start();
         setupAudio();
       }
       clickSound();
       const openingVideo = document.getElementById('opening-video');
-      openingVideo.muted = false; // 音声付きで再生
-      openingVideo.play();
+      openingVideo.muted = false;
+      // ユーザー操作後の再生は成功しやすい
+      openingVideo.play().catch(e => console.log("User interaction might be needed for audio"));
       switchScreen('language');
     });
 
@@ -415,7 +416,9 @@
     document.getElementById('instruction-ok-button').addEventListener('click', () => {
       clickSound();
       openingVideoContainer.classList.add('hidden');
+      document.getElementById('opening-video').pause();
       gameVideoContainer.classList.remove('hidden');
+      document.getElementById('game-bg-video').play().catch(e => console.log("Game video play failed"));
       switchScreen('start');
     });
     
@@ -425,6 +428,10 @@
     // --- 初期化処理 ---
     updateUIText();
     switchScreen('title');
+    // ★追加: ページロード時に動画再生を試みる
+    document.getElementById('opening-video').play().catch(e => {
+        console.log("Autoplay was prevented. User interaction is needed.");
+    });
   </script>
 </body>
 </html>
