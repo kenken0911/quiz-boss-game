@@ -42,15 +42,15 @@
 <body class="flex items-start sm:items-center justify-center min-h-screen p-4">
 
   <div id="opening-video-container" class="video-container">
-    <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline></video>
+    <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline onerror="handleMediaError(this)"></video>
   </div>
   <div id="game-video-container" class="video-container hidden">
-    <video id="game-bg-video" class="bg-video" src="./GameBackground1.mp4" autoplay muted loop playsinline></video>
+    <video id="game-bg-video" class="bg-video" src="./GameBackground1.mp4" autoplay muted loop playsinline onerror="handleMediaError(this)"></video>
   </div>
 
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
-      <div id="boss-container"><img id="boss-img" src="./Stage1_dragon.png" alt="ボスの画像" class="fire-glow"/></div>
+      <div id="boss-container"><img id="boss-img" src="./Stage1_dragon.png" alt="ボスの画像" class="fire-glow" onerror="handleMediaError(this)"/></div>
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
@@ -107,8 +107,8 @@
       </div>
     </div>
   </div>
-  <audio id="bgm" src="./BS1_BGM.wav" loop></audio>
-  <audio id="correct-sound" src="./クイズ正解.mp3"></audio>
+  <audio id="bgm" src="./BS1_BGM.wav" loop onerror="handleMediaError(this)"></audio>
+  <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
     const STAGE_NUMBER = '1';
@@ -427,6 +427,11 @@
       if (percentage <= 25) hpBar.className = 'boss-hp-bar low';
       else if (percentage <= 50) hpBar.className = 'boss-hp-bar mid';
       else hpBar.className = 'boss-hp-bar full';
+    }
+    
+    function handleMediaError(element) {
+        console.error(`Error loading media: ${element.src}`);
+        element.style.display = 'none'; 
     }
 
     document.getElementById('title-start-button').addEventListener('click', async () => {
