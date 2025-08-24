@@ -467,7 +467,7 @@
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
     const bgm = document.getElementById('bgm');
-    bgm.volume = 0.5; // ★変更点: BGMの音量を50%に設定
+    bgm.volume = 0.5;
     openingVideo.muted = false;
     openingVideo.play().catch(e => {
         console.log("Autoplay with sound was prevented. Muting and retrying.");
