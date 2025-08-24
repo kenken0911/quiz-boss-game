@@ -13,9 +13,9 @@
     body[lang="ja"], body[lang="zh"] { font-family: 'DotGothic16', sans-serif; }
     body[lang="en"] { font-family: 'Press Start 2P', cursive; }
     body { background-color: #000; color: #fff; image-rendering: pixelated; overflow-x: hidden; overflow-y: auto; }
-    .dq-window { border: 4px solid #fff; background: rgba(0, 0, 80, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0, 128, 255, 0.6); backdrop-filter: blur(3px); }
-    .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
-    .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
+    .dq-window { border: 4px solid #fff; background: rgba(0, 0, 80, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0, 128, 255, 0.5); backdrop-filter: blur(3px); }
+    .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055aa, #003388); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
+    .dq-button:hover { background-image: linear-gradient(to bottom, #3388dd, #0055aa); box-shadow: 0 0 10px #fff; }
     .video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     .bg-video { width: 100%; height: 100%; object-fit: cover; }
     #title-screen h1 { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px #00aaff; animation: fadeInTitle 2s ease-out forwards; }
@@ -33,7 +33,7 @@
     @keyframes boss-defeat-anim { 0% { opacity: 1; transform: rotate(0deg); } 50% { opacity: 1; transform: rotate(10deg); } 100% { opacity: 0; transform: translateY(100px) rotate(-20deg) scale(0.5); } }
     .shake { animation: shake .35s; }
     @keyframes shake { 10%,90% { transform: translate(-2px, -2px); } 20%,80% { transform: translate(3px, 2px); } 30%,50%,70% { transform: translate(-3px, 3px); } 40%,60% { transform: translate(3px, -2px); } }
-    .ice-glow { filter: drop-shadow(0 0 8px #00e5ff) drop-shadow(0 0 16px #00aeff) contrast(1.5); }
+    .ice-glow { filter: drop-shadow(0 0 8px #00aaff) drop-shadow(0 0 16px #00ddff) contrast(1.2); }
     #boss-img { width: 100%; max-width: 320px; height: auto; }
     .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
     .incorrect-answer { background-image: linear-gradient(to bottom, #888888, #555555) !important; opacity: 0.7; }
@@ -122,15 +122,15 @@
         startButton: "挑戦する",
         msgEnterId: "社員番号を入力してください",
         msgCheckingId: "挑戦資格を確認中...",
-        msgIdNotFound: "ステージ1から挑戦してください！",
+        msgIdNotFound: "ステージ2から挑戦してください！",
         msgCheckError: "確認エラー。時間をおいて再試行してください。",
         theme: "テーマ：世界の課題",
         progress: (q, t) => `${q}/${t}問目`,
         bossHp: "ボス HP",
         resultWinTitle: "勝利！",
-        resultWinMsg: "ステージクリア！世界への視野が広がった！",
+        resultWinMsg: "ステージクリア！世界を見る目が変わった！",
         resultLoseTitle: "ゲームオーバー",
-        resultLoseMsg: "竜の絶望は深かった…",
+        resultLoseMsg: "氷竜の吹雪は強力だった…",
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
@@ -139,11 +139,11 @@
         incorrect: "不正解...",
         nextButton: "次へ",
         quiz: [
-          { q: "世界では毎日、家庭の貧困を理由にどれくらいの子供が命を落としている？", o: ["約10,000人", "約50,000人", "約150人", "約9人"], a: "約10,000人", ex: "世界では毎日、貧困が原因で約10,000人もの5歳未満のこどもが命を落としているといわれています。" },
-          { q: "世界中のこどもたちの権利と健やかな成長を守る国連機関は？", o: ["IMF", "ユニセフ", "WHO", "UNESCO"], a: "ユニセフ", ex: "世界中のこどもたちの権利と健やかな成長を守るために活躍している国連機関はユニセフ（国際連合児童基金）です。" },
-          { q: "ユニセフが現地に届ける具体的な支援物資を選んで寄付できる仕組みは？", o: ["ユニセフ支援ギフト", "ユニセフ・クリスマスカード", "ユニセフ・チャリティ", "ユニセフ・マンスリーサポート"], a: "ユニセフ支援ギフト", ex: "寄付者が「ワクチン」や「栄養治療食」といった具体的な物資を選んで寄付することで、自分の支援がどのように役立つかをより実感できる仕組みです。" },
-          { q: "フェアトレードの理念に最も近い行動は？", o: ["一番安い商品を選ぶ", "大量に仕入れて安く売る", "友人から安く譲ってもらう", "地域の農家から直接野菜を買う"], a: "地域の農家から直接野菜を買う", ex: "地域の生産者から直接、適正な価格で商品を購入することは、フェアトレードの理念である『生産者への公正な利益の還元』に通じる行動です。" },
-          { q: "フィリピンの国民的な「バナナケチャップ」。トマトの代用品として使われた果物は？", o: ["マンゴー", "パイナップル", "バナナ", "パパイヤ"], a: "バナナ", ex: "第二次世界大戦中のトマト不足をきっかけに、当時豊富にあったバナナを代用品として開発されたのが「バナナケチャップ」です。" }
+          { q: "世界では毎日、家庭の貧困を理由にどれくらいの子供が命を落としている？", o: ["約10,000人", "約5,000人", "約1,000人", "約100人"], a: "約10,000人", ex: "世界では毎日、貧困が原因で約10,000人もの5歳未満のこどもが命を落としているといわれています。" },
+          { q: "世界中のこどもたちの権利と健やかな成長を守る国連機関は？", o: ["WHO", "ユニセフ", "UNESCO", "UNDP"], a: "ユニセフ", ex: "世界中のこどもたちの権利と健やかな成長を守るために活躍している国連機関はユニセフ（国際連合児童基金）です。" },
+          { q: "ユニセフが現地に届ける具体的な支援物資を選んで寄付できる仕組みは？", o: ["ユニセフ支援ギフト", "ワールド・ビジョン", "セーブ・ザ・チルドレン", "プラン・インターナショナル"], a: "ユニセフ支援ギフト", ex: "寄付者が「ワクチン」や「栄養治療食」といった具体的な物資を選んで寄付することで、自分の支援がどのように役立つかをより実感できる仕組みです。" },
+          { q: "フェアトレードの理念に最も近い行動は？", o: ["スーパーで一番安い商品を買う", "海外ブランドの高級品を買う", "大量生産された製品を買う", "地域の農家から直接野菜を買う"], a: "地域の農家から直接野菜を買う", ex: "地域の生産者から直接、適正な価格で商品を購入することは、フェアトレードの理念である『生産者への公正な利益の還元』に通じる行動です。" },
+          { q: "フィリピンの国民的な「バナナケチャップ」。トマトの代用品として使われた果物は？", o: ["マンゴー", "パパイヤ", "バナナ", "パイナップル"], a: "バナナ", ex: "第二次世界大戦中のトマト不足をきっかけに、当時豊富にあったバナナを代用品として開発されたのが「バナナケチャップ」です。" }
         ]
       },
       en: {
@@ -155,15 +155,15 @@
         startButton: "Challenge",
         msgEnterId: "Please enter your Employee ID",
         msgCheckingId: "Checking eligibility...",
-        msgIdNotFound: "Please complete Stage 1 first!",
+        msgIdNotFound: "Please complete Stage 2 first!",
         msgCheckError: "Verification error. Please try again later.",
         theme: "Theme: Global Issues",
         progress: (q, t) => `Q ${q}/${t}`,
         bossHp: "Boss HP",
         resultWinTitle: "Victory!",
-        resultWinMsg: "Stage Clear! Your perspective on the world has broadened!",
+        resultWinMsg: "Stage Clear! Your perspective on the world has changed!",
         resultLoseTitle: "Game Over",
-        resultLoseMsg: "The dragon's despair was deep...",
+        resultLoseMsg: "The ice dragon's blizzard was too strong...",
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
@@ -172,11 +172,11 @@
         incorrect: "Incorrect...",
         nextButton: "Next",
         quiz: [
-          { q: "How many children die every day due to family poverty worldwide?", o: ["About 10,000", "About 50,000", "About 150", "About 9"], a: "About 10,000", ex: "It is said that about 10,000 children under the age of five die every day worldwide due to poverty." },
-          { q: "Which UN agency protects the rights and healthy growth of children worldwide?", o: ["IMF", "UNICEF", "WHO", "UNESCO"], a: "UNICEF", ex: "UNICEF (United Nations Children's Fund) is the UN agency that works to protect the rights and healthy development of children worldwide." },
-          { q: "What is the system that allows you to select and donate specific aid items for UNICEF to deliver?", o: ["UNICEF Inspired Gifts", "UNICEF Christmas Cards", "UNICEF Charity", "UNICEF Monthly Support"], a: "UNICEF Inspired Gifts", ex: "This is a system where donors can choose specific items such as vaccines or therapeutic food to donate, allowing them to better realize how their support helps children." },
-          { q: "Which action is closest to the philosophy of Fair Trade?", o: ["Choosing the cheapest product", "Buying in bulk to sell cheaply", "Getting items cheaply from friends", "Buying vegetables directly from local farmers"], a: "Buying vegetables directly from local farmers", ex: "Buying products directly from local producers at a fair price is an action that aligns with the Fair Trade principle of 'fair returns to producers'." },
-          { q: "What fruit was used as a substitute for tomatoes in the Philippines' national 'Banana Ketchup'?", o: ["Mango", "Pineapple", "Banana", "Papaya"], a: "Banana", ex: "'Banana Ketchup' was developed during a tomato shortage in World War II, using bananas, which were abundant at the time, as a substitute." }
+          { q: "How many children die every day due to poverty in their homes?", o: ["Approx. 10,000", "Approx. 5,000", "Approx. 1,000", "Approx. 100"], a: "Approx. 10,000", ex: "It is said that about 10,000 children under the age of five die every day due to poverty." },
+          { q: "Which UN agency protects the rights and healthy development of children worldwide?", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "UNICEF (United Nations Children's Fund) is the UN agency that works to protect the rights and healthy development of children worldwide." },
+          { q: "What is the system that allows donors to choose specific aid items that UNICEF delivers to the field?", o: ["UNICEF Inspired Gifts", "World Vision", "Save the Children", "Plan International"], a: "UNICEF Inspired Gifts", ex: "This system allows donors to feel more connected to their support by choosing specific items to donate, such as 'vaccines' or 'therapeutic food'." },
+          { q: "Which action is closest to the philosophy of fair trade?", o: ["Buying the cheapest product at the supermarket", "Buying luxury goods from foreign brands", "Buying mass-produced products", "Buying vegetables directly from local farmers"], a: "Buying vegetables directly from local farmers", ex: "Purchasing products directly from local producers at a fair price is an action that aligns with the fair trade principle of 'ensuring a fair return to producers'." },
+          { q: "What fruit was used as a substitute for tomatoes in the Philippines' national 'banana ketchup'?", o: ["Mango", "Papaya", "Banana", "Pineapple"], a: "Banana", ex: "'Banana ketchup' was developed as a substitute using the abundant bananas available at the time, prompted by a tomato shortage during World War II." }
         ]
       },
       zh: {
@@ -188,15 +188,15 @@
         startButton: "挑战",
         msgEnterId: "请输入员工编号",
         msgCheckingId: "正在确认挑战资格...",
-        msgIdNotFound: "请先挑战第一关！",
+        msgIdNotFound: "请先挑战第二关！",
         msgCheckError: "确认出错。请稍后再试。",
         theme: "主题：世界性课题",
         progress: (q, t) => `第${q}/${t}题`,
         bossHp: "头目 HP",
         resultWinTitle: "胜利！",
-        resultWinMsg: "关卡完成！拓宽了对世界的视野！",
+        resultWinMsg: "关卡完成！看世界的眼光改变了！",
         resultLoseTitle: "游戏结束",
-        resultLoseMsg: "龙的绝望很深…",
+        resultLoseMsg: "冰龙的暴风雪太强大了…",
         submitting: "正在发送结果...",
         submitSuccess: "结果已发送！",
         submitError: "错误：无法发送结果。",
@@ -205,11 +205,11 @@
         incorrect: "回答错误...",
         nextButton: "下一个",
         quiz: [
-            { q: "全球每天有多少儿童因家庭贫困而死亡？", o: ["约10,000人", "约50,000人", "约150人", "约9人"], a: "约10,000人", ex: "据说全球每天有大约10,000名五岁以下儿童因贫困而死亡。" },
-            { q: "哪个联合国机构负责保护全球儿童的权利和健康成长？", o: ["国际货币基金组织", "联合国儿童基金会", "世界卫生组织", "联合国教科文组织"], a: "联合国儿童基金会", ex: "联合国儿童基金会（UNICEF）是致力于保护全球儿童权利和健康成长的联合国机构。" },
-            { q: "允许捐赠者选择并捐赠联合国儿童基金会（UNICEF）提供的具体援助物资的机制是什么？", o: ["联合国儿童基金会“爱心礼物”", "联合国儿童基金会圣诞贺卡", "联合国儿童基金会慈善活动", "联合国儿童基金会月度支持"], a: "联合国儿童基金会“爱心礼物”", ex: "这是一个让捐赠者可以选择如疫苗或营养治疗食品等具体物资进行捐赠的机制，从而让他们更真切地感受到自己的支持是如何帮助孩子们的。" },
-            { q: "以下哪种行为最接近公平贸易的理念？", o: ["选择最便宜的商品", "批量购买以低价出售", "从朋友那里廉价获得物品", "直接从当地农民那里购买蔬菜"], a: "直接从当地农民那里购买蔬菜", ex: "以合理的价格直接从当地生产者那里购买商品，这一行为符合公平贸易“向生产者提供公平回报”的理念。" },
-            { q: "在菲律宾的国民食品“香蕉番茄酱”中，用作番茄替代品的水果是什么？", o: ["芒果", "菠萝", "香蕉", "木瓜"], a: "香蕉", ex: "“香蕉番茄酱”是在第二次世界大战期间因番茄短缺而开发的，使用了当时丰富的香蕉作为替代品。" }
+            { q: "全球每天有多少儿童因家庭贫困而丧生？", o: ["约10,000人", "约5,000人", "约1,000人", "约100人"], a: "约10,000人", ex: "据说全球每天约有10,000名五岁以下儿童因贫困而死亡。" },
+            { q: "哪个联合国机构负责保护全世界儿童的权利和健康成长？", o: ["世界卫生组织", "联合国儿童基金会", "联合国教科文组织", "联合国开发计划署"], a: "联合国儿童基金会", ex: "联合国儿童基金会（UNICEF）是致力于保护全世界儿童权利和健康成长的联合国机构。" },
+            { q: "捐赠者可以选择联合国儿童基金会送到现场的具体援助物资的机制是什么？", o: ["联合国儿童基金会“爱心礼物”", "世界宣明会", "救助儿童会", "国际培幼会"], a: "联合国儿童基金会“爱心礼物”", ex: "该机制允许捐赠者选择“疫苗”或“营养治疗食品”等具体物资进行捐赠，从而更真实地感受到自己的援助如何发挥作用。" },
+            { q: "哪种行为最接近公平贸易的理念？", o: ["在超市购买最便宜的商品", "购买外国品牌的奢侈品", "购买批量生产的产品", "直接向当地农民购买蔬菜"], a: "直接向当地农民购买蔬菜", ex: "以公平的价格直接从当地生产者处购买产品，是符合“确保生产者获得公平回报”这一公平贸易理念的行为。" },
+            { q: "菲律宾的国民食品“香蕉番茄酱”中，用什么水果代替了番茄？", o: ["芒果", "木瓜", "香蕉", "菠萝"], a: "香蕉", ex: "“香蕉番茄酱”是在第二次世界大战期间因番茄短缺而开发的，当时使用丰富的香蕉作为替代品。" }
         ]
       }
     };
@@ -283,7 +283,7 @@
       msgEl.textContent = TEXTS[currentLang].msgCheckingId;
 
       try {
-        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(employeeId)}`;
+        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(employeeId)}&stage=2`;
         const response = await fetch(checkUrl);
         const result = await response.json();
 
@@ -466,8 +466,6 @@
     updateUIText();
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
-    const bgm = document.getElementById('bgm');
-    bgm.volume = 0.5;
     openingVideo.muted = false;
     openingVideo.play().catch(e => {
         console.log("Autoplay with sound was prevented. Muting and retrying.");
