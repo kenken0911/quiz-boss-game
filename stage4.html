@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainable Quest 🗡️ - Final Stage</title>
+  <title>Sustainable Quest 🗡️ - Stage 4</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
   <style>
-    body[lang="ja"] { font-family: 'DotGothic16', sans-serif; }
+    body[lang="ja"], body[lang="zh"] { font-family: 'DotGothic16', sans-serif; }
     body[lang="en"] { font-family: 'Press Start 2P', cursive; }
     body { background-color: #000; color: #fff; image-rendering: pixelated; overflow-x: hidden; overflow-y: auto; }
-    .dq-window { border: 4px solid #fff; background: rgba(50, 0, 50, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(255, 0, 255, 0.6); backdrop-filter: blur(3px); }
+    .dq-window { border: 4px solid #fff; background: rgba(80, 0, 80, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(255, 0, 255, 0.5); backdrop-filter: blur(3px); }
     .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #aa00aa, #880088); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
-    .dq-button:hover { background-image: linear-gradient(to bottom, #dd44dd, #aa00aa); box-shadow: 0 0 10px #fff; }
+    .dq-button:hover { background-image: linear-gradient(to bottom, #dd33dd, #aa00aa); box-shadow: 0 0 10px #fff; }
     .video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     .bg-video { width: 100%; height: 100%; object-fit: cover; }
-    #title-screen h1 { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px #00aaff; animation: fadeInTitle 2s ease-out forwards; }
+    #title-screen h1 { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px #ff00ff; animation: fadeInTitle 2s ease-out forwards; }
     #title-start-button { animation: pulseButton 2.5s infinite ease-in-out; }
     @keyframes fadeInTitle { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     @keyframes pulseButton { 0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,255,255,0.7); } 50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,1); } }
@@ -33,7 +33,7 @@
     @keyframes boss-defeat-anim { 0% { opacity: 1; transform: rotate(0deg); } 50% { opacity: 1; transform: rotate(10deg); } 100% { opacity: 0; transform: translateY(100px) rotate(-20deg) scale(0.5); } }
     .shake { animation: shake .35s; }
     @keyframes shake { 10%,90% { transform: translate(-2px, -2px); } 20%,80% { transform: translate(3px, 2px); } 30%,50%,70% { transform: translate(-3px, 3px); } 40%,60% { transform: translate(3px, -2px); } }
-    .final-glow { filter: drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 16px #ff00ff) contrast(1.5); }
+    .magic-glow { filter: drop-shadow(0 0 8px #ff00ff) drop-shadow(0 0 16px #aa00ff) contrast(1.2); }
     #boss-img { width: 100%; max-width: 320px; height: auto; }
     .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
     .incorrect-answer { background-image: linear-gradient(to bottom, #888888, #555555) !important; opacity: 0.7; }
@@ -42,15 +42,15 @@
 <body class="flex items-start sm:items-center justify-center min-h-screen p-4">
 
   <div id="opening-video-container" class="video-container">
-    <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline></video>
+    <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline onerror="handleMediaError(this)"></video>
   </div>
   <div id="game-video-container" class="video-container hidden">
-    <video id="game-bg-video" class="bg-video" src="./GameBackground.mp4" autoplay muted loop playsinline></video>
+    <video id="game-bg-video" class="bg-video" src="./GameBackground4.mp4" autoplay muted loop playsinline onerror="handleMediaError(this)"></video>
   </div>
 
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
-      <div id="boss-container"><img id="boss-img" src="./Stage4_dragon.png" alt="ボスの画像" class="final-glow"/></div>
+      <div id="boss-container"><img id="boss-img" src="./Stage4_dragon.png" alt="ボスの画像" class="magic-glow" onerror="handleMediaError(this)"/></div>
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
@@ -60,9 +60,10 @@
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <div class="flex justify-center gap-4">
+        <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
+          <button id="lang-zh" class="dq-button">中文</button>
         </div>
       </div>
 
@@ -71,11 +72,11 @@
         <div id="instruction-text" class="text-left mb-6 space-y-2"></div>
         <button id="instruction-ok-button" class="dq-button"></button>
       </div>
-
+      
       <div id="start-screen" class="text-center hidden">
         <h1 id="title-text" class="text-2xl font-bold mb-4"></h1>
         <div class="flex flex-col items-center gap-4 mb-4">
-          <input id="employeeIdInput" type="text" pattern="\d{1,10}" title="社員番号を数字で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
+          <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は半角数字5桁で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
         </div>
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
         <div id="msg" class="text-yellow-300 text-sm h-5 mt-2"></div>
@@ -106,71 +107,109 @@
       </div>
     </div>
   </div>
-  <audio id="bgm" src="./BS4_BGM.wav" loop></audio>
+  <audio id="bgm" src="./BS4_BGM.wav" loop onerror="handleMediaError(this)"></audio>
+  <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzAWGVWFaajScW042FX1fWFqa72eyLAXjkFi7iUigDhbE0XIziWM91dohV0JiwHLwTZwA/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
     const STAGE_NUMBER = '4';
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
         instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "最終ステージ：多様性の視点",
-        employeeIdPlaceholder: "社員番号を入力",
-        startButton: "最後の戦いへ",
+        title: "ステージ4：多様性の視点",
+        employeeIdPlaceholder: "社員番号(半角5桁)を入力",
+        startButton: "挑戦する",
         msgEnterId: "社員番号を入力してください",
+        msgCheckingId: "挑戦資格を確認中...",
+        msgIdNotFound: "ステージ3から挑戦してください！",
+        msgCheckError: "確認エラー。時間をおいて再試行してください。",
         theme: "テーマ：多様性の視点",
         progress: (q, t) => `${q}/${t}問目`,
         bossHp: "ボス HP",
-        resultWinTitle: "完全勝利！",
-        resultWinMsg: "全ての試練を乗り越えた！世界に平和が訪れた！",
+        resultWinTitle: "勝利！",
+        resultWinMsg: "ステージクリア！多様な視点が世界を広げた！",
         resultLoseTitle: "ゲームオーバー",
-        resultLoseMsg: "真の理解には届かなかった…",
+        resultLoseMsg: "魔竜王の魔力は計り知れない…",
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
-        alreadySubmitted: "既に挑戦済みです。最初の記録が保存されています。",
         restartButton: "タイトルへ戻る",
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
         quiz: [
-          { q: "「青」と「緑」を区別しない言語の存在が示す、多様性に関する重要な気づきとは？", o: ["現実の認識は言語や文化により形作られる", "人間の目は青と緑の判別が苦手", "文化は常に一定の順序で進化する", "古代には青色のものが少なかった"], a: "現実の認識は言語や文化により形作られる", ex: "私たちは皆、同じ世界を見ていると思いがちですが、実際には「言語」や「文化」というフィルターを通して世界を認識しています。日本の「青信号」が良い例です。" },
-          { q: "多様な人材で構成されたチームが高い成果を出す、最も重要な理由とは？", o: ["生まれつき創造性が高いから", "より深く思考し周到な準備を促すから", "無用な対立を避けるから", "アイデアの総量が多くなるから"], a: "より深く思考し周到な準備を促すから", ex: "異なる視点の存在が、メンバー各自に「自分の意見は多角的に検証されるだろう」と予測させ、結果として、より深く情報を処理し、周到な準備と思考を促すためです。" },
-          { q: "英語のことわざ「Variety is the spice of life.」の日本語訳として最も適切なものは？", o: ["多様性は人生の薬味である", "多様性は人生の近道である", "多様性は人生の羅針盤である", "多様性は人生の終着駅である"], a: "多様性は人生の薬味である", ex: "このことわざは、変化に富んだ様々な経験が人生を豊かにするという意味です。薬味が料理の味を引き立てるように、多様な経験が人生をより面白く、味わい深いものにしてくれます。" },
-          { q: "日本では緑色の信号を「青信号」と呼ぶことがある。これはなぜ？", o: ["昔の信号機が青色だったから", "青色の方が目に優しいから", "古い日本語では緑も「あお」と呼んだ名残", "法律で青と定められているから"], a: "古い日本語では緑も「あお」と呼んだ名残", ex: "古い日本語の「あお」は、現在の緑色も含む広い範囲の色を指す言葉でした。その名残で、現代でも緑色のものを「青」と呼ぶことがあります。" },
-          { q: "自分と似たメンバーだけのチームが陥りがちな、思考の罠とは？", o: ["決定が遅くなる", "意見がまとまらない", "固定観念に縛られる", "新しい挑戦が増える"], a: "固定観念に縛られる", ex: "似たメンバーだけのチームでは、「きっと皆も同じように考えているだろう」という暗黙の前提から、思考のショートカットが生まれがちです。これにより、チーム全体が固定観念に縛られ、リスクを見過ごす原因となります。" }
+          { q: "「青」と「緑」を区別しない言語の存在が示す、多様性に関する重要な気づきとは？", o: ["現実の認識は言語や文化により形作られる", "全ての言語は同じ構造を持つ", "色の認識は世界共通である", "古代言語は不完全だった"], a: "現実の認識は言語や文化により形作られる", ex: "私たちは「言語」や「文化」というフィルターを通して世界を認識しています。日本の「青信号」も古い日本語の名残です。" },
+          { q: "多様な人材で構成されたチームが高い成果を出す、最も重要な理由とは？", o: ["意見がすぐにまとまるから", "より深く思考し周到な準備を促すから", "競争が激しくなるから", "専門家だけが集まるから"], a: "より深く思考し周到な準備を促すから", ex: "異なる視点の存在が、メンバー各自により深く情報を処理し、周到な準備と思考を促すためです。均質なチームでは思考のショートカットが生まれがちです。" },
+          { q: "英語のことわざ「Variety is the spice of life.」の日本語訳として最も適切なものは？", o: ["多様性は人生の薬味である", "人生はスパイスのように辛い", "変化のない人生が一番だ", "人生はバラエティ番組だ"], a: "多様性は人生の薬味である", ex: "変化に富んだ様々な経験が人生を豊かにするという意味です。薬味が料理の味を引き立てるように、多様な経験が人生をより面白く、味わい深いものにしてくれます。" },
+          { q: "日本では緑色の信号を「青信号」と呼ぶことがある。これはなぜ？", o: ["信号機が青色に見えるから", "法律で「青」と定められているから", "古い日本語では緑も「あお」と呼んだ名残", "国際的なルールだから"], a: "古い日本語では緑も「あお」と呼んだ名残", ex: "古い日本語の「あお」が緑色も含む言葉だった名残です。" },
+          { q: "自分と似たメンバーだけのチームが陥りがちな、思考の罠とは？", o: ["革新的なアイデアが生まれやすい", "意思決定が遅くなる", "固定観念に縛られる", "議論が活発になりすぎる"], a: "固定観念に縛られる", ex: "「きっと皆も同じように考えているだろう」という暗黙の前提から思考のショートカットが生まれ、チーム全体が固定観念に縛られがちになります。" }
         ]
       },
       en: {
         instructionTitle: "Rules of the Quest",
         instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Final Stage: Perspectives on Diversity",
-        employeeIdPlaceholder: "Enter Employee ID",
-        startButton: "To the Final Battle",
+        title: "Stage 4: Perspectives on Diversity",
+        employeeIdPlaceholder: "Enter 5-digit Employee ID",
+        startButton: "Challenge",
         msgEnterId: "Please enter your Employee ID",
+        msgCheckingId: "Checking eligibility...",
+        msgIdNotFound: "Please complete Stage 3 first!",
+        msgCheckError: "Verification error. Please try again later.",
         theme: "Theme: Perspectives on Diversity",
         progress: (q, t) => `Q ${q}/${t}`,
         bossHp: "Boss HP",
-        resultWinTitle: "Complete Victory!",
-        resultWinMsg: "You have overcome all trials! Peace has been restored to the world!",
+        resultWinTitle: "Victory!",
+        resultWinMsg: "Stage Clear! Diverse perspectives have broadened your world!",
         resultLoseTitle: "Game Over",
-        resultLoseMsg: "True understanding was just out of reach...",
+        resultLoseMsg: "The Magic Dragon King's power is immeasurable...",
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
-        alreadySubmitted: "You have already challenged. Your first score is saved.",
         restartButton: "Back to Title",
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
         quiz: [
-          { q: "What important insight about diversity does the existence of languages that don't distinguish between 'blue' and 'green' give us?", o: ["Perception of reality is shaped by language and culture", "Human eyes are bad at distinguishing blue and green", "Cultures always evolve in a fixed order", "There were few blue things in ancient times"], a: "Perception of reality is shaped by language and culture", ex: "We tend to think we all see the same world, but we actually perceive it through the filters of 'language' and 'culture.' The Japanese 'blue traffic light' is a good example." },
-          { q: "What is the most important reason that diverse teams outperform homogeneous ones?", o: ["They are naturally more creative", "It encourages deeper information processing and preparation", "They avoid unnecessary conflict", "The total number of ideas is statistically higher"], a: "It encourages deeper information processing and preparation", ex: "The presence of different viewpoints makes each member anticipate that their opinions will be scrutinized from multiple angles, which in turn encourages deeper information processing and more thorough preparation and thought." },
-          { q: "What is the most appropriate translation of the English proverb 'Variety is the spice of life.'?", o: ["Diversity is the spice of life", "Diversity is a shortcut in life", "Diversity is a compass in life", "Diversity is the final stop in life"], a: "Diversity is the spice of life", ex: "This proverb means that a variety of rich experiences makes life more interesting. Just as spices enhance the flavor of food, diverse experiences make life more fun and flavorful." },
-          { q: "In Japan, a green traffic light is sometimes called 'ao shingo' (blue light). Why?", o: ["Old traffic lights were blue", "Blue is easier on the eyes", "A remnant of old Japanese where 'ao' included green", "It is legally defined as blue"], a: "A remnant of old Japanese where 'ao' included green", ex: "The old Japanese word 'ao' referred to a wide range of colors, including what we now call green. As a remnant of that, green things are still sometimes referred to as 'ao' today." },
-          { q: "What is the cognitive trap that teams of similar members are prone to falling into?", o: ["Slower decision making", "Inability to reach consensus", "Being bound by stereotypes", "An increase in new challenges"], a: "Being bound by stereotypes", ex: "In a team of similar members, cognitive shortcuts are often taken based on the tacit assumption that 'everyone else is probably thinking the same thing.' This can cause the entire team to be bound by stereotypes and overlook risks." }
+          { q: "What important insight about diversity is revealed by languages that don't distinguish between 'blue' and 'green'?", o: ["Perception of reality is shaped by language and culture", "All languages share the same structure", "Color perception is universal", "Ancient languages were incomplete"], a: "Perception of reality is shaped by language and culture", ex: "We perceive the world through the filters of 'language' and 'culture.' The Japanese 'blue signal' (aoshingo) for a green traffic light is a remnant of old Japanese." },
+          { q: "What is the most important reason a diverse team achieves high performance?", o: ["Decisions are made quickly", "It encourages deeper thinking and thorough preparation", "Competition becomes more intense", "It consists only of experts"], a: "It encourages deeper thinking and thorough preparation", ex: "The presence of different viewpoints prompts each member to process information more deeply, encouraging thorough preparation and thought. Homogeneous teams tend to take mental shortcuts." },
+          { q: "What is the most appropriate translation for the English proverb 'Variety is the spice of life.'?", o: ["Variety is the spice of life", "Life is spicy", "A life without change is best", "Life is a variety show"], a: "Variety is the spice of life", ex: "It means that a variety of rich experiences enriches life. Just as spices enhance a dish's flavor, diverse experiences make life more interesting and flavorful." },
+          { q: "In Japan, green traffic lights are sometimes called 'blue signals' (aoshingo). Why?", o: ["The light looks blue", "It's legally defined as 'blue'", "It's a remnant of old Japanese where green was also 'ao'", "It's an international rule"], a: "It's a remnant of old Japanese where green was also 'ao'", ex: "It's a remnant from when the old Japanese word 'ao' also included the color green." },
+          { q: "What is a common mental trap for a team composed only of like-minded members?", o: ["Innovative ideas emerge easily", "Decision-making becomes slower", "Being bound by stereotypes", "Discussions become too heated"], a: "Being bound by stereotypes", ex: "The implicit assumption that 'everyone probably thinks the same way' leads to mental shortcuts, and the entire team tends to be bound by stereotypes." }
+        ]
+      },
+      zh: {
+        instructionTitle: "冒险须知",
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・祝你好运！"],
+        instructionOk: "知道了",
+        title: "第四关：多样性视角",
+        employeeIdPlaceholder: "输入员工编号(5位半角数字)",
+        startButton: "挑战",
+        msgEnterId: "请输入员工编号",
+        msgCheckingId: "正在确认挑战资格...",
+        msgIdNotFound: "请先挑战第三关！",
+        msgCheckError: "确认出错。请稍后再试。",
+        theme: "主题：多样性视角",
+        progress: (q, t) => `第${q}/${t}题`,
+        bossHp: "头目 HP",
+        resultWinTitle: "胜利！",
+        resultWinMsg: "关卡完成！多样的视角拓宽了世界！",
+        resultLoseTitle: "游戏结束",
+        resultLoseMsg: "魔龙王的力量深不可测…",
+        submitting: "正在发送结果...",
+        submitSuccess: "结果已发送！",
+        submitError: "错误：无法发送结果。",
+        restartButton: "返回标题",
+        correct: "回答正确！",
+        incorrect: "回答错误...",
+        nextButton: "下一个",
+        quiz: [
+            { q: "存在不区分“蓝色”和“绿色”的语言，这一事实揭示了关于多样性的何种重要启示？", o: ["对现实的认知是由语言和文化塑造的", "所有语言都具有相同的结构", "颜色识别是世界共通的", "古代语言不完整"], a: "对现实的认知是由语言和文化塑造的", ex: "我们通过“语言”和“文化”的滤镜来认识世界。日本的“青信号”（绿灯）也是古代日语的遗留。" },
+            { q: "由多元化人才组成的团队能取得更高成就的最重要原因是什么？", o: ["能迅速统一意见", "因为它能促进更深入的思考和周密的准备", "竞争变得更加激烈", "因为只有专家聚集在一起"], a: "因为它能促进更深入的思考和周密的准备", ex: "不同视点的存在，促使每个成员更深入地处理信息，并鼓励周密的准备和思考。同质化的团队容易产生思维捷径。" },
+            { q: "英语谚语“Variety is the spice of life.”最贴切的中文翻译是什么？", o: ["多样性是生活的调味品", "人生像香料一样辛辣", "没有变化的人生是最好的", "人生是一场综艺秀"], a: "多样性是生活的调味品", ex: "意思是丰富多彩的经历能使人生更加充实。就像调味品能提升菜肴的味道一样，多样的经历能让人生更有趣、更有味道。" },
+            { q: "在日本，绿色的交通信号灯有时被称为“青信号”。这是为什么？", o: ["因为信号灯看起来是蓝色的", "因为法律规定为“青色”", "古代日语中绿色也称为“ao”的遗留", "因为这是国际规则"], a: "古代日语中绿色也称为“ao”的遗留", ex: "这是古代日语中“ao”一词也包含绿色的遗留。" },
+            { q: "只由想法相似的成员组成的团队容易陷入什么样的思维陷阱？", o: ["容易产生创新想法", "决策变慢", "被刻板印象所束缚", "讨论变得过于激烈"], a: "被刻板印象所束缚", ex: "“大家肯定都这么想”的默契前提会导致思维捷径，使整个团队容易被刻板印象所束缚。" }
         ]
       }
     };
@@ -184,6 +223,7 @@
     const bossContainer = document.getElementById('boss-container');
     const employeeIdInput = document.getElementById('employeeIdInput');
     const bgm = document.getElementById('bgm');
+    const correctSound = document.getElementById('correct-sound');
     const startButton = document.getElementById('start-button');
     const explanationModal = document.getElementById('explanation-modal');
     const nextQuestionButton = document.getElementById('next-question-button');
@@ -216,7 +256,10 @@
     function setupAudio() {
       if (audioStarted) return;
       clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
-      hitSound = () => new Tone.Synth({ oscillator: { type: "fmsquare" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.1 } }).toDestination().triggerAttackRelease("C5", "16n");
+      hitSound = () => {
+        correctSound.currentTime = 0;
+        correctSound.play().catch(e => console.error("Correct sound play failed:", e));
+      };
       damageSound = () => new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination().triggerAttackRelease("8n");
       victorySound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C5", "8n", n); s.triggerAttackRelease("E5", "8n", n + 0.2); s.triggerAttackRelease("G5", "8n", n + 0.4); s.triggerAttackRelease("C6", "4n", n + 0.6) };
       defeatSound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C4", "4n", n); s.triggerAttackRelease("B3", "4n", n + 0.3); s.triggerAttackRelease("A#3", "4n", n + 0.6); s.triggerAttackRelease("A3", "2n", n + 0.9) };
@@ -224,32 +267,51 @@
     }
 
     async function startGame() {
+      if (!employeeIdInput.checkValidity()) {
+        employeeIdInput.reportValidity();
+        return;
+      }
       const employeeId = employeeIdInput.value.trim();
+      const msgEl = document.getElementById('msg');
       if (!employeeId) {
-        document.getElementById('msg').textContent = TEXTS[currentLang].msgEnterId;
+        msgEl.textContent = TEXTS[currentLang].msgEnterId;
         return;
       }
       if (isGameInProgress) return;
       isGameInProgress = true;
       startButton.disabled = true;
-      
-      bgm.play().catch(e => console.error("BGM play failed:", e));
-      clickSound();
-      correctCount = 0;
-      
-      document.getElementById('boss-area').classList.remove('hidden');
-      bossContainer.className = 'boss-idle';
-      updateHpBars(100);
-      switchScreen('quiz');
-      
-      startTime = Date.now();
-      timerInterval = setInterval(() => {
-        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
-        document.getElementById('timer-display').textContent = `${elapsedTime}s`;
-      }, 100);
-      
-      displayQuestion(0);
-      startButton.disabled = false;
+      msgEl.textContent = TEXTS[currentLang].msgCheckingId;
+
+      try {
+        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(employeeId)}&stage=3`;
+        const response = await fetch(checkUrl);
+        const result = await response.json();
+
+        if (result.exists) {
+          msgEl.textContent = "";
+          bgm.play().catch(e => console.error("BGM play failed:", e));
+          clickSound();
+          correctCount = 0;
+          document.getElementById('boss-area').classList.remove('hidden');
+          bossContainer.className = 'boss-idle';
+          updateHpBars(100);
+          switchScreen('quiz');
+          startTime = Date.now();
+          timerInterval = setInterval(() => {
+            const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            document.getElementById('timer-display').textContent = `${elapsedTime}s`;
+          }, 100);
+          displayQuestion(0);
+        } else {
+          msgEl.textContent = TEXTS[currentLang].msgIdNotFound;
+        }
+      } catch (error) {
+        console.error("Error checking employee ID:", error);
+        msgEl.textContent = TEXTS[currentLang].msgCheckError;
+      } finally {
+        isGameInProgress = false;
+        startButton.disabled = false;
+      }
     }
 
     function displayQuestion(index) {
@@ -307,7 +369,7 @@
       document.querySelector('.dq-window').classList.remove('shake');
       
       const nextIndex = parseInt(nextQuestionButton.dataset.nextIndex);
-      if (nextIndex >= TEXTS[currentLang].quiz.length || correctCount >= 4) {
+      if (nextIndex >= TEXTS[currentLang].quiz.length) {
         showEndScreen();
       } else {
         displayQuestion(nextIndex);
@@ -367,6 +429,11 @@
       else if (percentage <= 50) hpBar.className = 'boss-hp-bar mid';
       else hpBar.className = 'boss-hp-bar full';
     }
+    
+    function handleMediaError(element) {
+        console.error(`Error loading media: ${element.src}`);
+        element.style.display = 'none'; 
+    }
 
     document.getElementById('title-start-button').addEventListener('click', async () => {
       if (!audioStarted) { 
@@ -382,6 +449,7 @@
 
     document.getElementById('lang-ja').addEventListener('click', () => { clickSound(); currentLang = 'ja'; updateUIText(); switchScreen('instruction'); });
     document.getElementById('lang-en').addEventListener('click', () => { clickSound(); currentLang = 'en'; updateUIText(); switchScreen('instruction'); });
+    document.getElementById('lang-zh').addEventListener('click', () => { clickSound(); currentLang = 'zh'; updateUIText(); switchScreen('instruction'); });
     
     document.getElementById('instruction-ok-button').addEventListener('click', () => {
       clickSound();
