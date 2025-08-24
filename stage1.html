@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
   <style>
-    body[lang="ja"] { font-family: 'DotGothic16', sans-serif; }
+    body[lang="ja"], body[lang="zh"] { font-family: 'DotGothic16', sans-serif; }
     body[lang="en"] { font-family: 'Press Start 2P', cursive; }
     body { background-color: #000; color: #fff; image-rendering: pixelated; overflow-x: hidden; overflow-y: auto; }
     .dq-window { border: 4px solid #fff; background: rgba(0,0,80,0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0,128,255,0.6); backdrop-filter: blur(3px); }
@@ -45,12 +45,12 @@
     <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline></video>
   </div>
   <div id="game-video-container" class="video-container hidden">
-    <video id="game-bg-video" class="bg-video" src="./GameBackground.mp4" autoplay muted loop playsinline></video>
+    <video id="game-bg-video" class="bg-video" src="./GameBackground1.mp4" autoplay muted loop playsinline></video>
   </div>
 
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
-      <div id="boss-container"><img id="boss-img" src="./dragon_cutout.png" alt="ボスの画像" class="fire-glow"/></div>
+      <div id="boss-container"><img id="boss-img" src="./Stage1_dragon.png" alt="ボスの画像" class="fire-glow"/></div>
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
@@ -60,9 +60,10 @@
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <div class="flex justify-center gap-4">
+        <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
+          <button id="lang-zh" class="dq-button">中文</button>
         </div>
       </div>
 
@@ -76,7 +77,7 @@
         <div class="flex flex-col items-center gap-4 mb-4">
           <input id="nicknameInput" type="text" maxlength="20" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
           <select id="companySelect" class="text-black px-3 py-2 w-full md:w-80 text-center rounded"></select>
-          <input id="employeeIdInput" type="text" pattern="\d{1,10}" title="社員番号を数字で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
+          <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は半角数字5桁で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
         </div>
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
         <div id="msg" class="text-yellow-300 text-sm h-5 mt-2"></div>
@@ -106,7 +107,8 @@
       </div>
     </div>
   </div>
-  <audio id="bgm" src="./boss_bgm_8bit.wav" loop></audio>
+  <audio id="bgm" src="./BS1_BGM.wav" loop></audio>
+  <audio id="correct-sound" src="./クイズ正解.mp3"></audio>
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
     const STAGE_NUMBER = '1';
@@ -117,7 +119,7 @@
         instructionOk: "わかった",
         title: "ステージ1：地球環境",
         nicknamePlaceholder: "ニックネームを入力",
-        employeeIdPlaceholder: "社員番号を入力",
+        employeeIdPlaceholder: "社員番号(半角5桁)を入力",
         companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
         msgEnterId: "ニックネーム、所属会社、社員番号をすべて入力してください",
@@ -131,7 +133,6 @@
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
-        alreadySubmitted: "既に挑戦済みです。最初の記録が保存されています。",
         restartButton: "タイトルへ戻る",
         correct: "正解！",
         incorrect: "不正解...",
@@ -150,7 +151,7 @@
         instructionOk: "Got it",
         title: "Stage 1: Global Environment",
         nicknamePlaceholder: "Enter Nickname",
-        employeeIdPlaceholder: "Enter Employee ID",
+        employeeIdPlaceholder: "Enter 5-digit Employee ID",
         companySelectDefault: "Select your company",
         startButton: "Challenge",
         msgEnterId: "Please enter all fields: Nickname, Company, and Employee ID",
@@ -164,7 +165,6 @@
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
-        alreadySubmitted: "You have already challenged. Your first score is saved.",
         restartButton: "Back to Title",
         correct: "Correct!",
         incorrect: "Incorrect...",
@@ -176,11 +176,44 @@
           { q: "What is the name of UNIQLO's initiative to collect and donate clothes to refugees?", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "Through the 'RE.UNIQLO' initiative, UNIQLO collects clothes that customers no longer wear and makes the most of them. Clothes that can still be worn are delivered to refugees and disaster victims around the world in cooperation with UNHCR." },
           { q: "What is the main reason buying Fair Trade products helps solve poverty?", o: ["Products are distributed for free", "Products are cheaper", "All sales are donated", "Producers are paid a fair wage"], a: "Producers are paid a fair wage", ex: "One of the most important principles of Fair Trade is to guarantee a fair price to producers and provide them with a stable income. This allows them to improve their lives and invest in education and healthcare." }
         ]
+      },
+      zh: {
+        instructionTitle: "冒险须知",
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・祝你好运！"],
+        instructionOk: "知道了",
+        title: "第一关：地球环境",
+        nicknamePlaceholder: "输入昵称",
+        employeeIdPlaceholder: "输入员工编号(5位半角数字)",
+        companySelectDefault: "请选择所属公司",
+        startButton: "挑战",
+        msgEnterId: "请输入昵称、所属公司和员工编号",
+        theme: "主题：地球环境",
+        progress: (q, t) => `第${q}/${t}题`,
+        bossHp: "头目 HP",
+        resultWinTitle: "胜利！",
+        resultWinMsg: "关卡完成！对环境的认识提高了！",
+        resultLoseTitle: "游戏结束",
+        resultLoseMsg: "龙的力量太强大了…",
+        submitting: "正在发送结果...",
+        submitSuccess: "结果已发送！",
+        submitError: "错误：无法发送结果。",
+        restartButton: "返回标题",
+        correct: "回答正确！",
+        incorrect: "回答错误...",
+        nextButton: "下一个",
+        quiz: [
+            { q: "以下哪项不是应对气候变化的措施？", o: ["节能和使用可再生能源", "森林保护", "适应气候变化", "捡拾海洋和河流中的垃圾"], a: "捡拾海洋和河流中的垃圾", ex: "应对气候变化的措施包括减少温室气体排放的“减缓”和减轻气候变化影响的“适应”。捡垃圾虽然不是直接的气候变化对策，但对解决海洋污染问题是有价值的活动。" },
+            { q: "旨在抑制废物产生和有效利用资源的想法“5R”中不包括以下哪一项？", o: ["拒绝(Refuse)", "减少(Reduce)", "修理(Repair)", "保留(Remain)"], a: "保留(Remain)", ex: "作为抑制废物的想法，提倡了3R（减少、再利用、回收），最近更扩展到包括拒绝和修理在内的“5R”。“保留”不包括在内。" },
+            { q: "生物多样性所包含的“三个多样性层次”中不包括以下哪一项？", o: ["生态系统的多样性", "物种的多样性", "遗传的多样性", "文化的多样性"], a: "文化的多样性", ex: "生物多样性是指地球上各种生物在各自的环境中相互联系、共存的状态。具体包括“生态系统的多样性”、“物种的多样性”和“遗传的多样性”这三个层次的多样性。" },
+            { q: "优衣库实施的回收衣物并捐赠给难民等人的活动名称是什么？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "优衣库通过名为“RE.UNIQLO”的活动，回收顾客不再穿着的衣物并加以最大限度地利用。仍然可以穿着的衣物会与联合国难民署（UNHCR）合作，送往世界各地的难民和灾民手中。" },
+            { q: "购买公平贸易产品有助于解决贫困问题的主要原因是什么？", o: ["因为产品是免费分发的", "因为产品价格便宜", "因为销售额全部捐出", "因为生产者能获得公平的报酬"], a: "因为生产者能获得公平的报酬", ex: "公平贸易最重要的原则之一是保证生产者获得公正的价格，并为他们提供稳定的收入。这使他们能够改善生活，并投资于教育和医疗。" }
+        ]
       }
     };
     const companyList = {
       ja: ["本社/天満地区", "治工具場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
-      en: ["HQ/Tenma Area", "Jig & Tool Plant", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"]
+      en: ["HQ/Tenma Area", "Jig & Tool Plant", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
+      zh: ["总公司/天满地区", "治工具工厂", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
     
     const titleScreen = document.getElementById('title-screen');
@@ -232,7 +265,7 @@
     function setupAudio() {
       if (audioStarted) return;
       clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
-      hitSound = () => new Tone.Synth({ oscillator: { type: "fmsquare" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.1 } }).toDestination().triggerAttackRelease("C5", "16n");
+      hitSound = () => document.getElementById('correct-sound').play();
       damageSound = () => new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination().triggerAttackRelease("8n");
       victorySound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C5", "8n", n); s.triggerAttackRelease("E5", "8n", n + 0.2); s.triggerAttackRelease("G5", "8n", n + 0.4); s.triggerAttackRelease("C6", "4n", n + 0.6) };
       defeatSound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C4", "4n", n); s.triggerAttackRelease("B3", "4n", n + 0.3); s.triggerAttackRelease("A#3", "4n", n + 0.6); s.triggerAttackRelease("A3", "2n", n + 0.9) };
@@ -240,6 +273,10 @@
     }
 
     async function startGame() {
+      if (!employeeIdInput.checkValidity()) {
+        employeeIdInput.reportValidity();
+        return;
+      }
       const nickname = nicknameInput.value.trim();
       const company = companySelect.value;
       const employeeId = employeeIdInput.value.trim();
@@ -402,6 +439,7 @@
 
     document.getElementById('lang-ja').addEventListener('click', () => { clickSound(); currentLang = 'ja'; updateUIText(); switchScreen('instruction'); });
     document.getElementById('lang-en').addEventListener('click', () => { clickSound(); currentLang = 'en'; updateUIText(); switchScreen('instruction'); });
+    document.getElementById('lang-zh').addEventListener('click', () => { clickSound(); currentLang = 'zh'; updateUIText(); switchScreen('instruction'); });
     
     document.getElementById('instruction-ok-button').addEventListener('click', () => {
       clickSound();
