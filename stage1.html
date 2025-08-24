@@ -227,6 +227,7 @@
     const nicknameInput = document.getElementById('nicknameInput');
     const companySelect = document.getElementById('companySelect');
     const bgm = document.getElementById('bgm');
+    const correctSound = document.getElementById('correct-sound');
     const startButton = document.getElementById('start-button');
     const explanationModal = document.getElementById('explanation-modal');
     const nextQuestionButton = document.getElementById('next-question-button');
@@ -265,7 +266,10 @@
     function setupAudio() {
       if (audioStarted) return;
       clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
-      hitSound = () => document.getElementById('correct-sound').play();
+      hitSound = () => {
+        correctSound.currentTime = 0;
+        correctSound.play().catch(e => console.error("Correct sound play failed:", e));
+      };
       damageSound = () => new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.2 } }).toDestination().triggerAttackRelease("8n");
       victorySound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C5", "8n", n); s.triggerAttackRelease("E5", "8n", n + 0.2); s.triggerAttackRelease("G5", "8n", n + 0.4); s.triggerAttackRelease("C6", "4n", n + 0.6) };
       defeatSound = () => { const s = new Tone.Synth().toDestination(), n = Tone.now(); s.triggerAttackRelease("C4", "4n", n); s.triggerAttackRelease("B3", "4n", n + 0.3); s.triggerAttackRelease("A#3", "4n", n + 0.6); s.triggerAttackRelease("A3", "2n", n + 0.9) };
@@ -362,7 +366,7 @@
       document.querySelector('.dq-window').classList.remove('shake');
       
       const nextIndex = parseInt(nextQuestionButton.dataset.nextIndex);
-      if (nextIndex >= TEXTS[currentLang].quiz.length || correctCount >= 4) {
+      if (nextIndex >= TEXTS[currentLang].quiz.length) {
         showEndScreen();
       } else {
         displayQuestion(nextIndex);
