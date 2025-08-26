@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainable Quest 🗡️ - Stage 1</title>
+  <!-- ★変更: タイトルを修正 -->
+  <title>Sustainability Quest 🗡️ - Stage 1</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,12 +55,15 @@
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
-        <h1 class="mb-10">Sustainable Quest</h1>
+        <!-- ★変更: タイトルを修正 -->
+        <h1 class="mb-10">Sustainability Quest</h1>
         <button id="title-start-button" class="dq-button">START</button>
       </div>
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
+        <!-- ★追加: AI翻訳の注意書き -->
+        <p class="text-sm mb-6">Translations are provided by AI.</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
@@ -110,7 +114,8 @@
   <audio id="bgm" src="./BS1_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
+    // ★変更: GASのURLを更新
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJRryhzu2JaSQSQzSHXnvreD6iBY6hOQKhvKlIelrme9kAsr6uY2tK1JwFgLsCN3HdnA/exec';
     const STAGE_NUMBER = '1';
     const TEXTS = {
       ja: {
@@ -137,12 +142,13 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
+        // ★変更: クイズ内容を全て入れ替え
         quiz: [
-          { q: "気候変動対策として誤っているものは次のうちどれ？", o: ["省エネや再生可能エネルギーの使用", "森林保全", "気候変動への適応", "海や川のゴミ拾い"], a: "海や川のゴミ拾い", ex: "気候変動対策には、温室効果ガス排出量を削減する「緩和」と、気候変動の影響を軽減する「適応」があります。ゴミ拾いは直接的な気候変動対策にはなりませんが、海洋汚染対策として価値のある活動です。" },
-          { q: "廃棄物の発生抑制や資源の有効活用のための考え方「5R」。これに含まれないものは？", o: ["リフューズ(断る)", "リデュース(減らす)", "リペア(修理する)", "リメイン(留まる)"], a: "リメイン(留まる)", ex: "廃棄物抑制の考え方として3R(リデュース、リユース、リサイクル)が提唱され、最近ではリフューズ(断る)、リペア(修理する)を加えた「5R」にまで広がっています。「リメイン(留まる)」は含まれません。" },
-          { q: "生物多様性に含まれる「3つのレベルの多様性」に当てはまらないものは？", o: ["生態系の多様性", "種の多様性", "遺伝子の多様性", "文化の多様性"], a: "文化の多様性", ex: "生物多様性とは、地球上の生物が互いに繋がり合って生きている状態のことです。具体的には、「生態系の多様性」、「種の多様性」、「遺伝子の多様性」の3つのレベルでの多様性を含みます。" },
-          { q: "ユニクロが実施している、服を回収し難民などに寄贈する活動名は？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "ユニクロは「RE.UNIQLO」という活動を通じて、お客様が着なくなった服を回収し、最大限に活用しています。まだ着られる服は、UNHCRと協力して世界中の難民や被災者に届けられます。" },
-          { q: "フェアトレード製品を買うことが貧困問題の解決に繋がる主な理由は？", o: ["製品が無料で配布されるから", "製品の価格が安いから", "売上が全て寄付されるから", "生産者に公正な賃金が支払われるから"], a: "生産者に公正な賃金が支払われるから", ex: "フェアトレードの最も重要な原則の一つは、生産者に公正な価格を保証し、安定した収入を提供することです。これにより、彼らは生活を改善し、教育や医療に投資できるようになります。" }
+          { q: "気候変動対策として誤っているものは次のうちどれでしょうか？", o: ["省エネや再生エネルギーの使用", "森林保全", "気候変動への適応", "海の川のゴミ拾い"], a: "海の川のゴミ拾い", ex: "気候変動対策には、温室効果ガス排出量を削減するための「緩和」と、気候変動の影響を軽減したり、順応して快適に暮らすための「適応」があります。ゴミを拾っても、温室効果ガス排出量は減らないため、直接的な気候変動対策になりません。しかし、海洋汚染対策に貢献する価値のある活動です。" },
+          { q: "廃棄物の発生を抑制し、資源を有効活用するための考え方として誤っているものは次のうちどれでしょうか？", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "廃棄物の発生抑制、資源の有効活用のための考え方として、3R（Reduce・Reuse・Recycle）が提唱されていますが、最近ではRefuseやRepairなどの考え方にまで広がっています。" },
+          { q: "生物多様性に含まれる「3つのレベルの多様性」として誤っているものは次のうちどれでしょうか？", o: ["生態系の多様性", "種の多様性", "遺伝子の多様性", "文化の多様性"], a: "文化の多様性", ex: "生物多様性とは、地球上の様々な種類の生物が、それぞれの環境で互いにつながり合いながら生きている状態のことです。具体的には、「生態系の多様性」、「種の多様性」、「遺伝子の多様性」の3つのレベルでの多様性を含みます。" },
+          { q: "世界経済フォーラム（WEF）が発表する「グローバルリスクレポート（2024）」の中で、最も高い環境関連リスクは次のうちどれでしょうか？", o: ["異常気象", "生物多様性の喪失と生態系の崩壊", "自然資源の不足", "汚染"], a: "異常気象", ex: "異常気象は、短期間リスクでは2位、長期間リスクでは1位にランクインしています。グローバルリスクレポートには、環境以外にも、経済、地政学、社会、テクノロジーのリスクカテゴリーがありますが、長期間リスクのTOP10には、他の選択肢を含む環境関連リスクが5つもランクインしています。" },
+          { q: "「永遠の化学物質」と呼ばれる有害化学物質は次のうちどれでしょうか？", o: ["BPA（ビスフェノールA）", "DDT（ジクロロジフェニルトリクロロエタン）", "PFAS（有機フッ素化合物）", "ダイオキシン類"], a: "PFAS（有機フッ素化合物）", ex: "PFASは、自然界でほとんど分解されず、環境や人体への長期的な影響が懸念されている有害化学物質の総称です。水や油をはじき、熱に強いため、フライパンや防水スプレーなど、幅広い製品で使用されてきました。DDT、BPA、ダイオキシン類はいずれも環境や人体に有害な化学物質ですが、「永遠の化学物質」とは呼ばれません。" }
         ]
       },
       en: {
@@ -169,12 +175,13 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
+        // ★変更: クイズ内容を全て入れ替え
         quiz: [
           { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers", ex: "Climate change countermeasures include 'mitigation' to reduce greenhouse gas emissions and 'adaptation' to reduce the impacts of climate change. Picking up trash is not a direct countermeasure, but it is a valuable activity for ocean pollution control." },
-          { q: "Which is NOT included in the '5Rs' for waste reduction and resource utilization?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "The 3Rs (Reduce, Reuse, Recycle) have been proposed for waste reduction, and recently it has expanded to the '5Rs' by adding Refuse and Repair. 'Remain' is not included." },
-          { q: "Which is NOT one of the 'three levels of diversity' included in biodiversity?", o: ["Ecosystem diversity", "Species diversity", "Genetic diversity", "Cultural diversity"], a: "Cultural diversity", ex: "Biodiversity is the state in which various organisms on Earth live in connection with each other in their respective environments. Specifically, it includes diversity at three levels: 'ecosystem diversity,' 'species diversity,' and 'genetic diversity.'" },
-          { q: "What is the name of UNIQLO's initiative to collect and donate clothes to refugees?", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "Through the 'RE.UNIQLO' initiative, UNIQLO collects clothes that customers no longer wear and makes the most of them. Clothes that can still be worn are delivered to refugees and disaster victims around the world in cooperation with UNHCR." },
-          { q: "What is the main reason buying Fair Trade products helps solve poverty?", o: ["Products are distributed for free", "Products are cheaper", "All sales are donated", "Producers are paid a fair wage"], a: "Producers are paid a fair wage", ex: "One of the most important principles of Fair Trade is to guarantee a fair price to producers and provide them with a stable income. This allows them to improve their lives and invest in education and healthcare." }
+          { q: "Which of the following is an incorrect concept for suppressing waste generation and effectively utilizing resources?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "To suppress waste generation and effectively utilize resources, the 3Rs (Reduce, Reuse, Recycle) have been advocated, but recently this has expanded to include concepts like Refuse and Repair. 'Remain' is not included." },
+          { q: "Which of the following is incorrect as one of the 'three levels of diversity' included in biodiversity?", o: ["Ecosystem diversity", "Species diversity", "Genetic diversity", "Cultural diversity"], a: "Cultural diversity", ex: "Biodiversity is the state where various types of life on Earth live while being interconnected in their respective environments. Specifically, it includes diversity at three levels: 'ecosystem diversity,' 'species diversity,' and 'genetic diversity.'" },
+          { q: "In the 'Global Risks Report (2024)' published by the World Economic Forum (WEF), which of the following is the highest environmental risk?", o: ["Extreme weather events", "Biodiversity loss and ecosystem collapse", "Natural resource shortages", "Pollution"], a: "Extreme weather events", ex: "Extreme weather events are ranked 2nd for short-term risks and 1st for long-term risks. The Global Risks Report includes economic, geopolitical, social, and technological risk categories in addition to environmental ones, but 5 of the top 10 long-term risks, including the other options, are environment-related." },
+          { q: "Which of the following hazardous chemicals are known as 'forever chemicals'?", o: ["BPA (Bisphenol A)", "DDT (Dichlorodiphenyltrichloroethane)", "PFAS (Per- and polyfluoroalkyl substances)", "Dioxins"], a: "PFAS (Per- and polyfluoroalkyl substances)", ex: "PFAS is a general term for hazardous chemicals that hardly break down in nature, raising concerns about their long-term effects on the environment and human body. Because they repel water and oil and are heat-resistant, they have been used in a wide range of products, such as frying pans and waterproof sprays. DDT, BPA, and dioxins are all chemicals harmful to the environment and humans but are not called 'forever chemicals'." }
         ]
       },
       zh: {
@@ -201,12 +208,13 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
+        // ★変更: クイズ内容を全て入れ替え
         quiz: [
-            { q: "以下哪项不是应对气候变化的措施？", o: ["节能和使用可再生能源", "森林保护", "适应气候变化", "捡拾海洋和河流中的垃圾"], a: "捡拾海洋和河流中的垃圾", ex: "应对气候变化的措施包括减少温室气体排放的“减缓”和减轻气候变化影响的“适应”。捡垃圾虽然不是直接的气候变化对策，但对解决海洋污染问题是有价值的活动。" },
-            { q: "旨在抑制废物产生和有效利用资源的想法“5R”中不包括以下哪一项？", o: ["拒绝(Refuse)", "减少(Reduce)", "修理(Repair)", "保留(Remain)"], a: "保留(Remain)", ex: "作为抑制废物的想法，提倡了3R（减少、再利用、回收），最近更扩展到包括拒绝和修理在内的“5R”。“保留”不包括在内。" },
-            { q: "生物多样性所包含的“三个多样性层次”中不包括以下哪一项？", o: ["生态系统的多样性", "物种的多样性", "遗传的多样性", "文化的多样性"], a: "文化的多样性", ex: "生物多样性是指地球上各种生物在各自的环境中相互联系、共存的状态。具体包括“生态系统的多样性”、“物种的多样性”和“遗传的多样性”这三个层次的多样性。" },
-            { q: "优衣库实施的回收衣物并捐赠给难民等人的活动名称是什么？", o: ["RECYCLE-UNIQLO", "RE:UNIQLO", "REUSE-UNIQLO", "REBORN-UNIQLO"], a: "RE:UNIQLO", ex: "优衣库通过名为“RE.UNIQLO”的活动，回收顾客不再穿着的衣物并加以最大限度地利用。仍然可以穿着的衣物会与联合国难民署（UNHCR）合作，送往世界各地的难民和灾民手中。" },
-            { q: "购买公平贸易产品有助于解决贫困问题的主要原因是什么？", o: ["因为产品是免费分发的", "因为产品价格便宜", "因为销售额全部捐出", "因为生产者能获得公平的报酬"], a: "因为生产者能获得公平的报酬", ex: "公平贸易最重要的原则之一是保证生产者获得公正的价格，并为他们提供稳定的收入。这使他们能够改善生活，并投资于教育和医疗。" }
+          { q: "以下哪项作为气候变化对策是错误的？", o: ["节能和使用可再生能源", "森林保护", "适应气候变化", "捡拾海洋和河流的垃圾"], a: "捡拾海洋和河流的垃圾", ex: "气候变化对策包括旨在减少温室气体排放的“减缓”措施，以及旨在减轻气候变化影响并舒适生活的“适应”措施。捡垃圾不会减少温室气体排放，因此不是直接的气候变化对策。但是，它是一项有价值的活动，有助于防治海洋污染。" },
+          { q: "以下哪项是抑制废物产生和有效利用资源方面的错误概念？", o: ["拒绝 (Refuse)", "减少 (Reduce)", "修理 (Repair)", "保留 (Remain)"], a: "保留 (Remain)", ex: "为了抑制废物产生和有效利用资源，人们提倡3R（减少、再利用、回收），但最近这一理念已扩展到包括拒绝和修理等概念。不包括“保留”。" },
+          { q: "以下哪项不属于生物多样性中所包含的“三个多样性层次”？", o: ["生态系统多样性", "物种多样性", "遗传多样性", "文化多样性"], a: "文化多样性", ex: "生物多样性是指地球上各种生物在各自的环境中相互联系、共存的状态。具体而言，它包括三个层次的多样性：“生态系统多样性”、“物种多样性”和“遗传多样性”。" },
+          { q: "在世界经济论坛（WEF）发布的《2024年全球风险报告》中，以下哪项是最高的环境相关风险？", o: ["极端天气事件", "生物多样性丧失和生态系统崩溃", "自然资源短缺", "污染"], a: "极端天气事件", ex: "极端天气事件在短期风险中排名第二，在长期风险中排名第一。《全球风险报告》除了环境风险外，还包括经济、地缘政治、社会和技术风险类别，但在长期风险前十名中，包括其他选项在内的与环境相关的风险占了五项。" },
+          { q: "以下哪种有害化学物质被称为“永久性化学物质”？", o: ["BPA (双酚A)", "DDT (二氯二苯三氯乙烷)", "PFAS (全氟和多氟烷基物质)", "二噁英类"], a: "PFAS (全氟和多氟烷基物质)", ex: "PFAS 是一类有害化学物质的总称，它们在自然界中几乎不分解，引发了人们对其对环境和人体长期影响的担忧。由于它们能防水防油且耐热，因此被广泛用于煎锅和防水喷雾等产品中。DDT、BPA和二噁英类都是对环境和人体有害的化学物质，但不被称为“永久性化学物质”。" }
         ]
       }
     };
