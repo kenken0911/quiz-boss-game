@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- ★変更: タイトルを修正 -->
   <title>Sustainability Quest 🗡️ - Stage 1</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,14 +54,12 @@
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
-        <!-- ★変更: タイトルを修正 -->
         <h1 class="mb-10">Sustainability Quest</h1>
         <button id="title-start-button" class="dq-button">START</button>
       </div>
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <!-- ★追加: AI翻訳の注意書き -->
         <p class="text-sm mb-6">Translations are provided by AI.</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
@@ -114,8 +111,8 @@
   <audio id="bgm" src="./BS1_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    // ★変更: GASのURLを更新
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJRryhzu2JaSQSQzSHXnvreD6iBY6hOQKhvKlIelrme9kAsr6uY2tK1JwFgLsCN3HdnA/exec';
+    // ★変更: GASのURLを最新版に更新
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzAtsMSbIHY3Nvdfkp27sXgZ1tcJUWhtTiSbrokCSQoS48Jp9mv_P1xidJwOp2-ynAcyw/exec';
     const STAGE_NUMBER = '1';
     const TEXTS = {
       ja: {
@@ -142,7 +139,6 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
-        // ★変更: クイズ内容を全て入れ替え
         quiz: [
           { q: "気候変動対策として誤っているものは次のうちどれでしょうか？", o: ["省エネや再生エネルギーの使用", "森林保全", "気候変動への適応", "海の川のゴミ拾い"], a: "海の川のゴミ拾い", ex: "気候変動対策には、温室効果ガス排出量を削減するための「緩和」と、気候変動の影響を軽減したり、順応して快適に暮らすための「適応」があります。ゴミを拾っても、温室効果ガス排出量は減らないため、直接的な気候変動対策になりません。しかし、海洋汚染対策に貢献する価値のある活動です。" },
           { q: "廃棄物の発生を抑制し、資源を有効活用するための考え方として誤っているものは次のうちどれでしょうか？", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "廃棄物の発生抑制、資源の有効活用のための考え方として、3R（Reduce・Reuse・Recycle）が提唱されていますが、最近ではRefuseやRepairなどの考え方にまで広がっています。" },
@@ -175,7 +171,6 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
-        // ★変更: クイズ内容を全て入れ替え
         quiz: [
           { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers", ex: "Climate change countermeasures include 'mitigation' to reduce greenhouse gas emissions and 'adaptation' to reduce the impacts of climate change. Picking up trash is not a direct countermeasure, but it is a valuable activity for ocean pollution control." },
           { q: "Which of the following is an incorrect concept for suppressing waste generation and effectively utilizing resources?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "To suppress waste generation and effectively utilize resources, the 3Rs (Reduce, Reuse, Recycle) have been advocated, but recently this has expanded to include concepts like Refuse and Repair. 'Remain' is not included." },
@@ -208,7 +203,6 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
-        // ★変更: クイズ内容を全て入れ替え
         quiz: [
           { q: "以下哪项作为气候变化对策是错误的？", o: ["节能和使用可再生能源", "森林保护", "适应气候变化", "捡拾海洋和河流的垃圾"], a: "捡拾海洋和河流的垃圾", ex: "气候变化对策包括旨在减少温室气体排放的“减缓”措施，以及旨在减轻气候变化影响并舒适生活的“适应”措施。捡垃圾不会减少温室气体排放，因此不是直接的气候变化对策。但是，它是一项有价值的活动，有助于防治海洋污染。" },
           { q: "以下哪项是抑制废物产生和有效利用资源方面的错误概念？", o: ["拒绝 (Refuse)", "减少 (Reduce)", "修理 (Repair)", "保留 (Remain)"], a: "保留 (Remain)", ex: "为了抑制废物产生和有效利用资源，人们提倡3R（减少、再利用、回收），但最近这一理念已扩展到包括拒绝和修理等概念。不包括“保留”。" },
@@ -219,7 +213,7 @@
       }
     };
     const companyList = {
-      ja: ["本社/天満地区", "治工具場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
+      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
       en: ["HQ/Tenma Area", "Jig & Tool Plant", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
       zh: ["总公司/天满地区", "治工具工厂", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
