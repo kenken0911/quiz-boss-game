@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainability Quest 🗡️ - Stage 4</title>
+  <title>Sustainability Quest 🗡️</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,7 +60,7 @@
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <p class="text-sm mb-6">Translations are provided by AI.</p>
+        <p class="text-sm mb-6">Translations are provided by AI. / 翻译由人工智能提供。</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
@@ -88,7 +88,7 @@
         <div class="flex justify-between items-center mb-2 text-lg">
           <span id="theme-display"></span>
           <span id="progress-display"></span>
-          <span id="timer-display">0.0s</span>
+          <span id="timer-display" class="hidden">0.0s</span>
         </div>
         <div class="mb-4"><p id="boss-hp-label"></p><div class="boss-hp-container"><div id="boss-hp-bar"></div></div></div>
         <div class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
@@ -96,9 +96,10 @@
       </div>
       <div id="result-screen" class="hidden text-center">
         <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
-        <p id="result-message" class="text-xl mb-6"></p>
-        <p id="submission-status" class="text-yellow-300 mb-8"></p>
-        <div id="restart-button" class="dq-button inline-block"></div>
+        <p id="result-message" class="text-xl mb-2"></p>
+        <p id="submission-status" class="text-yellow-300 mb-4"></p>
+        <div id="review-container" class="mt-4"></div>
+        <button id="restart-button" class="dq-button inline-block mt-6"></button>
       </div>
       <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
         <div class="dq-window w-full max-w-2xl text-center">
@@ -117,9 +118,9 @@
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・クイズの途中で画面を閉じると、その挑戦は無効となるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "ステージ4：こども・貧困",
+        title: "こども・貧困",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
         companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
@@ -142,6 +143,9 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
+        reviewTitle: "クイズの振り返り",
+        reviewAnswerLabel: "正解",
+        reviewUserAnswerLabel: "あなたの回答",
         quiz: [
           { q: "世界では、毎日どれくらいのこどもが、家庭の貧困を理由に命を落としているでしょうか？", o: ["約150,000人", "約10,000人", "約1,000人", "約100人"], a: "約10,000人", ex: "世界では毎日、貧困が原因で約10,000人もの5歳未満のこどもが命を落としているといわれています。" },
           { q: "世界中のこどもたちの権利と健やかな成長を守る国連機関は？", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "世界中のこどもたちの権利と健やかな成長を守るために活躍している国連機関はUNICEF（国際連合児童基金）です。" },
@@ -152,9 +156,9 @@
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Closing the screen mid-quiz will invalidate the attempt.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Stage 4: Children & Poverty",
+        title: "Children & Poverty",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
         companySelectDefault: "Select your company",
         startButton: "Challenge",
@@ -177,6 +181,9 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
+        reviewTitle: "Quiz Review",
+        reviewAnswerLabel: "Answer",
+        reviewUserAnswerLabel: "Your Answer",
         quiz: [
           { q: "How many children are estimated to die every day due to family poverty worldwide?", o: ["About 150,000", "About 10,000", "About 1,000", "About 100"], a: "About 10,000", ex: "It is said that every day, about 10,000 children under the age of five lose their lives due to poverty." },
           { q: "Which UN agency protects the rights and healthy development of children worldwide?", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "The UN agency that works to protect the rights and healthy development of children worldwide is UNICEF (United Nations Children's Fund)." },
@@ -187,9 +194,9 @@
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・中途关闭测验将导致本次挑战无效。", "・祝你好运！"],
         instructionOk: "知道了",
-        title: "第四关：儿童与贫困",
+        title: "儿童与贫困",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
         companySelectDefault: "请选择所属公司",
         startButton: "挑战",
@@ -212,6 +219,9 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
+        reviewTitle: "测验回顾",
+        reviewAnswerLabel: "正确答案",
+        reviewUserAnswerLabel: "你的答案",
         quiz: [
           { q: "全球每天大约有多少儿童因家庭贫困而死亡？", o: ["约150,000人", "约10,000人", "约1,000人", "约100人"], a: "约10,000人", ex: "据说，全球每天有多达10,000名5岁以下儿童因贫困而死亡。" },
           { q: "哪个联合国机构负责保护全世界儿童的权利和健康成长？", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "致力于保护全世界儿童权利和健康成长的联合国机构是联合国儿童基金会（UNICEF）。" },
@@ -222,9 +232,9 @@
       }
     };
     const companyList = {
-      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
-      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
-      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
+      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "NASSH", "須田商事", "富士ホーニング", "中西興産", "CTM", "イーグローバレッジ", "ながいグリーンパワー", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
+      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NASSH", "Suda Corporation", "Fuji Honing", "Nakanishi Kosan", "CTM", "e-Globaledge", "Nagai Green Power", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
+      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "NASSH", "须田商事", "富士珩磨", "中西兴产", "CTM", "e-Globaledge", "长井绿色电力", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
     
     const titleScreen = document.getElementById('title-screen');
@@ -247,6 +257,7 @@
     let currentLang = 'ja';
     let timerInterval, startTime, correctCount, isGameInProgress = false, audioStarted = false;
     let clickSound, hitSound, damageSound, victorySound, defeatSound;
+    let userAnswers = [];
 
     function switchScreen(screenName) {
       [titleScreen, languageScreen, instructionScreen, startScreen, quizScreen, resultScreen].forEach(s => s.classList.add('hidden'));
@@ -319,6 +330,7 @@
           bgm.play().catch(e => console.error("BGM play failed:", e));
           clickSound();
           correctCount = 0;
+          userAnswers = [];
           document.getElementById('boss-area').classList.remove('hidden');
           bossContainer.className = 'boss-idle';
           updateHpBars(100);
@@ -345,7 +357,7 @@
       const quizData = TEXTS[currentLang].quiz;
       document.getElementById('progress-display').textContent = TEXTS[currentLang].progress(index + 1, quizData.length);
       const current = quizData[index];
-      document.getElementById('question-text').textContent = `Q${index + 1}: ${current.q}`;
+      document.getElementById('question-text').textContent = `${current.q}`;
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.innerHTML = '';
       current.o.forEach(opt => {
@@ -359,6 +371,12 @@
 
     function handleAnswer(selectedAnswer, currentQuiz, index) {
       const isCorrect = selectedAnswer === currentQuiz.a;
+      userAnswers.push({
+          questionIndex: index,
+          selectedAnswer: selectedAnswer,
+          isCorrect: isCorrect
+      });
+        
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
         btn.style.pointerEvents = 'none';
@@ -422,8 +440,54 @@
         const t = TEXTS[currentLang];
         document.getElementById('result-title').textContent = isVictory ? t.resultWinTitle : t.resultLoseTitle;
         document.getElementById('result-message').textContent = isVictory ? t.resultWinMsg : t.resultLoseMsg;
+        populateReviewSection();
         submitResults();
       }, isVictory ? 1500 : 500);
+    }
+
+    function populateReviewSection() {
+        const reviewContainer = document.getElementById('review-container');
+        const quizData = TEXTS[currentLang].quiz;
+        reviewContainer.innerHTML = '';
+
+        const title = document.createElement('h3');
+        title.textContent = TEXTS[currentLang].reviewTitle;
+        title.className = 'text-2xl font-bold mb-4';
+        reviewContainer.appendChild(title);
+
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'text-base text-left h-48 overflow-y-auto p-2 border-2 border-white space-y-4 rounded-lg';
+        reviewContainer.appendChild(contentWrapper);
+
+        quizData.forEach((q, index) => {
+            const userAnswerData = userAnswers.find(ans => ans.questionIndex === index);
+            const isCorrect = userAnswerData ? userAnswerData.isCorrect : false;
+
+            const questionBlock = document.createElement('div');
+            questionBlock.className = `p-3 border-b border-gray-500 ${!isCorrect ? 'bg-red-500 bg-opacity-20 rounded-md' : ''}`;
+
+            const questionP = document.createElement('p');
+            questionP.className = 'font-bold';
+            questionP.textContent = `Q${index + 1}: ${q.q}`;
+            questionBlock.appendChild(questionP);
+
+            if (!isCorrect && userAnswerData) {
+                const userAnswerP = document.createElement('p');
+                userAnswerP.innerHTML = `<strong class="text-red-400">${TEXTS[currentLang].reviewUserAnswerLabel}:</strong> ${userAnswerData.selectedAnswer}`;
+                questionBlock.appendChild(userAnswerP);
+            }
+
+            const answerP = document.createElement('p');
+            answerP.innerHTML = `<strong class="text-green-400">${TEXTS[currentLang].reviewAnswerLabel}:</strong> ${q.a}`;
+            questionBlock.appendChild(answerP);
+
+            const explanationP = document.createElement('p');
+            explanationP.textContent = q.ex;
+            explanationP.className = 'text-sm mt-2 text-gray-300';
+            questionBlock.appendChild(explanationP);
+
+            contentWrapper.appendChild(questionBlock);
+        });
     }
 
     async function submitResults() {
@@ -513,7 +577,7 @@
     
     startButton.addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', () => location.reload());
-
+    
     updateUIText();
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
