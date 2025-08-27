@@ -97,23 +97,16 @@
       </div>
       <div id="result-screen" class="hidden text-center">
         <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
-        <p id="result-message" class="text-xl mb-6"></p>
-        <p id="submission-status" class="text-yellow-300 mb-8"></p>
-        <button id="review-button" class="dq-button inline-block mr-4"></button>
-        <button id="restart-button" class="dq-button inline-block"></button>
+        <p id="result-message" class="text-xl mb-2"></p>
+        <p id="submission-status" class="text-yellow-300 mb-4"></p>
+        <div id="review-container" class="mt-4"></div>
+        <button id="restart-button" class="dq-button inline-block mt-6"></button>
       </div>
       <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
         <div class="dq-window w-full max-w-2xl text-center">
           <h2 id="explanation-title" class="text-4xl font-bold mb-4"></h2>
           <p id="explanation-text" class="text-lg mb-6 text-left h-48 overflow-y-auto p-2 border"></p>
           <button id="next-question-button" class="dq-button"></button>
-        </div>
-      </div>
-       <div id="review-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
-        <div class="dq-window w-full max-w-2xl text-center">
-          <h2 id="review-title" class="text-3xl font-bold mb-4"></h2>
-          <div id="review-content" class="text-lg mb-6 text-left h-64 overflow-y-auto p-2 border space-y-4"></div>
-          <button id="review-close-button" class="dq-button"></button>
         </div>
       </div>
     </div>
@@ -149,10 +142,9 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
-        reviewButton: "クイズを振り返る",
         reviewTitle: "クイズの振り返り",
         reviewAnswerLabel: "正解",
-        reviewClose: "閉じる",
+        reviewUserAnswerLabel: "あなたの回答",
         quiz: [
           { q: "気候変動対策として誤っているものは次のうちどれでしょうか？", o: ["省エネや再生エネルギーの使用", "森林保全", "気候変動への適応", "海の川のゴミ拾い"], a: "海の川のゴミ拾い", ex: "気候変動対策には、温室効果ガス排出量を削減するための「緩和」と、気候変動の影響を軽減したり、順応して快適に暮らすための「適応」があります。ゴミを拾っても、温室効果ガス排出量は減らないため、直接的な気候変動対策になりません。しかし、海洋汚染対策に貢献する価値のある活動です。" },
           { q: "廃棄物の発生を抑制し、資源を有効活用するための考え方として誤っているものは次のうちどれでしょうか？", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "廃棄物の発生抑制、資源の有効活用のための考え方として、3R（Reduce・Reuse・Recycle）が提唱されていますが、最近ではRefuseやRepairなどの考え方にまで広がっています。" },
@@ -186,10 +178,9 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
-        reviewButton: "Review Quiz",
         reviewTitle: "Quiz Review",
         reviewAnswerLabel: "Answer",
-        reviewClose: "Close",
+        reviewUserAnswerLabel: "Your Answer",
         quiz: [
           { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers", ex: "Climate change countermeasures include 'mitigation' to reduce greenhouse gas emissions and 'adaptation' to reduce the impacts of climate change. Picking up trash is not a direct countermeasure, but it is a valuable activity for ocean pollution control." },
           { q: "Which of the following is an incorrect concept for suppressing waste generation and effectively utilizing resources?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "To suppress waste generation and effectively utilize resources, the 3Rs (Reduce, Reuse, Recycle) have been advocated, but recently this has expanded to include concepts like Refuse and Repair. 'Remain' is not included." },
@@ -223,10 +214,9 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
-        reviewButton: "回顾测验",
         reviewTitle: "测验回顾",
         reviewAnswerLabel: "正确答案",
-        reviewClose: "关闭",
+        reviewUserAnswerLabel: "你的答案",
         quiz: [
           { q: "以下哪项作为气候变化对策是错误的？", o: ["节能和使用可再生能源", "森林保护", "适应气候变化", "捡拾海洋和河流的垃圾"], a: "捡拾海洋和河流的垃圾", ex: "气候变化对策包括旨在减少温室气体排放的“减缓”措施，以及旨在减轻气候变化影响并舒适生活的“适应”措施。捡垃圾不会减少温室气体排放，因此不是直接的气候变化对策。但是，它是一项有价值的活动，有助于防治海洋污染。" },
           { q: "以下哪项是抑制废物产生和有效利用资源方面的错误概念？", o: ["拒绝 (Refuse)", "减少 (Reduce)", "修理 (Repair)", "保留 (Remain)"], a: "保留 (Remain)", ex: "为了抑制废物产生和有效利用资源，人们提倡3R（减少、再利用、回收），但最近这一理念已扩展到包括拒绝和修理等概念。不包括“保留”。" },
@@ -259,13 +249,11 @@
     const nextQuestionButton = document.getElementById('next-question-button');
     const openingVideoContainer = document.getElementById('opening-video-container');
     const gameVideoContainer = document.getElementById('game-video-container');
-    const reviewModal = document.getElementById('review-modal');
-    const reviewButton = document.getElementById('review-button');
-    const reviewCloseButton = document.getElementById('review-close-button');
 
     let currentLang = 'ja';
     let timerInterval, startTime, correctCount, isGameInProgress = false, audioStarted = false;
     let clickSound, hitSound, damageSound, victorySound, defeatSound;
+    let userAnswers = [];
 
     function switchScreen(screenName) {
       [titleScreen, languageScreen, instructionScreen, startScreen, quizScreen, resultScreen].forEach(s => s.classList.add('hidden'));
@@ -285,9 +273,6 @@
       document.getElementById('boss-hp-label').textContent = t.bossHp;
       document.getElementById('restart-button').textContent = t.restartButton;
       document.getElementById('theme-display').textContent = t.theme;
-      document.getElementById('review-button').textContent = t.reviewButton;
-      document.getElementById('review-title').textContent = t.reviewTitle;
-      document.getElementById('review-close-button').textContent = t.reviewClose;
       
       companySelect.innerHTML = `<option value="">${t.companySelectDefault}</option>`;
       companyList[currentLang].forEach(company => {
@@ -333,6 +318,7 @@
       bgm.play().catch(e => console.error("BGM play failed:", e));
       clickSound();
       correctCount = 0;
+      userAnswers = [];
       
       document.getElementById('boss-area').classList.remove('hidden');
       bossContainer.className = 'boss-idle';
@@ -368,6 +354,12 @@
 
     function handleAnswer(selectedAnswer, currentQuiz, index) {
       const isCorrect = selectedAnswer === currentQuiz.a;
+      userAnswers.push({
+          questionIndex: index,
+          selectedAnswer: selectedAnswer,
+          isCorrect: isCorrect
+      });
+        
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
         btn.style.pointerEvents = 'none';
@@ -431,8 +423,54 @@
         const t = TEXTS[currentLang];
         document.getElementById('result-title').textContent = isVictory ? t.resultWinTitle : t.resultLoseTitle;
         document.getElementById('result-message').textContent = isVictory ? t.resultWinMsg : t.resultLoseMsg;
+        populateReviewSection();
         submitResults();
       }, isVictory ? 1500 : 500);
+    }
+
+    function populateReviewSection() {
+        const reviewContainer = document.getElementById('review-container');
+        const quizData = TEXTS[currentLang].quiz;
+        reviewContainer.innerHTML = '';
+
+        const title = document.createElement('h3');
+        title.textContent = TEXTS[currentLang].reviewTitle;
+        title.className = 'text-2xl font-bold mb-4';
+        reviewContainer.appendChild(title);
+
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'text-base text-left h-48 overflow-y-auto p-2 border-2 border-white space-y-4 rounded-lg';
+        reviewContainer.appendChild(contentWrapper);
+
+        quizData.forEach((q, index) => {
+            const userAnswerData = userAnswers.find(ans => ans.questionIndex === index);
+            const isCorrect = userAnswerData ? userAnswerData.isCorrect : false;
+
+            const questionBlock = document.createElement('div');
+            questionBlock.className = `p-3 border-b border-gray-500 ${!isCorrect ? 'bg-red-500 bg-opacity-20 rounded-md' : ''}`;
+
+            const questionP = document.createElement('p');
+            questionP.className = 'font-bold';
+            questionP.textContent = `Q${index + 1}: ${q.q}`;
+            questionBlock.appendChild(questionP);
+
+            if (!isCorrect && userAnswerData) {
+                const userAnswerP = document.createElement('p');
+                userAnswerP.innerHTML = `<strong class="text-red-400">${TEXTS[currentLang].reviewUserAnswerLabel}:</strong> ${userAnswerData.selectedAnswer}`;
+                questionBlock.appendChild(userAnswerP);
+            }
+
+            const answerP = document.createElement('p');
+            answerP.innerHTML = `<strong class="text-green-400">${TEXTS[currentLang].reviewAnswerLabel}:</strong> ${q.a}`;
+            questionBlock.appendChild(answerP);
+
+            const explanationP = document.createElement('p');
+            explanationP.textContent = q.ex;
+            explanationP.className = 'text-sm mt-2 text-gray-300';
+            questionBlock.appendChild(explanationP);
+
+            contentWrapper.appendChild(questionBlock);
+        });
     }
 
     async function submitResults() {
@@ -524,42 +562,6 @@
     startButton.addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', () => location.reload());
     
-    reviewButton.addEventListener('click', () => {
-        clickSound();
-        const reviewContent = document.getElementById('review-content');
-        const quizData = TEXTS[currentLang].quiz;
-        reviewContent.innerHTML = ''; // Clear previous content
-
-        quizData.forEach((q, index) => {
-            const questionBlock = document.createElement('div');
-            questionBlock.className = 'mb-4 p-2 border-b border-gray-500';
-
-            const questionP = document.createElement('p');
-            questionP.className = 'font-bold';
-            questionP.textContent = `Q${index + 1}: ${q.q}`;
-
-            const answerP = document.createElement('p');
-            answerP.innerHTML = `<strong class="text-yellow-300">${TEXTS[currentLang].reviewAnswerLabel}:</strong> ${q.a}`;
-
-            const explanationP = document.createElement('p');
-            explanationP.textContent = q.ex;
-            explanationP.className = 'text-sm mt-2';
-
-            questionBlock.appendChild(questionP);
-            questionBlock.appendChild(answerP);
-            questionBlock.appendChild(explanationP);
-
-            reviewContent.appendChild(questionBlock);
-        });
-
-        reviewModal.style.display = 'flex';
-    });
-    
-    reviewCloseButton.addEventListener('click', () => {
-        clickSound();
-        reviewModal.style.display = 'none';
-    });
-
     updateUIText();
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
