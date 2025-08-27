@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainable Quest 🗡️ - Stage 4</title>
+  <title>Sustainability Quest 🗡️ - Stage 4</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,12 +54,13 @@
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
-        <h1 class="mb-10">Sustainable Quest</h1>
+        <h1 class="mb-10">Sustainability Quest</h1>
         <button id="title-start-button" class="dq-button">START</button>
       </div>
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
+        <p class="text-sm mb-6">Translations are provided by AI.</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
@@ -76,6 +77,7 @@
       <div id="start-screen" class="text-center hidden">
         <h1 id="title-text" class="text-2xl font-bold mb-4"></h1>
         <div class="flex flex-col items-center gap-4 mb-4">
+          <select id="companySelect" class="text-black px-3 py-2 w-full md:w-80 text-center rounded"></select>
           <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は半角数字5桁で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
         </div>
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
@@ -110,108 +112,119 @@
   <audio id="bgm" src="./BS4_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJSdEy7FB8URSCuHC9DoFPHzPOcMS7TVnyFJ-4IGRunK09fLbwSdQxUGQDM0vOZ7wNmA/exec';
     const STAGE_NUMBER = '4';
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "ステージ4：多様性の視点",
+        title: "ステージ4：こども・貧困",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
+        companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
-        msgEnterId: "社員番号を入力してください",
+        msgEnterId: "所属会社と社員番号を入力してください",
         msgCheckingId: "挑戦資格を確認中...",
-        msgIdNotFound: "ステージ3から挑戦してください！",
+        msgIdNotFound: "ステージ1の記録が見つかりません。会社名と社員番号を確認してください。",
         msgCheckError: "確認エラー。時間をおいて再試行してください。",
-        theme: "テーマ：多様性の視点",
+        theme: "テーマ：こども・貧困",
         progress: (q, t) => `${q}/${t}問目`,
         bossHp: "ボス HP",
         resultWinTitle: "勝利！",
-        resultWinMsg: "ステージクリア！多様な視点が世界を広げた！",
+        resultWinMsg: "ステージクリア！未来への希望をつないだ！",
         resultLoseTitle: "ゲームオーバー",
         resultLoseMsg: "魔竜王の魔力は計り知れない…",
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
+        recordedFalse: "プレイありがとう！記録は初回のもののみとなります。",
         restartButton: "タイトルへ戻る",
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
         quiz: [
-          { q: "「青」と「緑」を区別しない言語の存在が示す、多様性に関する重要な気づきとは？", o: ["現実の認識は言語や文化により形作られる", "全ての言語は同じ構造を持つ", "色の認識は世界共通である", "古代言語は不完全だった"], a: "現実の認識は言語や文化により形作られる", ex: "私たちは「言語」や「文化」というフィルターを通して世界を認識しています。日本の「青信号」も古い日本語の名残です。" },
-          { q: "多様な人材で構成されたチームが高い成果を出す、最も重要な理由とは？", o: ["意見がすぐにまとまるから", "より深く思考し周到な準備を促すから", "競争が激しくなるから", "専門家だけが集まるから"], a: "より深く思考し周到な準備を促すから", ex: "異なる視点の存在が、メンバー各自により深く情報を処理し、周到な準備と思考を促すためです。均質なチームでは思考のショートカットが生まれがちです。" },
-          { q: "英語のことわざ「Variety is the spice of life.」の日本語訳として最も適切なものは？", o: ["多様性は人生の薬味である", "人生はスパイスのように辛い", "変化のない人生が一番だ", "人生はバラエティ番組だ"], a: "多様性は人生の薬味である", ex: "変化に富んだ様々な経験が人生を豊かにするという意味です。薬味が料理の味を引き立てるように、多様な経験が人生をより面白く、味わい深いものにしてくれます。" },
-          { q: "日本では緑色の信号を「青信号」と呼ぶことがある。これはなぜ？", o: ["信号機が青色に見えるから", "法律で「青」と定められているから", "古い日本語では緑も「あお」と呼んだ名残", "国際的なルールだから"], a: "古い日本語では緑も「あお」と呼んだ名残", ex: "古い日本語の「あお」が緑色も含む言葉だった名残です。" },
-          { q: "自分と似たメンバーだけのチームが陥りがちな、思考の罠とは？", o: ["革新的なアイデアが生まれやすい", "意思決定が遅くなる", "固定観念に縛られる", "議論が活発になりすぎる"], a: "固定観念に縛られる", ex: "「きっと皆も同じように考えているだろう」という暗黙の前提から思考のショートカットが生まれ、チーム全体が固定観念に縛られがちになります。" }
+          { q: "世界では、毎日どれくらいのこどもが、家庭の貧困を理由に命を落としているでしょうか？", o: ["約150,000人", "約10,000人", "約1,000人", "約100人"], a: "約10,000人", ex: "世界では毎日、貧困が原因で約10,000人もの5歳未満のこどもが命を落としているといわれています。" },
+          { q: "世界中のこどもたちの権利と健やかな成長を守る国連機関は？", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "世界中のこどもたちの権利と健やかな成長を守るために活躍している国連機関はUNICEF（国際連合児童基金）です。" },
+          { q: "貧困の再生産（連鎖）を断ち切るために、最も重要だと考えられている対策は次のうちどれでしょうか？", o: ["貧しい家庭の医療費を全額免除すること", "失業者に食料を配布すること", "貧困層が住む地域の建物を新しく建て替えること", "こどもたちに公平で質の高い機会の保障をすること"], a: "こどもたちに公平で質の高い機会の保障をすること", ex: "貧困の再生産は、親の貧困が子どもの機会を奪うことで起こります。教育は、この「機会の不平等」を是正し、子どもたちに自力で未来を切り開くための機会を与える、最も効果的な手段です。" },
+          { q: "フェアトレード製品を買うことが貧困問題の解決に繋がる主な理由は次のうちどれでしょうか？", o: ["製品が無料で配布されるから。", "消費者が節約したお金を寄付できるから。", "売上金がすべて貧困地域に寄付されるから。", "生産者に公正な賃金が支払われるから。"], a: "生産者に公正な賃金が支払われるから。", ex: "フェアトレードの最も重要な原則の一つは、生産者に公正な価格を保証し、安定した収入を提供することです。これにより、彼らは生活を改善し、教育や医療に投資できるようになります。" },
+          { q: "家庭の経済的な理由で十分な食事がとれない子どもを支援する活動として「こども食堂」が広がっていますが、中心的な役割として最も適切なものは次のうちどれでしょうか？", o: ["子どもたちに料理の技術を教え、自立を促すこと。", "子どもたちが孤立せず、安心して過ごせる居場所を提供すること。", "貧しい家庭の子どもだけを対象に、食事を配給すること。", "子どもたちに、安価または無料で豪華な食事を提供すること。"], a: "子どもたちが孤立せず、安心して過ごせる居場所を提供すること。", ex: "こども食堂は、食事を通じて、子どもたちが孤立することなく、地域社会とつながる「居場所」を提供することを最も重要な役割としています。NKCでは、2018年から、未来あるこどもたちのために「なかにわこども食堂」を立ち上げ、新たな価値を提供する体験機会づくりに取り組んでいます。" }
         ]
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Stage 4: Perspectives on Diversity",
+        title: "Stage 4: Children & Poverty",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
+        companySelectDefault: "Select your company",
         startButton: "Challenge",
-        msgEnterId: "Please enter your Employee ID",
+        msgEnterId: "Please enter your Company and Employee ID",
         msgCheckingId: "Checking eligibility...",
-        msgIdNotFound: "Please complete Stage 3 first!",
+        msgIdNotFound: "Stage 1 record not found. Please check your Company and Employee ID.",
         msgCheckError: "Verification error. Please try again later.",
-        theme: "Theme: Perspectives on Diversity",
+        theme: "Theme: Children & Poverty",
         progress: (q, t) => `Q ${q}/${t}`,
         bossHp: "Boss HP",
         resultWinTitle: "Victory!",
-        resultWinMsg: "Stage Clear! Diverse perspectives have broadened your world!",
+        resultWinMsg: "Stage Clear! You have connected hope for the future!",
         resultLoseTitle: "Game Over",
         resultLoseMsg: "The Magic Dragon King's power is immeasurable...",
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
+        recordedFalse: "Thanks for playing! Only your first result is recorded.",
         restartButton: "Back to Title",
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
         quiz: [
-          { q: "What important insight about diversity is revealed by languages that don't distinguish between 'blue' and 'green'?", o: ["Perception of reality is shaped by language and culture", "All languages share the same structure", "Color perception is universal", "Ancient languages were incomplete"], a: "Perception of reality is shaped by language and culture", ex: "We perceive the world through the filters of 'language' and 'culture.' The Japanese 'blue signal' (aoshingo) for a green traffic light is a remnant of old Japanese." },
-          { q: "What is the most important reason a diverse team achieves high performance?", o: ["Decisions are made quickly", "It encourages deeper thinking and thorough preparation", "Competition becomes more intense", "It consists only of experts"], a: "It encourages deeper thinking and thorough preparation", ex: "The presence of different viewpoints prompts each member to process information more deeply, encouraging thorough preparation and thought. Homogeneous teams tend to take mental shortcuts." },
-          { q: "What is the most appropriate translation for the English proverb 'Variety is the spice of life.'?", o: ["Variety is the spice of life", "Life is spicy", "A life without change is best", "Life is a variety show"], a: "Variety is the spice of life", ex: "It means that a variety of rich experiences enriches life. Just as spices enhance a dish's flavor, diverse experiences make life more interesting and flavorful." },
-          { q: "In Japan, green traffic lights are sometimes called 'blue signals' (aoshingo). Why?", o: ["The light looks blue", "It's legally defined as 'blue'", "It's a remnant of old Japanese where green was also 'ao'", "It's an international rule"], a: "It's a remnant of old Japanese where green was also 'ao'", ex: "It's a remnant from when the old Japanese word 'ao' also included the color green." },
-          { q: "What is a common mental trap for a team composed only of like-minded members?", o: ["Innovative ideas emerge easily", "Decision-making becomes slower", "Being bound by stereotypes", "Discussions become too heated"], a: "Being bound by stereotypes", ex: "The implicit assumption that 'everyone probably thinks the same way' leads to mental shortcuts, and the entire team tends to be bound by stereotypes." }
+          { q: "How many children are estimated to die every day due to family poverty worldwide?", o: ["About 150,000", "About 10,000", "About 1,000", "About 100"], a: "About 10,000", ex: "It is said that every day, about 10,000 children under the age of five lose their lives due to poverty." },
+          { q: "Which UN agency protects the rights and healthy development of children worldwide?", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "The UN agency that works to protect the rights and healthy development of children worldwide is UNICEF (United Nations Children's Fund)." },
+          { q: "Which of the following is considered the most important measure to break the cycle of poverty?", o: ["Waiving all medical expenses for poor families", "Distributing food to the unemployed", "Rebuilding homes in poor areas", "Ensuring fair, high-quality opportunities for children"], a: "Ensuring fair, high-quality opportunities for children", ex: "The cycle of poverty occurs when parental poverty deprives children of opportunities. Education is the most effective means to correct this 'inequality of opportunity' and give children the chance to build their own futures." },
+          { q: "What is the main reason why buying Fair Trade products helps solve the problem of poverty?", o: ["The products are distributed for free.", "Consumers can donate the money they save.", "All sales are donated to poor regions.", "Producers are paid a fair wage."], a: "Producers are paid a fair wage.", ex: "One of the most important principles of Fair Trade is to guarantee a fair price to producers and provide them with a stable income. This allows them to improve their lives and invest in education and healthcare." },
+          { q: "What is the most appropriate central role of 'Kodomo Shokudo' (Children's Cafeterias), which support children who can't get enough food for economic reasons?", o: ["Teaching children cooking skills to promote independence.", "Providing a safe place where children can feel secure and not isolated.", "Distributing meals exclusively to children from poor families.", "Providing children with cheap or free luxurious meals."], a: "Providing a safe place where children can feel secure and not isolated.", ex: "The most important role of Kodomo Shokudo is to provide a 'place to belong' through meals, where children can connect with the community without being isolated. Since 2018, NKC has run the 'Nakaniwa Kodomo Shokudo' to create new value experiences for children." }
         ]
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・祝你好运！"],
         instructionOk: "知道了",
-        title: "第四关：多样性视角",
+        title: "第四关：儿童与贫困",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
+        companySelectDefault: "请选择所属公司",
         startButton: "挑战",
-        msgEnterId: "请输入员工编号",
+        msgEnterId: "请输入所属公司和员工编号",
         msgCheckingId: "正在确认挑战资格...",
-        msgIdNotFound: "请先挑战第三关！",
+        msgIdNotFound: "未找到第一关的记录。请检查公司名称和员工编号。",
         msgCheckError: "确认出错。请稍后再试。",
-        theme: "主题：多样性视角",
+        theme: "主题：儿童与贫困",
         progress: (q, t) => `第${q}/${t}题`,
         bossHp: "头目 HP",
         resultWinTitle: "胜利！",
-        resultWinMsg: "关卡完成！多样的视角拓宽了世界！",
+        resultWinMsg: "关卡完成！连接了未来的希望！",
         resultLoseTitle: "游戏结束",
         resultLoseMsg: "魔龙王的力量深不可测…",
         submitting: "正在发送结果...",
         submitSuccess: "结果已发送！",
         submitError: "错误：无法发送结果。",
+        recordedFalse: "感谢您的参与！只有初次挑战结果会被记录。",
         restartButton: "返回标题",
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
         quiz: [
-            { q: "存在不区分“蓝色”和“绿色”的语言，这一事实揭示了关于多样性的何种重要启示？", o: ["对现实的认知是由语言和文化塑造的", "所有语言都具有相同的结构", "颜色识别是世界共通的", "古代语言不完整"], a: "对现实的认知是由语言和文化塑造的", ex: "我们通过“语言”和“文化”的滤镜来认识世界。日本的“青信号”（绿灯）也是古代日语的遗留。" },
-            { q: "由多元化人才组成的团队能取得更高成就的最重要原因是什么？", o: ["能迅速统一意见", "因为它能促进更深入的思考和周密的准备", "竞争变得更加激烈", "因为只有专家聚集在一起"], a: "因为它能促进更深入的思考和周密的准备", ex: "不同视点的存在，促使每个成员更深入地处理信息，并鼓励周密的准备和思考。同质化的团队容易产生思维捷径。" },
-            { q: "英语谚语“Variety is the spice of life.”最贴切的中文翻译是什么？", o: ["多样性是生活的调味品", "人生像香料一样辛辣", "没有变化的人生是最好的", "人生是一场综艺秀"], a: "多样性是生活的调味品", ex: "意思是丰富多彩的经历能使人生更加充实。就像调味品能提升菜肴的味道一样，多样的经历能让人生更有趣、更有味道。" },
-            { q: "在日本，绿色的交通信号灯有时被称为“青信号”。这是为什么？", o: ["因为信号灯看起来是蓝色的", "因为法律规定为“青色”", "古代日语中绿色也称为“ao”的遗留", "因为这是国际规则"], a: "古代日语中绿色也称为“ao”的遗留", ex: "这是古代日语中“ao”一词也包含绿色的遗留。" },
-            { q: "只由想法相似的成员组成的团队容易陷入什么样的思维陷阱？", o: ["容易产生创新想法", "决策变慢", "被刻板印象所束缚", "讨论变得过于激烈"], a: "被刻板印象所束缚", ex: "“大家肯定都这么想”的默契前提会导致思维捷径，使整个团队容易被刻板印象所束缚。" }
+          { q: "全球每天大约有多少儿童因家庭贫困而死亡？", o: ["约150,000人", "约10,000人", "约1,000人", "约100人"], a: "约10,000人", ex: "据说，全球每天有多达10,000名5岁以下儿童因贫困而死亡。" },
+          { q: "哪个联合国机构负责保护全世界儿童的权利和健康成长？", o: ["WHO", "UNICEF", "UNESCO", "UNDP"], a: "UNICEF", ex: "致力于保护全世界儿童权利和健康成长的联合国机构是联合国儿童基金会（UNICEF）。" },
+          { q: "为打破贫困的代际传递（循环），以下哪项被认为是最重要的措施？", o: ["全额免除贫困家庭的医疗费用", "向失业者分发食物", "重建贫困地区的住房", "确保儿童获得公平和高质量的机会"], a: "确保儿童获得公平和高质量的机会", ex: "贫困的代际传递是由于父母的贫困剥夺了孩子的机会而发生的。教育是纠正这种“机会不平等”、给予孩子们依靠自己力量开创未来的机会的最有效手段。" },
+          { q: "购买公平贸易产品有助于解决贫困问题的主要原因是什么？", o: ["产品是免费分发的。", "消费者可以捐出节省下来的钱。", "所有销售额都捐赠给贫困地区。", "生产者能获得公平的报酬。"], a: "生产者能获得公平的报酬。", ex: "公平贸易最重要的原则之一是保证生产者获得公正的价格，并为他们提供稳定的收入。这使他们能够改善生活，并投资于教育和医疗。" },
+          { q: "“儿童食堂”作为一项支援因家庭经济原因而无法获得足够食物的儿童的活动正在普及。以下哪项是其最核心的作用？", o: ["教孩子们烹饪技巧，促进他们自立。", "提供一个让孩子们不感到孤立、可以安心度过的场所。", "专门为贫困家庭的儿童配餐。", "为孩子们提供廉价或免费的豪华餐食。"], a: "提供一个让孩子们不感到孤立、可以安心度过的场所。", ex: "儿童食堂最重要的作用是通过提供餐食，为孩子们提供一个与当地社区联系、不感到孤立的“归属地”。自2018年以来，NKC为肩负未来的孩子们创办了“中庭儿童食堂”，致力于创造提供新价值的体验机会。" }
         ]
       }
+    };
+    const companyList = {
+      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
+      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
+      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
     
     const titleScreen = document.getElementById('title-screen');
@@ -222,6 +235,7 @@
     const resultScreen = document.getElementById('result-screen');
     const bossContainer = document.getElementById('boss-container');
     const employeeIdInput = document.getElementById('employeeIdInput');
+    const companySelect = document.getElementById('companySelect');
     const bgm = document.getElementById('bgm');
     const correctSound = document.getElementById('correct-sound');
     const startButton = document.getElementById('start-button');
@@ -251,6 +265,11 @@
       document.getElementById('boss-hp-label').textContent = t.bossHp;
       document.getElementById('restart-button').textContent = t.restartButton;
       document.getElementById('theme-display').textContent = t.theme;
+      
+      companySelect.innerHTML = `<option value="">${t.companySelectDefault}</option>`;
+      companyList[currentLang].forEach(company => {
+        companySelect.innerHTML += `<option value="${company}">${company}</option>`;
+      });
     }
 
     function setupAudio() {
@@ -266,14 +285,20 @@
       audioStarted = true;
     }
 
+    function normalizeEmployeeIdForHTML(v) {
+      const digits = String(v == null ? "" : v).replace(/[^\d]/g, "");
+      return digits.padStart(5, "0");
+    }
+
     async function startGame() {
       if (!employeeIdInput.checkValidity()) {
         employeeIdInput.reportValidity();
         return;
       }
+      const company = companySelect.value;
       const employeeId = employeeIdInput.value.trim();
       const msgEl = document.getElementById('msg');
-      if (!employeeId) {
+      if (!company || !employeeId) {
         msgEl.textContent = TEXTS[currentLang].msgEnterId;
         return;
       }
@@ -282,8 +307,10 @@
       startButton.disabled = true;
       msgEl.textContent = TEXTS[currentLang].msgCheckingId;
 
+      const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeId);
+
       try {
-        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(employeeId)}&stage=3`;
+        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(normalizedEmployeeId)}&company=${encodeURIComponent(company)}`;
         const response = await fetch(checkUrl);
         const result = await response.json();
 
@@ -409,17 +436,41 @@
             console.error('IPアドレスの取得に失敗しました:', error);
         }
 
+        const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeIdInput.value.trim());
         const payload = {
-            employeeId: employeeIdInput.value.trim(),
+            company: companySelect.value,
+            employeeId: normalizedEmployeeId,
             stage: STAGE_NUMBER,
             score: correctCount,
             time: ((Date.now() - startTime) / 1000).toFixed(2),
             ipAddress: ipAddress
         };
         statusEl.textContent = TEXTS[currentLang].submitting;
-        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' })
-            .then(() => { statusEl.textContent = TEXTS[currentLang].submitSuccess; })
-            .catch(err => { statusEl.textContent = TEXTS[currentLang].submitError; console.error('Error:', err); });
+        
+        try {
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                if (result.recorded === false) {
+                    statusEl.textContent = TEXTS[currentLang].recordedFalse;
+                } else {
+                    statusEl.textContent = TEXTS[currentLang].submitSuccess;
+                }
+            } else {
+                statusEl.textContent = result.message || TEXTS[currentLang].submitError;
+            }
+        } catch (err) {
+            statusEl.textContent = TEXTS[currentLang].submitError;
+            console.error('Error:', err);
+        }
     }
 
     function updateHpBars(percentage) {
