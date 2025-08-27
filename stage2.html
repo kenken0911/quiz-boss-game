@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainable Quest 🗡️ - Stage 2</title>
+  <title>Sustainability Quest 🗡️ - Stage 2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,12 +54,13 @@
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
-        <h1 class="mb-10">Sustainable Quest</h1>
+        <h1 class="mb-10">Sustainability Quest</h1>
         <button id="title-start-button" class="dq-button">START</button>
       </div>
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
+        <p class="text-sm mb-6">Translations are provided by AI.</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
@@ -110,106 +111,109 @@
   <audio id="bgm" src="./BS2_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyUqbm7dUC9hMKTtAaoDj58FpQlFCSpiZjfRjdyZVOUSpXSjtlJq1o2DHQukzUmKXjSw/exec';
     const STAGE_NUMBER = '2';
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "ステージ2：地域と社会",
+        title: "ステージ2：多様性",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
         startButton: "挑戦する",
         msgEnterId: "社員番号を入力してください",
         msgCheckingId: "挑戦資格を確認中...",
         msgIdNotFound: "ステージ1から挑戦してください！",
         msgCheckError: "確認エラー。時間をおいて再試行してください。",
-        theme: "テーマ：地域と社会",
+        theme: "テーマ：多様性",
         progress: (q, t) => `${q}/${t}問目`,
         bossHp: "ボス HP",
         resultWinTitle: "勝利！",
-        resultWinMsg: "ステージクリア！社会への理解が深まった！",
+        resultWinMsg: "ステージクリア！多様性への理解が深まった！",
         resultLoseTitle: "ゲームオーバー",
         resultLoseMsg: "竜の守りは固かった…",
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
+        recordedFalse: "プレイありがとう！記録は初回のもののみとなります。",
         restartButton: "タイトルへ戻る",
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
         quiz: [
-          { q: "地域活性化が目指す、多くの地域で共通の課題とは？", o: ["自然環境の全てを開発", "人口減少と経済停滞の食い止め", "特定産業への依存", "中心都市の過密化促進"], a: "人口減少と経済停滞の食い止め", ex: "人口減少による労働力不足や高齢化、経済力の低下は多くの地域が直面する共通の課題であり、地域活性化の最も重要な目的です。" },
-          { q: "廃工場などをギャラリーや劇場に再生する取り組みを何と呼ぶ？", o: ["インフラ整備", "インフィル開発", "ジェントリフィケーション", "コンバージョン"], a: "コンバージョン", ex: "建物の用途を変えて再利用することを『コンバージョン』と呼びます。産業遺産などを文化や商業の拠点として活用する手法は、世界中の都市で地域活性化の成功例として知られています。" },
-          { q: "空き店舗を活用して小規模事業者の起業を支援する主なメリットは？", o: ["起業コストを抑え、魅力的な街並みを作る", "空き店舗の持ち主の収益保証", "特定チェーン店のみを誘致", "大規模な商業施設の誘致"], a: "起業コストを抑え、魅力的な街並みを作る", ex: "空き店舗の活用は初期投資を抑えられるため、起業のハードルが下がります。多様な店舗が増えることで、街ににぎわいが生まれ、新たな魅力となることが期待されます。" },
-          { q: "NKCグループが大阪市北区との連携協定で貢献できることは？", o: ["若手人材育成と企業の人材確保", "地域社会の発展と企業価値向上", "住民の福利厚生と従業員満足度向上", "地域経済活性化と新規事業創出"], a: "地域社会の発展と企業価値向上", ex: "北区との連携協定により、NKCグループが地域社会の発展に貢献することはもちろん、それらの取り組みを通じてNKCグループの企業価値向上にも貢献しています。" },
-          { q: "経済的理由で食事がとれない子どもを支援する日本で広がる活動は？", o: ["ファストフード店の割引券配布", "こども食堂の運営", "高額な学習塾への無料招待", "海外旅行のプレゼント"], a: "こども食堂の運営", ex: "子ども食堂は、経済的な理由だけでなく、孤食の防止や地域コミュニティの活性化なども目的に、全国に広がっている活動です。" }
+            { q: "私たちの世界の「見え方」は文化や言語によって異なり、例えば虹の色の数にも差があると言われます。この事実は「多様性」について、どのような本質的な気づきを与えてくれるでしょうか？", o: ["文化というフィルターを通して私たちの「認識」が多様な「現実」を生み出している", "世界で「唯一の正しい認識」を共有することが最終目的である", "現代文化は古代文化より世界を正確に捉えている", "多様な文化の根底には「全人類共通の真実」が隠されている"], a: "文化というフィルターを通して私たちの「認識」が多様な「現実」を生み出している", ex: "虹の色の数も文化によって認識が異なります。自分が当たり前と思っていることが相手にとって当たり前ではないかも、という意識を持つことが大事です。" },
+            { q: "NKCグループの拠点のある各国の発酵食品に関連して、誤っているものは次のうちどれでしょうか？", o: ["中国の「腐乳」は豆腐にカビを植え付けてつくる", "フィリピン発祥の「ナタ・デ・ココ」は、ココナツミルクを発酵させてつくる", "スウェーデンの「シュールストレミング」は、マスを発酵させてつくる", "アメリカでは、「Kombucha」と呼ばれる紅茶を発酵させた飲み物が飲まれている"], a: "スウェーデンの「シュールストレミング」は、マスを発酵させてつくる", ex: "スウェーデンの「シュールストレミング」は「マス」ではなく「ニシン」を発酵させてつくられます。「世界で最も臭い食べ物」とも呼ばれます。" },
+            { q: "多様な人材で構成されたチームが高い成果を出す最も重要な理由は次のうちどれでしょうか？", o: ["マイノリティ人材は、本質的に創造性が豊かだから", "様々な視点や知識が組み合わさることで、個人の「視点の死角」を補い合えるから", "対立を避けることで、穏便に結論を出せるから", "チーム内の人間関係が円滑になり、協力しやすくなるから"], a: "様々な視点や知識が組み合わさることで、個人の「視点の死角」を補い合えるから", ex: "多様なチームの真価は、異なる視点の存在が、チーム全体の思考プロセスにおける「死角」を減らし、総合的に物事を考慮して対処できるようになる点にあります。" },
+            { q: "英語のことわざ「Variety is the spice of life.」(多様性は人生のスパイスだ)が伝えたい最も重要なメッセージは？", o: ["新しい経験や変化、違いがあることで、人生はより面白く、豊かになる", "多様な知識があれば、人生の困難を乗り越える近道が見つかる", "多様な価値観に触れることで、人生における唯一の正しい道がわかる", "多様な選択肢がありすぎると、決断を迷わせてしまう"], a: "新しい経験や変化、違いがあることで、人生はより面白く、豊かになる", ex: "このことわざは、新しい経験や変化が人生をより面白くするという意味です。様々な価値観や経験に触れることで人生が豊かになることを示唆しています。" },
+            { q: "時間の捉え方も国や文化によって多様です。各国の特徴として言われているもので、誤っているものは？", o: ["スウェーデンには「Fika(フィーカ)」というコーヒーブレイク文化がある", "アメリカでは「Time is money.」のように効率性が重視される", "中国では将来のための「長期志向」が強い", "フィリピンでは人間関係を大切にするため、時間に厳格である"], a: "フィリピンでは人間関係を大切にするため、時間に厳格である", ex: "フィリピンには、その場の人間関係を優先する傾向があり、時間に寛容な「Filipino Time」という言葉が存在します。（文化の多様性を示す一般論であり、ステレオタイプに陥らないよう注意しましょう）" }
         ]
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Stage 2: Community & Society",
+        title: "Stage 2: Diversity",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
         startButton: "Challenge",
         msgEnterId: "Please enter your Employee ID",
         msgCheckingId: "Checking eligibility...",
         msgIdNotFound: "Please complete Stage 1 first!",
         msgCheckError: "Verification error. Please try again later.",
-        theme: "Theme: Community & Society",
+        theme: "Theme: Diversity",
         progress: (q, t) => `Q ${q}/${t}`,
         bossHp: "Boss HP",
         resultWinTitle: "Victory!",
-        resultWinMsg: "Stage Clear! Your understanding of society has deepened!",
+        resultWinMsg: "Stage Clear! Your understanding of diversity has deepened!",
         resultLoseTitle: "Game Over",
         resultLoseMsg: "The dragon's defense was solid...",
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
+        recordedFalse: "Thanks for playing! Only your first result is recorded.",
         restartButton: "Back to Title",
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
         quiz: [
-          { q: "What is a common challenge that regional revitalization aims to solve in many areas?", o: ["Developing all natural environments", "Halting population decline and economic stagnation", "Dependence on specific industries", "Promoting overcrowding in central cities"], a: "Halting population decline and economic stagnation", ex: "Population decline, labor shortages, aging populations, and economic decline are common challenges facing many regions, making them the most important goals of regional revitalization." },
-          { q: "What is the term for repurposing abandoned factories into galleries or theaters?", o: ["Infrastructure development", "Infill development", "Gentrification", "Conversion"], a: "Conversion", ex: "Changing a building's use for reuse is called 'conversion.' Utilizing industrial heritage as cultural and commercial hubs is a successful example of regional revitalization in cities worldwide." },
-          { q: "What is the main benefit of using vacant stores to support small business startups?", o: ["Creating attractive streets while reducing startup costs", "Guaranteeing income for vacant store owners", "Attracting only specific chain stores", "Attracting large commercial facilities"], a: "Creating attractive streets while reducing startup costs", ex: "Utilizing vacant stores lowers the barrier to entry for startups by reducing initial investment. An increase in diverse shops is expected to bring vibrancy and new charm to the town." },
-          { q: "How can the NKC Group contribute through its agreement with Kita Ward, Osaka?", o: ["Youth development and corporate recruitment", "Community development and corporate value enhancement", "Resident welfare and employee satisfaction", "Economic revitalization and new business creation"], a: "Community development and corporate value enhancement", ex: "Through the agreement with Kita Ward, the NKC Group not only contributes to community development but also enhances its corporate value through these initiatives." },
-          { q: "What activity is spreading in Japan to support children who cannot get enough food for economic reasons?", o: ["Distributing fast-food coupons", "Operating 'Kodomo Shokudo' (children's cafeterias)", "Free invitations to expensive cram schools", "Gifts of overseas trips"], a: "Operating 'Kodomo Shokudo' (children's cafeterias)", ex: "'Kodomo Shokudo' are spreading nationwide not only for economic reasons but also to prevent solitary meals and revitalize local communities." }
+            { q: "The way we 'see' the world differs by culture. For example, the number of colors in a rainbow. What essential insight does this give us about diversity?", o: ["Our 'perception' creates diverse 'realities' through the filter of culture", "The ultimate goal is to share a 'single correct perception' of the world", "Modern cultures perceive the world more accurately than ancient ones", "A 'common human truth' is hidden beneath diverse cultures"], a: "Our 'perception' creates diverse 'realities' through the filter of culture", ex: "The number of colors seen in a rainbow differs by culture. It's important to realize that what you consider normal may not be normal for others." },
+            { q: "Regarding fermented foods from countries where the NKC Group has locations, which of the following is incorrect?", o: ["Chinese 'furu' (fermented tofu) is made by inoculating tofu with mold", "Filipino 'nata de coco' is made by fermenting coconut milk", "Swedish 'surströmming' is made by fermenting trout", "In the US, a beverage called 'Kombucha' made from fermented tea is popular"], a: "Swedish 'surströmming' is made by fermenting trout", ex: "Swedish 'surströmming' is made by fermenting 'herring,' not 'trout.' It is known as one of the smelliest foods in the world." },
+            { q: "What is the most important reason that diverse teams often outperform homogeneous teams in problem-solving?", o: ["Minority individuals are inherently more creative", "Various perspectives and knowledge compensate for individual 'blind spots'", "They can reach conclusions amicably by avoiding conflict", "Interpersonal relationships within the team become smoother"], a: "Various perspectives and knowledge compensate for individual 'blind spots'", ex: "The true value of a diverse team is that different viewpoints reduce the team's overall 'blind spots,' allowing for more comprehensive consideration of matters." },
+            { q: "What is the most important message of the English proverb, 'Variety is the spice of life'?", o: ["New experiences, changes, and differences make life more interesting and rich", "Diverse knowledge provides shortcuts to overcome life's difficulties", "Experiencing diverse values reveals the one true path in life", "Too many options can make important life decisions more difficult"], a: "New experiences, changes, and differences make life more interesting and rich", ex: "This proverb means that new experiences and changes make life more interesting. It suggests that encountering diverse values and experiences enriches one's life." },
+            { q: "The perception of time varies by culture. Which of the following generalizations about different countries is incorrect?", o: ["In Sweden, people value work-life balance and have a coffee break called 'Fika'", "In the US, efficiency is valued, as in 'Time is money'", "In China, there is a strong 'long-term orientation' for future success", "In the Philippines, people are strict about punctuality out of respect for relationships"], a: "In the Philippines, people are strict about punctuality out of respect for relationships", ex: "In the Philippines, there is a tendency to prioritize immediate personal relationships over schedules, leading to the term 'Filipino Time,' which signifies a relaxed attitude toward time. (This is a generalization to illustrate cultural diversity and not a stereotype.)" }
         ]
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・祝你好运！"],
         instructionOk: "知道了",
-        title: "第二关：地区与社会",
+        title: "第二关：多样性",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
         startButton: "挑战",
         msgEnterId: "请输入员工编号",
         msgCheckingId: "正在确认挑战资格...",
         msgIdNotFound: "请先挑战第一关！",
         msgCheckError: "确认出错。请稍后再试。",
-        theme: "主题：地区与社会",
+        theme: "主题：多样性",
         progress: (q, t) => `第${q}/${t}题`,
         bossHp: "头目 HP",
         resultWinTitle: "胜利！",
-        resultWinMsg: "关卡完成！加深了对社会的理解！",
+        resultWinMsg: "关卡完成！加深了对多样性的理解！",
         resultLoseTitle: "游戏结束",
         resultLoseMsg: "龙的防御很坚固…",
         submitting: "正在发送结果...",
         submitSuccess: "结果已发送！",
         submitError: "错误：无法发送结果。",
+        recordedFalse: "感谢您的参与！只有初次挑战结果会被记录。",
         restartButton: "返回标题",
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
         quiz: [
-            { q: "区域振兴旨在解决的许多地区共通的课题是什么？", o: ["开发所有自然环境", "阻止人口减少和经济停滞", "依赖特定产业", "促进中心城市过度拥挤"], a: "阻止人口减少和经济停滞", ex: "因人口减少导致的劳动力不足、老龄化以及经济实力下降是许多地区面临的共同课题，也是区域振兴最重要的目标。" },
-            { q: "将废弃工厂等改造为画廊或剧院的举措称为什么？", o: ["基础设施建设", "内部填充开发", "士绅化", "功能转换"], a: "功能转换", ex: "改变建筑物用途以重新利用称为“功能转换”。将工业遗产等活化为文化和商业中心的手法，在世界各地的城市中作为区域振兴的成功案例而闻名。" },
-            { q: "利用空置店铺支持小规模创业者的主要好处是什么？", o: ["在抑制创业成本的同时，打造有魅力的街景", "保证空置店铺所有者的收益", "仅吸引特定连锁店", "吸引大型商业设施"], a: "在抑制创业成本的同时，打造有魅力的街景", ex: "利用空置店铺可以抑制初期投资，从而降低创业的门槛。多样化店铺的增加，有望为街道带来活力，成为新的魅力。" },
-            { q: "NKC集团通过与大阪市北区的合作协议能做出什么贡献？", o: ["培养地区青年人才与确保企业人才", "地区社会的发展与企业价值的提升", "提高地区居民的福利与员工满意度", "活化地区经济与创造新事业"], a: "地区社会的发展与企业价值的提升", ex: "通过与北区的合作协议，NKC集团不仅为地区社会的发展做出贡献，并通过这些举措提升NKC集团的企业价值。" },
-            { q: "在日本为支援因经济原因无法获得足够食物的儿童而推广的活动是什么？", o: ["分发快餐店折扣券", "运营儿童食堂", "免费邀请参加昂贵的补习班", "赠送海外旅行"], a: "运营儿童食堂", ex: "儿童食堂不仅因为经济原因，也为了防止孤独用餐和活化地区社群等目的，在全国范围内推广。" }
+            { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”", "最终目标是共享一个“唯一正确的全球认知”", "现代文化比古代文化更准确地把握世界", "多样文化的根基下隐藏着“全人类共通的真理”"], a: "我们的“认知”通过文化的滤镜创造出多样的“现实”", ex: "对彩虹颜色的认知因文化而异。重要的是要意识到，你认为理所当然的事情，对他人而言可能并非如此。" },
+            { q: "关于NKC集团设有据点的各国的发酵食品，以下哪项是错误的？", o: ["中国的“腐乳”是通过在豆腐上接种霉菌制成的", "菲律宾的“椰果”是通过发酵椰奶制成的", "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的", "在美国，一种名为“康普茶”的发酵红茶饮料很受欢迎"], a: "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的", ex: "瑞典的“瑞典盐腌鲱鱼”是发酵“鲱鱼”而非“鳟鱼”制成。它被称为世界上最臭的食物之一。" },
+            { q: "多元化团队在解决问题时通常优于同质化团队，其最重要的原因是什么？", o: ["少数群体成员天生更具创造力", "不同的视角和知识能弥补个人的“盲点”", "通过避免冲突，能和平地得出结论", "团队内部的人际关系更顺畅"], a: "不同的视角和知识能弥补个人的“盲点”", ex: "多元化团队的真正价值在于，不同的观点能减少团队整体的“盲点”，从而能够更全面地考虑问题。" },
+            { q: "英语谚语“Variety is the spice of life.”（多样性是生活的调味品）传达的最重要的信息是什么？", o: ["新的体验、变化和差异使生活更有趣、更丰富", "丰富的知识能为克服生活困难提供捷径", "接触多样的价值观能揭示生活中唯一正确的道路", "过多的选择会使人生的重要决策更加困难"], a: "新的体验、变化和差异使生活更有趣、更丰富", ex: "这句谚语意味着新的体验和变化使生活更有趣。它表明，接触不同的价值观和经验能丰富一个人的生活。" },
+            { q: "对时间的看法也因文化而异。以下关于不同国家普遍特征的说法中，哪项是错误的？", o: ["在瑞典，人们重视工作与生活的平衡，有称为“Fika”的咖啡休息时间", "在美国，效率受到重视，如“时间就是金钱”", "在中国，为未来成功有强烈的“长期导向”", "在菲律宾，出于对人际关系的尊重，人们对守时要求严格"], a: "在菲律宾，出于对人际关系的尊重，人们对守时要求严格", ex: "在菲律宾，人们倾向于优先考虑当前的人际关系而非日程安排，因此有“菲律宾时间”一词，表示对时间的宽松态度。（这是一个为说明文化多样性而举的普遍例子，不应视为刻板印象。）" }
         ]
       }
     };
@@ -417,9 +421,31 @@
             ipAddress: ipAddress
         };
         statusEl.textContent = TEXTS[currentLang].submitting;
-        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors' })
-            .then(() => { statusEl.textContent = TEXTS[currentLang].submitSuccess; })
-            .catch(err => { statusEl.textContent = TEXTS[currentLang].submitError; console.error('Error:', err); });
+        
+        try {
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                if (result.recorded === false) {
+                    statusEl.textContent = TEXTS[currentLang].recordedFalse;
+                } else {
+                    statusEl.textContent = TEXTS[currentLang].submitSuccess;
+                }
+            } else {
+                statusEl.textContent = result.message || TEXTS[currentLang].submitError;
+            }
+        } catch (err) {
+            statusEl.textContent = TEXTS[currentLang].submitError;
+            console.error('Error:', err);
+        }
     }
 
     function updateHpBars(percentage) {
