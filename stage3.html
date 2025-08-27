@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainability Quest 🗡️ - Stage 3</title>
+  <title>Sustainability Quest 🗡️</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,14 +13,11 @@
     body[lang="ja"], body[lang="zh"] { font-family: 'DotGothic16', sans-serif; }
     body[lang="en"] { font-family: 'Press Start 2P', cursive; }
     body { background-color: #000; color: #fff; image-rendering: pixelated; overflow-x: hidden; overflow-y: auto; }
-    /* ★変更: ウィンドウの色を水色テーマに */
     .dq-window { border: 4px solid #fff; background: rgba(0, 0, 80, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0, 128, 255, 0.6); backdrop-filter: blur(3px); }
-    /* ★変更: ボタンの色を水色テーマに */
     .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
     .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
     .video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     .bg-video { width: 100%; height: 100%; object-fit: cover; }
-    /* ★変更: タイトルシャドウの色を水色テーマに */
     #title-screen h1 { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px #00aaff; animation: fadeInTitle 2s ease-out forwards; }
     #title-start-button { animation: pulseButton 2.5s infinite ease-in-out; }
     @keyframes fadeInTitle { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
@@ -36,7 +33,6 @@
     @keyframes boss-defeat-anim { 0% { opacity: 1; transform: rotate(0deg); } 50% { opacity: 1; transform: rotate(10deg); } 100% { opacity: 0; transform: translateY(100px) rotate(-20deg) scale(0.5); } }
     .shake { animation: shake .35s; }
     @keyframes shake { 10%,90% { transform: translate(-2px, -2px); } 20%,80% { transform: translate(3px, 2px); } 30%,50%,70% { transform: translate(-3px, 3px); } 40%,60% { transform: translate(3px, -2px); } }
-    /* ★変更: ボスのオーラを水色テーマに */
     .gov-glow { filter: drop-shadow(0 0 8px #00aaff) drop-shadow(0 0 16px #00ffff) contrast(1.5); }
     #boss-img { width: 100%; max-width: 320px; height: auto; }
     .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
@@ -64,7 +60,7 @@
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <p class="text-sm mb-6">Translations are provided by AI.</p>
+        <p class="text-sm mb-6">Translations are provided by AI. / 翻译由人工智能提供。</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
@@ -92,7 +88,7 @@
         <div class="flex justify-between items-center mb-2 text-lg">
           <span id="theme-display"></span>
           <span id="progress-display"></span>
-          <span id="timer-display">0.0s</span>
+          <span id="timer-display" class="hidden">0.0s</span>
         </div>
         <div class="mb-4"><p id="boss-hp-label"></p><div class="boss-hp-container"><div id="boss-hp-bar"></div></div></div>
         <div class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
@@ -100,9 +96,10 @@
       </div>
       <div id="result-screen" class="hidden text-center">
         <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
-        <p id="result-message" class="text-xl mb-6"></p>
-        <p id="submission-status" class="text-yellow-300 mb-8"></p>
-        <div id="restart-button" class="dq-button inline-block"></div>
+        <p id="result-message" class="text-xl mb-2"></p>
+        <p id="submission-status" class="text-yellow-300 mb-4"></p>
+        <div id="review-container" class="mt-4"></div>
+        <button id="restart-button" class="dq-button inline-block mt-6"></button>
       </div>
       <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
         <div class="dq-window w-full max-w-2xl text-center">
@@ -121,9 +118,9 @@
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・クイズの途中で画面を閉じると、その挑戦は無効となるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "ステージ3：ガバナンス",
+        title: "ガバナンス",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
         companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
@@ -146,6 +143,9 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
+        reviewTitle: "クイズの振り返り",
+        reviewAnswerLabel: "正解",
+        reviewUserAnswerLabel: "あなたの回答",
         quiz: [
           { q: "企業がESG(環境・社会・企業統治）に取り組むことによって得られるメリットとして、誤っているものは次のうちどれでしょうか？", o: ["顧客・市場から品質や価格以外の要素でも選ばれるような事業競争力を得られること。", "社会課題起点の新たなビジネス創出等により、事業成長とよりよい環境や社会との両立を実現できること。", "補助金等を得やすくなることで、短期的な利益を最大化できること。", "優秀な人財の採用や資金調達において有利に働くこと。"], a: "補助金等を得やすくなることで、短期的な利益を最大化できること。", ex: "ESGへの取り組みは、長期的な企業価値の向上と持続可能な成長を目指すものです。短期的な利益の最大化を唯一の目的とすることは、ESGの本来の目的とは異なります。NKCグループでも「NKC Sustainability Vision 2024」において、サステナビリティ戦略を事業戦略と融合させ新たな「成長戦略」とすることを目指すことを示しています。" },
           { q: "NKCグループにおいて、社員に積極的に社会貢献活動に参加することを推奨している目的として、誤っているものは次のうちどれでしょうか？", o: ["（会社の外の）社会に必要とされる役割を得ることで、より幸せで充実した人生を過ごしてもらうため。", "会社の業務以外から、さまざまな知見やスキルを獲得する機会の一つにしてもらいたいため。", "人事評価やボーナスの評価に直結させる要素として考慮するため。", "社会課題を起点に、新たな事業を生み出すきっかけにしてもらいたいため。"], a: "人事評価やボーナスの評価に直結させる要素として考慮するため。", ex: "第一義的には、会社の外でも必要とされる役割を得ることで、より幸せで充した人生を過ごしてもらいたいということですが、結果的にスキルアップや事業創出等が会社に跳ね返ってくるメリットもあると考えています。ただ、価値観は人それぞれですし、あくまでも任意での活動なので人事評価やボーナスに直結させるということはありません。" },
@@ -156,9 +156,9 @@
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Closing the screen mid-quiz will invalidate the attempt.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Stage 3: Governance",
+        title: "Governance",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
         companySelectDefault: "Select your company",
         startButton: "Challenge",
@@ -181,6 +181,9 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
+        reviewTitle: "Quiz Review",
+        reviewAnswerLabel: "Answer",
+        reviewUserAnswerLabel: "Your Answer",
         quiz: [
           { q: "Which of the following is an incorrect benefit for a company engaging in ESG (Environmental, Social, and Governance)?", o: ["Gaining a competitive advantage by being chosen for factors other than quality and price.", "Achieving both business growth and a better society through new, socially-driven business creation.", "Maximizing short-term profits by making it easier to obtain subsidies.", "Gaining an advantage in recruiting talented personnel and in fundraising."], a: "Maximizing short-term profits by making it easier to obtain subsidies.", ex: "ESG initiatives aim for long-term corporate value enhancement and sustainable growth. Maximizing short-term profit as the sole objective is contrary to the original purpose of ESG. The NKC Group's 'NKC Sustainability Vision 2024' also aims to integrate sustainability strategy with business strategy to create a new 'growth strategy'." },
           { q: "Which of the following is an incorrect reason for the NKC Group to encourage employees to actively participate in social contribution activities?", o: ["To help them lead happier, more fulfilling lives by gaining roles needed by society (outside the company).", "To provide them with an opportunity to acquire diverse knowledge and skills from outside their regular work.", "To consider it as a direct factor in performance reviews and bonus evaluations.", "To inspire them to create new businesses based on social issues."], a: "To consider it as a direct factor in performance reviews and bonus evaluations.", ex: "Primarily, we want employees to lead happier lives by finding fulfilling roles outside the company. However, we also believe there are benefits for the company, such as skill enhancement and business creation. Since values differ and participation is voluntary, it is not directly linked to performance reviews or bonuses." },
@@ -191,9 +194,9 @@
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・中途关闭测验将导致本次挑战无效。", "・祝你好运！"],
         instructionOk: "知道了",
-        title: "第三关：治理",
+        title: "治理",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
         companySelectDefault: "请选择所属公司",
         startButton: "挑战",
@@ -216,6 +219,9 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
+        reviewTitle: "测验回顾",
+        reviewAnswerLabel: "正确答案",
+        reviewUserAnswerLabel: "你的答案",
         quiz: [
           { q: "企业致力于ESG（环境、社会和公司治理）所能获得的益处中，以下哪项是错误的？", o: ["获得除质量和价格外，也能被顾客和市场选择的业务竞争力。", "通过源于社会课题的新业务创造等，实现业务增长与更美好环境和社会的双赢。", "通过更容易获得补助金等，实现短期利益最大化。", "在招聘优秀人才和资金筹措方面处于有利地位。"], a: "通过更容易获得补助金等，实现短期利益最大化。", ex: "致力于ESG是为了提升长期企业价值和实现可持续发展。将短期利益最大化作为唯一目的，与ESG的初衷不符。NKC集团在《NKC可持续发展愿景2024》中也提出，旨在将可持续发展战略与业务战略相融合，形成新的“增长战略”。" },
           { q: "NKC集团鼓励员工积极参与社会贡献活动的目的中，以下哪项是错误的？", o: ["通过在公司外部获得社会所需的角色，让他们度过更幸福、更充实的人生。", "希望这能成为他们从公司业务之外获得各种知识和技能的机会之一。", "作为直接关系到人事评价和奖金评估的因素加以考虑。", "希望这能成为他们以社会课题为起点，创造新业务的契机。"], a: "作为直接关系到人事评价和奖金评估的因素加以考虑。", ex: "首要目的是希望员工通过在公司外部获得被需要的角色，从而度过更幸福充实的人生。但我们认为，这最终也会为公司带来技能提升和业务创造等好处。不过，价值观因人而异，这纯属自愿活动，因此不会与人事评价或奖金直接挂钩。" },
@@ -226,9 +232,9 @@
       }
     };
     const companyList = {
-      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
-      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
-      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
+      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "NASSH", "須田商事", "富士ホーニング", "中西興産", "CTM", "イーグローバレッジ", "ながいグリーンパワー", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
+      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NASSH", "Suda Corporation", "Fuji Honing", "Nakanishi Kosan", "CTM", "e-Globaledge", "Nagai Green Power", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
+      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "NASSH", "须田商事", "富士珩磨", "中西兴产", "CTM", "e-Globaledge", "长井绿色电力", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
     
     const titleScreen = document.getElementById('title-screen');
@@ -251,6 +257,7 @@
     let currentLang = 'ja';
     let timerInterval, startTime, correctCount, isGameInProgress = false, audioStarted = false;
     let clickSound, hitSound, damageSound, victorySound, defeatSound;
+    let userAnswers = [];
 
     function switchScreen(screenName) {
       [titleScreen, languageScreen, instructionScreen, startScreen, quizScreen, resultScreen].forEach(s => s.classList.add('hidden'));
@@ -278,7 +285,6 @@
 
     function setupAudio() {
       if (audioStarted) return;
-      // ★追加: BGMの音量を70%に設定
       bgm.volume = 0.3;
       clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
       hitSound = () => {
@@ -325,6 +331,7 @@
           bgm.play().catch(e => console.error("BGM play failed:", e));
           clickSound();
           correctCount = 0;
+          userAnswers = [];
           document.getElementById('boss-area').classList.remove('hidden');
           bossContainer.className = 'boss-idle';
           updateHpBars(100);
@@ -351,7 +358,7 @@
       const quizData = TEXTS[currentLang].quiz;
       document.getElementById('progress-display').textContent = TEXTS[currentLang].progress(index + 1, quizData.length);
       const current = quizData[index];
-      document.getElementById('question-text').textContent = `Q${index + 1}: ${current.q}`;
+      document.getElementById('question-text').textContent = `${current.q}`;
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.innerHTML = '';
       current.o.forEach(opt => {
@@ -365,6 +372,12 @@
 
     function handleAnswer(selectedAnswer, currentQuiz, index) {
       const isCorrect = selectedAnswer === currentQuiz.a;
+      userAnswers.push({
+          questionIndex: index,
+          selectedAnswer: selectedAnswer,
+          isCorrect: isCorrect
+      });
+        
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
         btn.style.pointerEvents = 'none';
@@ -428,8 +441,54 @@
         const t = TEXTS[currentLang];
         document.getElementById('result-title').textContent = isVictory ? t.resultWinTitle : t.resultLoseTitle;
         document.getElementById('result-message').textContent = isVictory ? t.resultWinMsg : t.resultLoseMsg;
+        populateReviewSection();
         submitResults();
       }, isVictory ? 1500 : 500);
+    }
+
+    function populateReviewSection() {
+        const reviewContainer = document.getElementById('review-container');
+        const quizData = TEXTS[currentLang].quiz;
+        reviewContainer.innerHTML = '';
+
+        const title = document.createElement('h3');
+        title.textContent = TEXTS[currentLang].reviewTitle;
+        title.className = 'text-2xl font-bold mb-4';
+        reviewContainer.appendChild(title);
+
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'text-base text-left h-48 overflow-y-auto p-2 border-2 border-white space-y-4 rounded-lg';
+        reviewContainer.appendChild(contentWrapper);
+
+        quizData.forEach((q, index) => {
+            const userAnswerData = userAnswers.find(ans => ans.questionIndex === index);
+            const isCorrect = userAnswerData ? userAnswerData.isCorrect : false;
+
+            const questionBlock = document.createElement('div');
+            questionBlock.className = `p-3 border-b border-gray-500 ${!isCorrect ? 'bg-red-500 bg-opacity-20 rounded-md' : ''}`;
+
+            const questionP = document.createElement('p');
+            questionP.className = 'font-bold';
+            questionP.textContent = `Q${index + 1}: ${q.q}`;
+            questionBlock.appendChild(questionP);
+
+            if (!isCorrect && userAnswerData) {
+                const userAnswerP = document.createElement('p');
+                userAnswerP.innerHTML = `<strong class="text-red-400">${TEXTS[currentLang].reviewUserAnswerLabel}:</strong> ${userAnswerData.selectedAnswer}`;
+                questionBlock.appendChild(userAnswerP);
+            }
+
+            const answerP = document.createElement('p');
+            answerP.innerHTML = `<strong class="text-green-400">${TEXTS[currentLang].reviewAnswerLabel}:</strong> ${q.a}`;
+            questionBlock.appendChild(answerP);
+
+            const explanationP = document.createElement('p');
+            explanationP.textContent = q.ex;
+            explanationP.className = 'text-sm mt-2 text-gray-300';
+            questionBlock.appendChild(explanationP);
+
+            contentWrapper.appendChild(questionBlock);
+        });
     }
 
     async function submitResults() {
@@ -488,7 +547,7 @@
     }
     
     function handleMediaError(element) {
-        console.error(`Error loading media: ${element.src}`);
+        console.error(`Error loading media: ${element.src || 'No Source'}`);
         element.style.display = 'none'; 
     }
 
@@ -519,7 +578,7 @@
     
     startButton.addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', () => location.reload());
-
+    
     updateUIText();
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
