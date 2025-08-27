@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sustainability Quest 🗡️ - Stage 1</title>
+  <title>Sustainability Quest 🗡️</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,7 +60,7 @@
 
       <div id="language-screen" class="text-center hidden">
         <h1 class="text-3xl font-bold mb-6">Select Language</h1>
-        <p class="text-sm mb-6">Translations are provided by AI.</p>
+        <p class="text-sm mb-6">Translations are provided by AI. / 翻译由人工智能提供。</p>
         <div class="flex justify-center gap-2 flex-wrap">
           <button id="lang-ja" class="dq-button">日本語</button>
           <button id="lang-en" class="dq-button">English</button>
@@ -89,7 +89,7 @@
         <div class="flex justify-between items-center mb-2 text-lg">
           <span id="theme-display"></span>
           <span id="progress-display"></span>
-          <span id="timer-display">0.0s</span>
+          <span id="timer-display" class="hidden">0.0s</span>
         </div>
         <div class="mb-4"><p id="boss-hp-label"></p><div class="boss-hp-container"><div id="boss-hp-bar"></div></div></div>
         <div class="mb-4 min-h-[80px] p-4 border-2 border-white"><p id="question-text" class="text-xl"></p></div>
@@ -99,13 +99,21 @@
         <h2 id="result-title" class="text-3xl font-bold mb-4"></h2>
         <p id="result-message" class="text-xl mb-6"></p>
         <p id="submission-status" class="text-yellow-300 mb-8"></p>
-        <div id="restart-button" class="dq-button inline-block"></div>
+        <button id="review-button" class="dq-button inline-block mr-4"></button>
+        <button id="restart-button" class="dq-button inline-block"></button>
       </div>
       <div id="explanation-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
         <div class="dq-window w-full max-w-2xl text-center">
           <h2 id="explanation-title" class="text-4xl font-bold mb-4"></h2>
           <p id="explanation-text" class="text-lg mb-6 text-left h-48 overflow-y-auto p-2 border"></p>
           <button id="next-question-button" class="dq-button"></button>
+        </div>
+      </div>
+       <div id="review-modal" class="absolute inset-0 bg-black bg-opacity-80 flex-col items-center justify-center p-4 hidden">
+        <div class="dq-window w-full max-w-2xl text-center">
+          <h2 id="review-title" class="text-3xl font-bold mb-4"></h2>
+          <div id="review-content" class="text-lg mb-6 text-left h-64 overflow-y-auto p-2 border space-y-4"></div>
+          <button id="review-close-button" class="dq-button"></button>
         </div>
       </div>
     </div>
@@ -118,9 +126,9 @@
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・クイズの途中で画面を閉じると、その挑戦は無効となるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "ステージ1：地球環境",
+        title: "地球環境",
         nicknamePlaceholder: "ニックネームを入力",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
         companySelectDefault: "所属会社を選択してください",
@@ -141,6 +149,10 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
+        reviewButton: "クイズを振り返る",
+        reviewTitle: "クイズの振り返り",
+        reviewAnswerLabel: "正解",
+        reviewClose: "閉じる",
         quiz: [
           { q: "気候変動対策として誤っているものは次のうちどれでしょうか？", o: ["省エネや再生エネルギーの使用", "森林保全", "気候変動への適応", "海の川のゴミ拾い"], a: "海の川のゴミ拾い", ex: "気候変動対策には、温室効果ガス排出量を削減するための「緩和」と、気候変動の影響を軽減したり、順応して快適に暮らすための「適応」があります。ゴミを拾っても、温室効果ガス排出量は減らないため、直接的な気候変動対策になりません。しかし、海洋汚染対策に貢献する価値のある活動です。" },
           { q: "廃棄物の発生を抑制し、資源を有効活用するための考え方として誤っているものは次のうちどれでしょうか？", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "廃棄物の発生抑制、資源の有効活用のための考え方として、3R（Reduce・Reuse・Recycle）が提唱されていますが、最近ではRefuseやRepairなどの考え方にまで広がっています。" },
@@ -151,9 +163,9 @@
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- Closing the screen mid-quiz will invalidate the attempt.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Stage 1: Global Environment",
+        title: "Global Environment",
         nicknamePlaceholder: "Enter Nickname",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
         companySelectDefault: "Select your company",
@@ -174,6 +186,10 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
+        reviewButton: "Review Quiz",
+        reviewTitle: "Quiz Review",
+        reviewAnswerLabel: "Answer",
+        reviewClose: "Close",
         quiz: [
           { q: "Which of the following is incorrect as a climate change countermeasure?", o: ["Energy saving and use of renewable energy", "Forest conservation", "Adaptation to climate change", "Picking up trash from the sea and rivers"], a: "Picking up trash from the sea and rivers", ex: "Climate change countermeasures include 'mitigation' to reduce greenhouse gas emissions and 'adaptation' to reduce the impacts of climate change. Picking up trash is not a direct countermeasure, but it is a valuable activity for ocean pollution control." },
           { q: "Which of the following is an incorrect concept for suppressing waste generation and effectively utilizing resources?", o: ["Refuse", "Reduce", "Repair", "Remain"], a: "Remain", ex: "To suppress waste generation and effectively utilize resources, the 3Rs (Reduce, Reuse, Recycle) have been advocated, but recently this has expanded to include concepts like Refuse and Repair. 'Remain' is not included." },
@@ -184,9 +200,9 @@
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・中途关闭测验将导致本次挑战无效。", "・祝你好运！"],
         instructionOk: "知道了",
-        title: "第一关：地球环境",
+        title: "地球环境",
         nicknamePlaceholder: "输入昵称",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
         companySelectDefault: "请选择所属公司",
@@ -207,6 +223,10 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
+        reviewButton: "回顾测验",
+        reviewTitle: "测验回顾",
+        reviewAnswerLabel: "正确答案",
+        reviewClose: "关闭",
         quiz: [
           { q: "以下哪项作为气候变化对策是错误的？", o: ["节能和使用可再生能源", "森林保护", "适应气候变化", "捡拾海洋和河流的垃圾"], a: "捡拾海洋和河流的垃圾", ex: "气候变化对策包括旨在减少温室气体排放的“减缓”措施，以及旨在减轻气候变化影响并舒适生活的“适应”措施。捡垃圾不会减少温室气体排放，因此不是直接的气候变化对策。但是，它是一项有价值的活动，有助于防治海洋污染。" },
           { q: "以下哪项是抑制废物产生和有效利用资源方面的错误概念？", o: ["拒绝 (Refuse)", "减少 (Reduce)", "修理 (Repair)", "保留 (Remain)"], a: "保留 (Remain)", ex: "为了抑制废物产生和有效利用资源，人们提倡3R（减少、再利用、回收），但最近这一理念已扩展到包括拒绝和修理等概念。不包括“保留”。" },
@@ -217,9 +237,9 @@
       }
     };
     const companyList = {
-      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
-      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
-      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
+      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "NASSH", "須田商事", "富士ホーニング", "中西興産", "CTM", "イーグローバレッジ", "ながいグリーンパワー", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
+      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NASSH", "Suda Corporation", "Fuji Honing", "Nakanishi Kosan", "CTM", "e-Globaledge", "Nagai Green Power", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
+      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "NASSH", "须田商事", "富士珩磨", "中西兴产", "CTM", "e-Globaledge", "长井绿色电力", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
     
     const titleScreen = document.getElementById('title-screen');
@@ -239,6 +259,9 @@
     const nextQuestionButton = document.getElementById('next-question-button');
     const openingVideoContainer = document.getElementById('opening-video-container');
     const gameVideoContainer = document.getElementById('game-video-container');
+    const reviewModal = document.getElementById('review-modal');
+    const reviewButton = document.getElementById('review-button');
+    const reviewCloseButton = document.getElementById('review-close-button');
 
     let currentLang = 'ja';
     let timerInterval, startTime, correctCount, isGameInProgress = false, audioStarted = false;
@@ -262,6 +285,9 @@
       document.getElementById('boss-hp-label').textContent = t.bossHp;
       document.getElementById('restart-button').textContent = t.restartButton;
       document.getElementById('theme-display').textContent = t.theme;
+      document.getElementById('review-button').textContent = t.reviewButton;
+      document.getElementById('review-title').textContent = t.reviewTitle;
+      document.getElementById('review-close-button').textContent = t.reviewClose;
       
       companySelect.innerHTML = `<option value="">${t.companySelectDefault}</option>`;
       companyList[currentLang].forEach(company => {
@@ -328,7 +354,7 @@
       const quizData = TEXTS[currentLang].quiz;
       document.getElementById('progress-display').textContent = TEXTS[currentLang].progress(index + 1, quizData.length);
       const current = quizData[index];
-      document.getElementById('question-text').textContent = `Q${index + 1}: ${current.q}`;
+      document.getElementById('question-text').textContent = `${current.q}`;
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.innerHTML = '';
       current.o.forEach(opt => {
@@ -497,6 +523,42 @@
     
     startButton.addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', () => location.reload());
+    
+    reviewButton.addEventListener('click', () => {
+        clickSound();
+        const reviewContent = document.getElementById('review-content');
+        const quizData = TEXTS[currentLang].quiz;
+        reviewContent.innerHTML = ''; // Clear previous content
+
+        quizData.forEach((q, index) => {
+            const questionBlock = document.createElement('div');
+            questionBlock.className = 'mb-4 p-2 border-b border-gray-500';
+
+            const questionP = document.createElement('p');
+            questionP.className = 'font-bold';
+            questionP.textContent = `Q${index + 1}: ${q.q}`;
+
+            const answerP = document.createElement('p');
+            answerP.innerHTML = `<strong class="text-yellow-300">${TEXTS[currentLang].reviewAnswerLabel}:</strong> ${q.a}`;
+
+            const explanationP = document.createElement('p');
+            explanationP.textContent = q.ex;
+            explanationP.className = 'text-sm mt-2';
+
+            questionBlock.appendChild(questionP);
+            questionBlock.appendChild(answerP);
+            questionBlock.appendChild(explanationP);
+
+            reviewContent.appendChild(questionBlock);
+        });
+
+        reviewModal.style.display = 'flex';
+    });
+    
+    reviewCloseButton.addEventListener('click', () => {
+        clickSound();
+        reviewModal.style.display = 'none';
+    });
 
     updateUIText();
     switchScreen('title');
