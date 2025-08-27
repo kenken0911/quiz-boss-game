@@ -111,7 +111,7 @@
   <audio id="bgm" src="./BS2_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyUqbm7dUC9hMKTtAaoDj58FpQlFCSpiZjfRjdyZVOUSpXSjtlJq1o2DHQukzUmKXjSw/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJSdEy7FB8URSCuHC9DoFPHzPOcMS7TVnyFJ-4IGRunK09fLbwSdQxUGQDM0vOZ7wNmA/exec';
     const STAGE_NUMBER = '2';
     const TEXTS = {
       ja: {
@@ -209,7 +209,7 @@
         incorrect: "回答错误...",
         nextButton: "下一个",
         quiz: [
-            { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”", "最终目标是共享一个“唯一正确的全球认知”", "现代文化比古代文化更准确地把握世界", "多样文化的根基下隐藏着“全人类共通的真理”"], a: "我们的“认知”通过文化的滤镜创造出多样的“现实”", ex: "对彩虹颜色的认知因文化而异。重要的是要意识到，你认为理所当然的事情，对他人而言可能并非如此。" },
+            { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”", "最终目标是共享一个“唯一正确的全球认知”", "现代文化比古代文化更准确地把握世界", "多样文化的根基下隐藏着“全人类共通的真理”"], a: "我们的“认知”通过文化的滤鏡创造出多样的“现实”", ex: "对彩虹颜色的认知因文化而异。重要的是要意识到，你认为理所当然的事情，对他人而言可能并非如此。" },
             { q: "关于NKC集团设有据点的各国的发酵食品，以下哪项是错误的？", o: ["中国的“腐乳”是通过在豆腐上接种霉菌制成的", "菲律宾的“椰果”是通过发酵椰奶制成的", "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的", "在美国，一种名为“康普茶”的发酵红茶饮料很受欢迎"], a: "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的", ex: "瑞典的“瑞典盐腌鲱鱼”是发酵“鲱鱼”而非“鳟鱼”制成。它被称为世界上最臭的食物之一。" },
             { q: "多元化团队在解决问题时通常优于同质化团队，其最重要的原因是什么？", o: ["少数群体成员天生更具创造力", "不同的视角和知识能弥补个人的“盲点”", "通过避免冲突，能和平地得出结论", "团队内部的人际关系更顺畅"], a: "不同的视角和知识能弥补个人的“盲点”", ex: "多元化团队的真正价值在于，不同的观点能减少团队整体的“盲点”，从而能够更全面地考虑问题。" },
             { q: "英语谚语“Variety is the spice of life.”（多样性是生活的调味品）传达的最重要的信息是什么？", o: ["新的体验、变化和差异使生活更有趣、更丰富", "丰富的知识能为克服生活困难提供捷径", "接触多样的价值观能揭示生活中唯一正确的道路", "过多的选择会使人生的重要决策更加困难"], a: "新的体验、变化和差异使生活更有趣、更丰富", ex: "这句谚语意味着新的体验和变化使生活更有趣。它表明，接触不同的价值观和经验能丰富一个人的生活。" },
@@ -270,6 +270,12 @@
       audioStarted = true;
     }
 
+    // ★追加: HTML側にも正規化関数を定義
+    function normalizeEmployeeIdForHTML(v) {
+      const digits = String(v == null ? "" : v).replace(/[^\d]/g, "");
+      return digits.padStart(5, "0");
+    }
+
     async function startGame() {
       if (!employeeIdInput.checkValidity()) {
         employeeIdInput.reportValidity();
@@ -286,8 +292,11 @@
       startButton.disabled = true;
       msgEl.textContent = TEXTS[currentLang].msgCheckingId;
 
+      // ★変更: 送信する前に社員番号を正規化
+      const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeId);
+
       try {
-        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(employeeId)}`;
+        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(normalizedEmployeeId)}`;
         const response = await fetch(checkUrl);
         const result = await response.json();
 
@@ -413,8 +422,10 @@
             console.error('IPアドレスの取得に失敗しました:', error);
         }
 
+        // ★変更: 送信する前に社員番号を正規化
+        const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeIdInput.value.trim());
         const payload = {
-            employeeId: employeeIdInput.value.trim(),
+            employeeId: normalizedEmployeeId,
             stage: STAGE_NUMBER,
             score: correctCount,
             time: ((Date.now() - startTime) / 1000).toFixed(2),
