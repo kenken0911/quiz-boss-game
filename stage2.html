@@ -77,6 +77,7 @@
       <div id="start-screen" class="text-center hidden">
         <h1 id="title-text" class="text-2xl font-bold mb-4"></h1>
         <div class="flex flex-col items-center gap-4 mb-4">
+          <select id="companySelect" class="text-black px-3 py-2 w-full md:w-80 text-center rounded"></select>
           <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は半角数字5桁で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
         </div>
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
@@ -111,7 +112,8 @@
   <audio id="bgm" src="./BS2_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJSdEy7FB8URSCuHC9DoFPHzPOcMS7TVnyFJ-4IGRunK09fLbwSdQxUGQDM0vOZ7wNmA/exec';
+    // ★変更: GASのURLを最新版に更新
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4c7h0WeWv1t_c7SKS6ZVOILwumsMQ7S1hGFkp2SRxRV3WR3f6cfGisFZ6ptuc5u_QIQ/exec';
     const STAGE_NUMBER = '2';
     const TEXTS = {
       ja: {
@@ -120,10 +122,11 @@
         instructionOk: "わかった",
         title: "ステージ2：多様性",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
+        companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
-        msgEnterId: "社員番号を入力してください",
+        msgEnterId: "所属会社と社員番号を入力してください",
         msgCheckingId: "挑戦資格を確認中...",
-        msgIdNotFound: "ステージ1から挑戦してください！",
+        msgIdNotFound: "ステージ1の記録が見つかりません。会社名と社員番号を確認してください。",
         msgCheckError: "確認エラー。時間をおいて再試行してください。",
         theme: "テーマ：多様性",
         progress: (q, t) => `${q}/${t}問目`,
@@ -140,7 +143,6 @@
         correct: "正解！",
         incorrect: "不正解...",
         nextButton: "次へ",
-        // ★修正: 解説文を全文に復元
         quiz: [
             { q: "私たちの世界の「見え方」は文化や言語によって異なり、例えば虹の色の数にも差があると言われます。この事実は「多様性」について、どのような本質的な気づきを与えてくれるでしょうか？", o: ["文化というフィルターを通して私たちの「認識」が多様な「現実」を生み出しているということ。", "文化の違いを乗り越え、世界で「唯一の正しい認識」を共有することが最終目的であること。", "認識は歴史と共に進歩するため、現代文化は古代文化より世界を正確に捉えていること。", "多様な文化の根底には、言語を超えた「全人類共通の真実」が隠されていること。"], a: "文化というフィルターを通して私たちの「認識」が多様な「現実」を生み出しているということ。", ex: "以下のように、虹の色の数についても文化によって認識にちがいがあります。自分が当たり前と思っていることが相手にとって当たり前ではないかもという意識を持つことが大事です。（参考）7色: 日本、スウェーデン、フィリピンほか。17世紀にアイザック・ニュートンが音階や惑星の数と結びつけスペクトルを7色（赤・橙・黄・緑・青・藍・紫）に分類したことが由来と言われています。6色: アメリカ、イギリス、ドイツなど。一般的に「藍色（インディゴ）」を青の一部として区別しないため、6色とされることも多いです。5色: (古代の)中国、ドイツなど。古代の中国では、五行思想と結びつき、虹は「五色の橋」と考えられていました。2色: アフリカや南アジアの一部の部族。例えば、暖色系をまとめて「赤」、寒色系をまとめて「黒」と表現する人たちもいます。" },
             { q: "NKCグループの拠点のある各国の発酵食品に関連して、誤っているものは次のうちどれでしょうか？", o: ["「東洋のチーズ」とも呼ばれる中国の「腐乳」は豆腐にカビを植え付けてつくる。", "フィリピン発祥の「ナタ・デ・ココ」は、ココナツミルクを発酵させてつくる。", "スウェーデンの「シュールストレミング」は、マスを発酵させてつくる。", "アメリカでは、「Kombucha」と呼ばれる紅茶を発酵させた酸味と微炭酸のある飲み物が飲まれている。"], a: "スウェーデンの「シュールストレミング」は、マスを発酵させてつくる。", ex: "スウェーデンの「シュールストレミング」は「マス」ではなく「ニシン」を発酵させてつくられます。その臭さは、納豆の約18倍ともされ、「世界で最も臭い食べ物」との呼び声も高いです。（なお、Dの「Kombucha」は日本の海藻の昆布を使った「昆布茶」とは全く別のものです）" },
@@ -155,10 +157,11 @@
         instructionOk: "Got it",
         title: "Stage 2: Diversity",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
+        companySelectDefault: "Select your company",
         startButton: "Challenge",
-        msgEnterId: "Please enter your Employee ID",
+        msgEnterId: "Please enter your Company and Employee ID",
         msgCheckingId: "Checking eligibility...",
-        msgIdNotFound: "Please complete Stage 1 first!",
+        msgIdNotFound: "Stage 1 record not found. Please check your Company and Employee ID.",
         msgCheckError: "Verification error. Please try again later.",
         theme: "Theme: Diversity",
         progress: (q, t) => `Q ${q}/${t}`,
@@ -175,7 +178,6 @@
         correct: "Correct!",
         incorrect: "Incorrect...",
         nextButton: "Next",
-        // ★修正: 解説文を全文に復元
         quiz: [
             { q: "The way we 'see' the world differs by culture. For example, the number of colors in a rainbow. What essential insight does this give us about diversity?", o: ["Our 'perception' creates diverse 'realities' through the filter of culture.", "The ultimate goal is to share a 'single correct perception' of the world.", "Modern cultures perceive the world more accurately than ancient ones.", "A 'common human truth' is hidden beneath diverse cultures."], a: "Our 'perception' creates diverse 'realities' through the filter of culture.", ex: "The perception of the number of colors in a rainbow differs by culture. It is important to be aware that what you take for granted may not be so for others. (Ref) 7 colors: Japan, Sweden, etc. Newton classified the spectrum into 7 colors in the 17th century. 6 colors: USA, UK, etc. 'Indigo' is often not distinguished from blue. 5 colors: Ancient China, etc. Linked to the Five Elements theory, the rainbow was a 'five-colored bridge.' 2 colors: Some tribes in Africa. They might group warm colors as 'red' and cool colors as 'black.'" },
             { q: "Regarding fermented foods from countries where the NKC Group has locations, which of the following is incorrect?", o: ["Chinese 'furu' (fermented tofu), also called 'oriental cheese,' is made by inoculating tofu with mold.", "Filipino 'nata de coco' is made by fermenting coconut milk.", "Swedish 'surströmming' is made by fermenting trout.", "In the US, a sour, slightly carbonated drink called 'Kombucha,' made from fermented tea, is popular."], a: "Swedish 'surströmming' is made by fermenting trout.", ex: "Swedish 'surströmming' is made by fermenting 'herring,' not 'trout.' Its smell is said to be about 18 times stronger than natto, earning it the reputation of being the 'world's smelliest food.' (Note: The 'Kombucha' is completely different from the Japanese 'Kombucha,' which is made from kelp seaweed.)" },
@@ -186,14 +188,15 @@
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・祝你好运！"],
         instructionOk: "知道了",
         title: "第二关：多样性",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
+        companySelectDefault: "请选择所属公司",
         startButton: "挑战",
-        msgEnterId: "请输入员工编号",
+        msgEnterId: "请输入所属公司和员工编号",
         msgCheckingId: "正在确认挑战资格...",
-        msgIdNotFound: "请先挑战第一关！",
+        msgIdNotFound: "未找到第一关的记录。请检查公司名称和员工编号。",
         msgCheckError: "确认出错。请稍后再试。",
         theme: "主题：多样性",
         progress: (q, t) => `第${q}/${t}题`,
@@ -210,15 +213,19 @@
         correct: "回答正确！",
         incorrect: "回答错误...",
         nextButton: "下一个",
-        // ★修正: 解説文を全文に復元
         quiz: [
             { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”。", "最终目标是共享一个“唯一正确的全球认知”。", "现代文化比古代文化更准确地把握世界。", "多样文化的根基下隐藏着“全人类共通的真理”。"], a: "我们的“认知”通过文化的滤镜创造出多样的“现实”。", ex: "如下所示，不同文化对彩虹颜色的数量认知也存在差异。重要的是要意识到，自己认为理所当然的事情，对他人来说可能并非如此。（参考）7色：日本、瑞典等。据说起源于17世纪牛顿将其分为七种颜色。6色：美国、英国等。通常不将“靛色”与蓝色区分。5色：（古代）中国等。与五行思想相结合，彩虹被认为是“五色彩桥”。2色：非洲和南亚的一些部落。例如，将暖色系统称为“红”，冷色系统称为“黑”。" },
             { q: "关于NKC集团设有据点的各国的发酵食品，以下哪项是错误的？", o: ["被称为“东方奶酪”的中国“腐乳”是通过在豆腐上接种霉菌制成的。", "源自菲律宾的“椰果”是通过发酵椰奶制成的。", "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", "在美国，一种名为“康普茶”的发酵红茶饮料很受欢迎。"], a: "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", ex: "瑞典的“瑞典盐腌鲱鱼”是使用“鲱鱼”而非“鳟鱼”发酵制成的。其臭味据说是纳豆的约18倍，被誉为“世界上最臭的食物”。（另外，“康普茶”与日本用海带制作的“昆布茶”完全是两回事。）" },
             { q: "许多研究表明，多元化团队在解决复杂问题时通常优于同质化团队。其最重要的原因是什么？", o: ["少数群体成员天生更具创造力。", "不同的视角和知识能弥补个人的“盲点”。", "通过避免冲突，能和平地得出结论。", "团队内部的人际关系更顺畅，更容易合作。"], a: "不同的视角和知识能弥补个人的“盲点”。", ex: "多元化团队的真正价值在于，不同视角的存在可以减少整个团队思维过程中的“盲点”，从而能够更全面地考虑和处理问题。营造一个能够引出自由意见、并倾听少数派意见的组织文化也至关重要。" },
             { q: "英语谚语“Variety is the spice of life.”（多样性是生活的调味品）传达的最重要的信息是什么？", o: ["新的经历、变化和差异使生活更有趣、更丰富。", "丰富的知识能为克服生活困难提供捷径。", "接触多样的价值观能揭示生活中唯一正确的道路。", "过多的选择会使人生的重要决策更加困难。"], a: "新的经历、变化和差异使生活更有趣、更丰富。", ex: "这句谚语的意思是，新的经历和变化会让生活变得更有趣。香料单独品尝可能并不美味，但当与各种食材混合时，就会增添层次丰富的味道。这与接触多元价值观和经历所带来的人生丰富性有相似之处。" },
-            { q: "对时间的看法也因文化而异。以下关于不同国家普遍特征的说法中，哪项是错误的？", o: ["在瑞典，人们重视工作与生活的平衡，有称为“Fika”的咖啡休息时间。", "在美国，效率受到重视，如“时间就是金钱”。", "在中国，为未来成功有强烈的“长期导向”。", "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。"], a: "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。", ex: "菲律宾人倾向于优先考虑当下的人际关系而非预定的时间表，甚至有“菲律宾时间”（Filipino Time）这个词来形容这种对时间宽容的态度。准时到达甚至可能被认为太早了。（这只是为了说明文化多样性的一般性问题，应注意避免陷入过度“刻板印象”。）" }
+            { q: "对时间的看法也因文化而异。以下关于不同国家普遍特征的说法中，哪项是错误的？", o: ["在瑞典，人们重视工作与生活的平衡，有称为“Fika”的咖啡休息时间。", "在美国，效率受到重视，如“时间就是金钱”。", "在中国，为未来成功有强烈的“长期导向”。", "在菲律-宾，出于对人际关系的尊重，人们对守时要求严格。"], a: "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。", ex: "菲律宾人倾向于优先考虑当下的人际关系而非预定的时间表，甚至有“菲律宾时间”（Filipino Time）这个词来形容这种对时间宽容的态度。准时到达甚至可能被认为太早了。（这只是为了说明文化多样性的一般性问题，应注意避免陷入过度“刻板印象”。）" }
         ]
       }
+    };
+    const companyList = {
+      ja: ["本社/天満地区", "治工具工場", "神戸工場", "大阪工場", "名張工場", "三重工場", "滋賀工場", "河内工場", "株式会社NKC NASSH", "株式会社須田商事", "富士ホーニング工業株式会社", "中西興産株式会社", "シー・ティ・マシン株式会社", "イーグローバレッジ株式会社", "NKCながいグリーンパワー株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "その他"],
+      en: ["HQ/Tenma Area", "Jig & Tool Factory", "Kobe Plant", "Osaka Plant", "Nabari Plant", "Mie Plant", "Shiga Plant", "Kawachi Plant", "NKC NASSH Inc.", "Suda Corporation", "Fuji Honing Industrial Co., Ltd.", "Nakanishi Kosan Co., Ltd.", "C.T. Machine Co., Ltd.", "e-Globaledge Corporation", "NKC Nagai Green Power Co., Ltd.", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "Other"],
+      zh: ["总公司/天满地区", "治工具工場", "神户工厂", "大阪工厂", "名张工厂", "三重工厂", "滋贺工厂", "河内工厂", "株式会社NKC NASSH", "株式会社须田商事", "富士珩磨工业株式会社", "中西兴产株式会社", "C.T. Machine株式会社", "e-Globaledge株式会社", "NKC长井绿色电力株式会社", "NMC", "NSC", "NWC", "NPC", "NAI", "NCP", "NDC", "其他"]
     };
     
     const titleScreen = document.getElementById('title-screen');
@@ -229,6 +236,7 @@
     const resultScreen = document.getElementById('result-screen');
     const bossContainer = document.getElementById('boss-container');
     const employeeIdInput = document.getElementById('employeeIdInput');
+    const companySelect = document.getElementById('companySelect');
     const bgm = document.getElementById('bgm');
     const correctSound = document.getElementById('correct-sound');
     const startButton = document.getElementById('start-button');
@@ -258,6 +266,11 @@
       document.getElementById('boss-hp-label').textContent = t.bossHp;
       document.getElementById('restart-button').textContent = t.restartButton;
       document.getElementById('theme-display').textContent = t.theme;
+      
+      companySelect.innerHTML = `<option value="">${t.companySelectDefault}</option>`;
+      companyList[currentLang].forEach(company => {
+        companySelect.innerHTML += `<option value="${company}">${company}</option>`;
+      });
     }
 
     function setupAudio() {
@@ -283,9 +296,10 @@
         employeeIdInput.reportValidity();
         return;
       }
+      const company = companySelect.value;
       const employeeId = employeeIdInput.value.trim();
       const msgEl = document.getElementById('msg');
-      if (!employeeId) {
+      if (!company || !employeeId) {
         msgEl.textContent = TEXTS[currentLang].msgEnterId;
         return;
       }
@@ -297,7 +311,7 @@
       const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeId);
 
       try {
-        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(normalizedEmployeeId)}`;
+        const checkUrl = `${GAS_URL}?action=checkEmployeeId&employeeId=${encodeURIComponent(normalizedEmployeeId)}&company=${encodeURIComponent(company)}`;
         const response = await fetch(checkUrl);
         const result = await response.json();
 
@@ -425,6 +439,7 @@
 
         const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeIdInput.value.trim());
         const payload = {
+            company: companySelect.value,
             employeeId: normalizedEmployeeId,
             stage: STAGE_NUMBER,
             score: correctCount,
