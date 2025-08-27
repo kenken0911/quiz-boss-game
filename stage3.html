@@ -279,7 +279,7 @@
     function setupAudio() {
       if (audioStarted) return;
       // ★追加: BGMの音量を70%に設定
-      bgm.volume = 0.7;
+      bgm.volume = 0.3;
       clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
       hitSound = () => {
         correctSound.currentTime = 0;
