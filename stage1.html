@@ -73,6 +73,7 @@
         <div id="instruction-text" class="text-left mb-6 space-y-2"></div>
         <button id="instruction-ok-button" class="dq-button"></button>
       </div>
+      
       <div id="start-screen" class="text-center hidden">
         <h1 id="title-text" class="text-2xl font-bold mb-4"></h1>
         <div class="flex flex-col items-center gap-4 mb-4">
@@ -83,6 +84,7 @@
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
         <div id="msg" class="text-yellow-300 text-sm h-5 mt-2"></div>
       </div>
+
       <div id="quiz-screen" class="hidden">
         <div class="flex justify-between items-center mb-2 text-lg">
           <span id="theme-display"></span>
@@ -111,8 +113,7 @@
   <audio id="bgm" src="./BS1_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
-    // ★変更: GASのURLを最新版に更新
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyUqbm7dUC9hMKTtAaoDj58FpQlFCSpiZjfRjdyZVOUSpXSjtlJq1o2DHQukzUmKXjSw/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJSdEy7FB8URSCuHC9DoFPHzPOcMS7TVnyFJ-4IGRunK09fLbwSdQxUGQDM0vOZ7wNmA/exec';
     const STAGE_NUMBER = '1';
     const TEXTS = {
       ja: {
@@ -135,7 +136,7 @@
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
-        recordedFalse: "プレイありがとう！記録は初回のもののみとなります。", // ★追加
+        recordedFalse: "プレイありがとう！記録は初回のもののみとなります。",
         restartButton: "タイトルへ戻る",
         correct: "正解！",
         incorrect: "不正解...",
@@ -168,7 +169,7 @@
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
-        recordedFalse: "Thanks for playing! Only your first result is recorded.", // ★追加
+        recordedFalse: "Thanks for playing! Only your first result is recorded.",
         restartButton: "Back to Title",
         correct: "Correct!",
         incorrect: "Incorrect...",
@@ -201,7 +202,7 @@
         submitting: "正在发送结果...",
         submitSuccess: "结果已发送！",
         submitError: "错误：无法发送结果。",
-        recordedFalse: "感谢您的参与！只有初次挑战结果会被记录。", // ★追加
+        recordedFalse: "感谢您的参与！只有初次挑战结果会被记录。",
         restartButton: "返回标题",
         correct: "回答正确！",
         incorrect: "回答错误...",
@@ -281,6 +282,11 @@
       audioStarted = true;
     }
 
+    function normalizeEmployeeIdForHTML(v) {
+      const digits = String(v == null ? "" : v).replace(/[^\d]/g, "");
+      return digits.padStart(5, "0");
+    }
+
     async function startGame() {
       if (!employeeIdInput.checkValidity()) {
         employeeIdInput.reportValidity();
@@ -289,8 +295,9 @@
       const nickname = nicknameInput.value.trim();
       const company = companySelect.value;
       const employeeId = employeeIdInput.value.trim();
+      const msgEl = document.getElementById('msg');
       if (!nickname || !company || !employeeId) {
-        document.getElementById('msg').textContent = TEXTS[currentLang].msgEnterId;
+        msgEl.textContent = TEXTS[currentLang].msgEnterId;
         return;
       }
       if (isGameInProgress) return;
@@ -314,6 +321,7 @@
       
       displayQuestion(0);
       startButton.disabled = false;
+      isGameInProgress = false;
     }
 
     function displayQuestion(index) {
@@ -403,28 +411,26 @@
 
     async function submitResults() {
         const statusEl = document.getElementById('submission-status');
-        statusEl.textContent = TEXTS[currentLang].submitting;
-
         let ipAddress = 'N/A';
         try {
-            const ipResponse = await fetch('https://api.ipify.org?format=json');
-            if (ipResponse.ok) {
-              ipAddress = (await ipResponse.json()).ip;
-            }
+            const response = await fetch('https://api.ipify.org?format=json');
+            ipAddress = (await response.json()).ip;
         } catch (error) {
             console.error('IPアドレスの取得に失敗しました:', error);
         }
 
+        const normalizedEmployeeId = normalizeEmployeeIdForHTML(employeeIdInput.value.trim());
         const payload = {
-            company: companySelect.value,
-            employeeId: employeeIdInput.value.trim(),
             nickname: nicknameInput.value.trim(),
+            company: companySelect.value,
+            employeeId: normalizedEmployeeId,
             stage: STAGE_NUMBER,
             score: correctCount,
             time: ((Date.now() - startTime) / 1000).toFixed(2),
             ipAddress: ipAddress
         };
-
+        statusEl.textContent = TEXTS[currentLang].submitting;
+        
         try {
             const response = await fetch(GAS_URL, {
                 method: 'POST',
@@ -436,7 +442,6 @@
 
             const result = await response.json();
 
-            // ★修正: GASからのrecordedフラグを見てメッセージを分岐
             if (result.status === 'success') {
                 if (result.recorded === false) {
                     statusEl.textContent = TEXTS[currentLang].recordedFalse;
