@@ -112,7 +112,7 @@
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
     // ★変更: GASのURLを最新版に更新
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbweFUJdhXskAKRsxyd1zkQEH_oFEfpbNFBJORLn3FPEsiDaoX4fQBKcoFzEKmtSS__kjQ/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyUqbm7dUC9hMKTtAaoDj58FpQlFCSpiZjfRjdyZVOUSpXSjtlJq1o2DHQukzUmKXjSw/exec';
     const STAGE_NUMBER = '1';
     const TEXTS = {
       ja: {
@@ -135,6 +135,7 @@
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
+        recordedFalse: "プレイありがとう！記録は初回のもののみとなります。", // ★追加
         restartButton: "タイトルへ戻る",
         correct: "正解！",
         incorrect: "不正解...",
@@ -167,6 +168,7 @@
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
+        recordedFalse: "Thanks for playing! Only your first result is recorded.", // ★追加
         restartButton: "Back to Title",
         correct: "Correct!",
         incorrect: "Incorrect...",
@@ -199,6 +201,7 @@
         submitting: "正在发送结果...",
         submitSuccess: "结果已发送！",
         submitError: "错误：无法发送结果。",
+        recordedFalse: "感谢您的参与！只有初次挑战结果会被记录。", // ★追加
         restartButton: "返回标题",
         correct: "回答正确！",
         incorrect: "回答错误...",
@@ -433,8 +436,13 @@
 
             const result = await response.json();
 
+            // ★修正: GASからのrecordedフラグを見てメッセージを分岐
             if (result.status === 'success') {
-                statusEl.textContent = TEXTS[currentLang].submitSuccess;
+                if (result.recorded === false) {
+                    statusEl.textContent = TEXTS[currentLang].recordedFalse;
+                } else {
+                    statusEl.textContent = TEXTS[currentLang].submitSuccess;
+                }
             } else {
                 statusEl.textContent = result.message || TEXTS[currentLang].submitError;
             }
