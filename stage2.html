@@ -79,6 +79,7 @@
         <div class="flex flex-col items-center gap-4 mb-4">
           <select id="companySelect" class="text-black px-3 py-2 w-full md:w-80 text-center rounded"></select>
           <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は半角数字5桁で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
+          <p id="employeeIdNoteDisplay" class="text-xs text-gray-300 -mt-2"></p>
         </div>
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
         <div id="msg" class="text-yellow-300 text-sm h-5 mt-2"></div>
@@ -118,10 +119,11 @@
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・クイズの途中で画面を閉じると、その挑戦は無効となるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・クイズの途中で画面を閉じると、その時点までのスコアがあなたの記録となるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
         title: "多様性",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
+        employeeIdNote: "社員番号4桁以下の方は、先頭に「0」を入力（例：111→00111)",
         companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
         msgEnterId: "所属会社と社員番号を入力してください",
@@ -156,10 +158,11 @@
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- Closing the screen mid-quiz will invalidate the attempt.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- If you close the screen mid-quiz, your score up to that point will be recorded.", "- Good luck!"],
         instructionOk: "Got it",
         title: "Diversity",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
+        employeeIdNote: "For IDs with 4 or fewer digits, add leading '0's (e.g., 111 -> 00111).",
         companySelectDefault: "Select your company",
         startButton: "Challenge",
         msgEnterId: "Please enter your Company and Employee ID",
@@ -194,10 +197,11 @@
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・中途关闭测验将导致本次挑战无效。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・如果您在测验中途关闭屏幕，您到那时为止的分数将成为您的记录。", "・祝你好运！"],
         instructionOk: "知道了",
         title: "多样性",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
+        employeeIdNote: "员工编号为4位数或以下者，请在开头输入“0”（例：111→00111）",
         companySelectDefault: "请选择所属公司",
         startButton: "挑战",
         msgEnterId: "请输入所属公司和员工编号",
@@ -223,11 +227,11 @@
         reviewAnswerLabel: "正确答案",
         reviewUserAnswerLabel: "你的答案",
         quiz: [
-            { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”。", "最终目标是共享一个“唯一正确的全球认知”。", "现代文化比古代文化更准确地把握世界。", "多样文化的根基下隐藏着“全人类共通的真理”。"], a: "我们的“认知”通过文化的滤鏡创造出多样的“现实”。", ex: "如下所示，不同文化对彩虹颜色的数量认知也存在差异。重要的是要意识到，自己认为理所当然的事情，对他人来说可能并非如此。（参考）7色：日本、瑞典等。据说起源于17世纪牛顿将其分为七种颜色。6色：美国、英国等。通常不将“靛色”与蓝色区分。5色：（古代）中国等。与五行思想相结合，彩虹被认为是“五色彩桥”。2色：非洲和南亚的一些部落。例如，将暖色系统称为“红”，冷色系统称为“黑”。" },
-            { q: "关于NKC集团设有据点的各国的发酵食品，以下哪项是错误的？", o: ["被称为“东方奶酪”的中国“腐乳”是通过在豆腐上接种霉菌制成的。", "源自菲律-宾的“椰果”是通过发酵椰奶制成的。", "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", "在美国，一种名为“康普茶”的发酵红茶饮料很受欢迎。"], a: "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", ex: "瑞典的“瑞典盐腌鲱鱼”是使用“鲱鱼”而非“鳟鱼”发酵制成的。其臭味据说是纳豆的约18倍，被誉为“世界上最臭的食物”。（另外，“康普茶”与日本用海带制作的“昆布茶”完全是两回事。）" },
+            { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”。", "最终目标是共享一个“唯一正确的全球认知”。", "现代文化比古代文化更准确地把握世界。", "多样文化的根基下隐藏着“全人类共通的真理”。"], a: "我们的“认知”通过文化的滤镜创造出多样的“现实”。", ex: "如下所示，不同文化对彩虹颜色的数量认知也存在差异。重要的是要意识到，自己认为理所当然的事情，对他人来说可能并非如此。（参考）7色：日本、瑞典等。据说起源于17世纪牛顿将其分为七种颜色。6色：美国、英国等。通常不将“靛色”与蓝色区分。5色：（古代）中国等。与五行思想相结合，彩虹被认为是“五色彩桥”。2色：非洲和南亚的一些部落。例如，将暖色系统称为“红”，冷色系统称为“黑”。" },
+            { q: "关于NKC集团设有据点的各国的发酵食品，以下哪项是错误的？", o: ["被称为“东方奶酪”的中国“腐乳”是通过在豆腐上接种霉菌制成的。", "源自菲律宾的“椰果”是通过发酵椰奶制成的。", "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", "在美国，一种名为“康普茶”的发酵红茶饮料很受欢迎。"], a: "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", ex: "瑞典的“瑞典盐腌鲱鱼”是使用“鲱鱼”而非“鳟鱼”发酵制成的。其臭味据说是纳豆的约18倍，被誉为“世界上最臭的食物”。（另外，“康普茶”与日本用海带制作的“昆布茶”完全是两回事。）" },
             { q: "许多研究表明，多元化团队在解决复杂问题时通常优于同质化团队。其最重要的原因是什么？", o: ["少数群体成员天生更具创造力。", "不同的视角和知识能弥补个人的“盲点”。", "通过避免冲突，能和平地得出结论。", "团队内部的人际关系更顺畅，更容易合作。"], a: "不同的视角和知识能弥补个人的“盲点”。", ex: "多元化团队的真正价值在于，不同视角的存在可以减少整个团队思维过程中的“盲点”，从而能够更全面地考虑和处理问题。营造一个能够引出自由意见、并倾听少数派意见的组织文化也至关重要。" },
             { q: "英语谚语“Variety is the spice of life.”（多样性是生活的调味品）传达的最重要的信息是什么？", o: ["新的经历、变化和差异使生活更有趣、更丰富。", "丰富的知识能为克服生活困难提供捷径。", "接触多样的价值观能揭示生活中唯一正确的道路。", "过多的选择会使人生的重要决策更加困难。"], a: "新的经历、变化和差异使生活更有趣、更丰富。", ex: "这句谚语的意思是，新的经历和变化会让生活变得更有趣。香料单独品尝可能并不美味，但当与各种食材混合时，就会增添层次丰富的味道。这与接触多元价值观和经历所带来的人生丰富性有相似之处。" },
-            { q: "对时间的看法也因文化而异。以下关于不同国家普遍特征的说法中，哪项是错误的？", o: ["在瑞典，人们重视工作与生活的平衡，有称为“Fika”的咖啡休息时间。", "在美国，效率受到重视，如“时间就是金钱”。", "在中国，为未来成功有强烈的“长期导向”。", "在菲律-宾，出于对人际关系的尊重，人们对守时要求严格。"], a: "在菲律-宾，出于对人际关系的尊重，人们对守时要求严格。", ex: "菲律宾人倾向于优先考虑当下的人际关系而非预定的时间表，甚至有“菲律宾时间”（Filipino Time）这个词来形容这种对时间宽容的态度。准时到达甚至可能被认为太早了。（这只是为了说明文化多样性的一般性问题，应注意避免陷入过度“刻板印象”。）" }
+            { q: "对时间的看法也因文化而异。以下关于不同国家普遍特征的说法中，哪项是错误的？", o: ["在瑞典，人们重视工作与生活的平衡，有称为“Fika”的咖啡休息时间。", "在美国，效率受到重视，如“时间就是金钱”。", "在中国，为未来成功有强烈的“长期导向”。", "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。"], a: "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。", ex: "菲律宾人倾向于优先考虑当下的人际关系而非预定的时间表，甚至有“菲律宾时间”（Filipino Time）这个词来形容这种对时间宽容的态度。准时到达甚至可能被认为太早了。（这只是为了说明文化多样性的一般性问题，应注意避免陷入过度“刻板印象”。）" }
         ]
       }
     };
@@ -272,6 +276,7 @@
       document.getElementById('instruction-ok-button').textContent = t.instructionOk;
       document.getElementById('title-text').textContent = t.title;
       employeeIdInput.placeholder = t.employeeIdPlaceholder;
+      document.getElementById('employeeIdNoteDisplay').textContent = t.employeeIdNote;
       document.getElementById('start-button-text').textContent = t.startButton;
       document.getElementById('boss-hp-label').textContent = t.bossHp;
       document.getElementById('restart-button').textContent = t.restartButton;
@@ -577,7 +582,7 @@
     
     startButton.addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', () => location.reload());
-    
+
     updateUIText();
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
