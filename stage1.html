@@ -80,6 +80,7 @@
           <input id="nicknameInput" type="text" maxlength="20" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
           <select id="companySelect" class="text-black px-3 py-2 w-full md:w-80 text-center rounded"></select>
           <input id="employeeIdInput" type="text" pattern="\d{5}" title="社員番号は半角数字5桁で入力してください" class="text-black px-3 py-2 w-full md:w-80 text-center rounded" />
+          <p id="employeeIdNoteDisplay" class="text-xs text-gray-300 -mt-2"></p>
         </div>
         <button id="start-button" class="dq-button inline-flex items-center gap-2"><span id="start-button-text"></span></button>
         <div id="msg" class="text-yellow-300 text-sm h-5 mt-2"></div>
@@ -119,11 +120,12 @@
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
-        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・クイズの途中で画面を閉じると、その挑戦は無効となるぞ。", "・健闘を祈る！"],
+        instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・最初の挑戦結果のみがランキングに記録されるぞ。", "・クイズの途中で画面を閉じると、その時点までのスコアがあなたの記録となるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
         title: "地球環境",
         nicknamePlaceholder: "ニックネームを入力",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
+        employeeIdNote: "社員番号4桁以下の方は、先頭に「0」を入力（例：111→00111)",
         companySelectDefault: "所属会社を選択してください",
         startButton: "挑戦する",
         msgEnterId: "ニックネーム、所属会社、社員番号をすべて入力してください",
@@ -155,11 +157,12 @@
       },
       en: {
         instructionTitle: "Rules of the Quest",
-        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- Closing the screen mid-quiz will invalidate the attempt.", "- Good luck!"],
+        instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt will be recorded for the ranking.", "- If you close the screen mid-quiz, your score up to that point will be recorded.", "- Good luck!"],
         instructionOk: "Got it",
         title: "Global Environment",
         nicknamePlaceholder: "Enter Nickname",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
+        employeeIdNote: "For IDs with 4 or fewer digits, add leading '0's (e.g., 111 -> 00111).",
         companySelectDefault: "Select your company",
         startButton: "Challenge",
         msgEnterId: "Please enter all fields: Nickname, Company, and Employee ID",
@@ -191,11 +194,12 @@
       },
       zh: {
         instructionTitle: "冒险须知",
-        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・中途关闭测验将导致本次挑战无效。", "・祝你好运！"],
+        instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击败头目！", "・只有第一次挑战的结果会被记录在排名中。", "・如果您在测验中途关闭屏幕，您到那时为止的分数将成为您的记录。", "・祝你好运！"],
         instructionOk: "知道了",
         title: "地球环境",
         nicknamePlaceholder: "输入昵称",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
+        employeeIdNote: "员工编号为4位数或以下者，请在开头输入“0”（例：111→00111）",
         companySelectDefault: "请选择所属公司",
         startButton: "挑战",
         msgEnterId: "请输入昵称、所属公司和员工编号",
@@ -269,6 +273,7 @@
       document.getElementById('title-text').textContent = t.title;
       nicknameInput.placeholder = t.nicknamePlaceholder;
       employeeIdInput.placeholder = t.employeeIdPlaceholder;
+      document.getElementById('employeeIdNoteDisplay').textContent = t.employeeIdNote;
       document.getElementById('start-button-text').textContent = t.startButton;
       document.getElementById('boss-hp-label').textContent = t.bossHp;
       document.getElementById('restart-button').textContent = t.restartButton;
@@ -353,13 +358,13 @@
     }
 
     function handleAnswer(selectedAnswer, currentQuiz, index) {
+        userAnswers.push({
+            questionIndex: index,
+            selectedAnswer: selectedAnswer,
+            isCorrect: selectedAnswer === currentQuiz.a
+        });
+
       const isCorrect = selectedAnswer === currentQuiz.a;
-      userAnswers.push({
-          questionIndex: index,
-          selectedAnswer: selectedAnswer,
-          isCorrect: isCorrect
-      });
-        
       const optionsContainer = document.getElementById('options-container');
       optionsContainer.querySelectorAll('.dq-button').forEach(btn => {
         btn.style.pointerEvents = 'none';
@@ -473,6 +478,7 @@
         });
     }
 
+
     async function submitResults() {
         const statusEl = document.getElementById('submission-status');
         let ipAddress = 'N/A';
@@ -530,7 +536,7 @@
     }
     
     function handleMediaError(element) {
-        console.error(`Error loading media: ${element.src}`);
+        console.error(`Error loading media: ${element.src || 'No Source'}`);
         element.style.display = 'none'; 
     }
 
@@ -561,7 +567,7 @@
     
     startButton.addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', () => location.reload());
-    
+
     updateUIText();
     switchScreen('title');
     const openingVideo = document.getElementById('opening-video');
