@@ -1,241 +1,489 @@
 <!DOCTYPE html>
 
+
+
 <html lang="ja">
+
+
 
 <head>
 
+
+
   <meta charset="UTF-8">
+
+
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
+
   <title>🏆 Sustainable Quest - Ranking 🏆</title>
+
+
 
   <script src="https://cdn.tailwindcss.com"></script>
 
+
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
+
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+
+
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+
 
   <style>
 
+
+
     body {
+
+
 
       font-family: 'DotGothic16', sans-serif;
 
+
+
       background-color: #000;
+
+
 
       color: #fff;
 
+
+
       background-image: url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+
+
 
       background-size: cover;
 
+
+
       background-position: center;
+
+
 
       background-attachment: fixed;
 
+
+
     }
+
+
 
     .dq-window { border: 4px solid #fff; background: rgba(0,0,80,0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0,128,255,0.6); backdrop-filter: blur(3px); }
 
+
+
     th { border-bottom: 2px solid #fff; line-height: 1.4; }
+
+
 
     td { border-bottom: 1px solid #555; }
 
+
+
     .rank-1 { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px #ffd700; }
+
+
 
     .rank-2 { color: #c0c0c0; font-weight: bold; }
 
+
+
     .rank-3 { color: #cd7f32; font-weight: bold; }
+
+
 
   </style>
 
+
+
 </head>
+
+
 
 <body class="p-4 md:p-8">
 
+
+
   <div class="dq-window max-w-4xl mx-auto">
+
+
 
     <h1 class="text-3xl md:text-4xl text-center font-bold mb-6 text-yellow-300" style="font-family: 'Press+Start+2P', cursive;">🏆 RANKING 🏆</h1>
 
+
+
     <div class="overflow-x-auto">
+
+
 
       <table class="w-full text-left text-lg">
 
+
+
         <thead>
+
+
 
           <tr>
 
+
+
             <th class="p-2 text-center">Rank<br>(順位)</th>
+
+
 
             <th class="p-2">Nickname<br>(ニックネーム)</th>
 
+
+
             <th class="p-2">Company<br>(所属会社)</th>
+
+
 
             <th class="p-2 text-center">Score<br>(合計スコア)</th>
 
+
+
+            <th class="p-2 text-center">Time(sec)<br>(合計タイム)</th>
+
+
+
           </tr>
+
+
 
         </thead>
 
+
+
         <tbody id="ranking-body">
+
+
 
           <!-- データはJavaScriptでここに挿入されます -->
 
+
+
         </tbody>
+
+
 
       </table>
 
+
+
     </div>
+
+
 
     <p id="loading-message" class="text-center text-xl mt-4">ランキング集計中...</p>
 
+
+
     <p id="updated-time" class="text-center text-sm mt-4 text-gray-400"></p>
+
+
 
   </div>
 
 
 
+
+
+
+
   <script>
 
+
+
     // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+
 
     // ★ GASを再デプロイした後の「新しいウェブアプリのURL」をここに設定してください ★
 
+
+
     // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+
 
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKjQfG-cW1tacggfb1JrGa8oT2iAqtgmdmeUb_wCdmMb3h78CXLgIiPVXsLXoMFdpHtQ/exec';
 
 
 
+
+
+
+
     async function fetchRanking() {
+
+
 
       const rankingBody = document.getElementById('ranking-body');
 
+
+
       const loadingMessage = document.getElementById('loading-message');
+
+
 
       const updatedTimeEl = document.getElementById('updated-time');
 
-      
+
+
+      
+
+
 
       try {
 
+
+
         const response = await fetch(GAS_URL);
+
+
 
         if (!response.ok) {
 
+
+
           throw new Error(`Network response was not ok: ${response.statusText}`);
 
+
+
         }
+
+
 
         const data = await response.json();
 
 
 
+
+
+
+
         if (data.error) {
+
+
 
           throw new Error(data.error);
 
+
+
         }
+
+
+
+
 
 
 
         if (data.length === 0) {
 
+
+
           loadingMessage.textContent = 'まだ挑戦者がいません。';
 
+
+
           return;
+
+
 
         }
 
 
 
+
+
+
+
         let tableHtml = '';
+
+
 
         data.forEach((player, index) => {
 
+
+
           const rank = index + 1;
+
+
 
           let rankClass = '';
 
+
+
           if (rank === 1) rankClass = 'rank-1';
 
+
+
           if (rank === 2) rankClass = 'rank-2';
+
+
 
           if (rank === 3) rankClass = 'rank-3';
 
 
 
+
+
+
+
           tableHtml += `
+
+
 
             <tr class="${rankClass}">
 
+
+
               <td class="p-2 text-center">${rank}</td>
+
+
 
               <td class="p-2">${escapeHtml(player.nickname)}</td>
 
+
+
               <td class="p-2">${escapeHtml(player.company)}</td>
+
+
 
               <td class="p-2 text-center">${player.totalScore}</td>
 
+
+
+              <td class="p-2 text-center">${player.totalTime.toFixed(2)}</td>
+
+
+
             </tr>
 
+
+
           `;
+
+
 
         });
 
 
 
+
+
+
+
         rankingBody.innerHTML = tableHtml;
+
+
 
         loadingMessage.style.display = 'none';
 
-        
+
+
+        
+
+
 
         const now = new Date();
+
+
 
         updatedTimeEl.textContent = `最終更新: ${now.toLocaleString('ja-JP')}`;
 
 
 
+
+
+
+
       } catch (error) {
+
+
 
         console.error('ランキングの取得に失敗しました:', error);
 
+
+
         loadingMessage.textContent = 'エラー：ランキングを読み込めませんでした。';
 
+
+
       }
+
+
 
     }
 
 
 
+
+
+
+
     function escapeHtml(unsafe) {
+
+
 
         return unsafe
 
+
+
              .replace(/&/g, "&amp;")
+
+
 
              .replace(/</g, "&lt;")
 
+
+
              .replace(/>/g, "&gt;")
+
+
 
              .replace(/"/g, "&quot;")
 
+
+
              .replace(/'/g, "&#039;");
+
+
 
      }
 
 
 
+
+
+
+
     // ページが読み込まれたらランキングを取得
+
+
 
     window.onload = fetchRanking;
 
+
+
   </script>
 
+
+
 </body>
+
+
 
 </html>
