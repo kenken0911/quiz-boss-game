@@ -13,9 +13,9 @@
     body[lang="ja"], body[lang="zh"] { font-family: 'DotGothic16', sans-serif; }
     body[lang="en"] { font-family: 'Press Start 2P', cursive; }
     body { background-color: #000; color: #fff; image-rendering: pixelated; overflow-x: hidden; overflow-y: auto; }
-    .dq-window { border: 4px solid #fff; background: rgba(0, 50, 0, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0, 255, 128, 0.5); backdrop-filter: blur(3px); }
-    .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #00aa55, #008833); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
-    .dq-button:hover { background-image: linear-gradient(to bottom, #33dd88, #00aa55); box-shadow: 0 0 10px #fff; }
+    .dq-window { border: 4px solid #fff; background: rgba(0, 0, 80, 0.85); padding: 1.5rem; box-shadow: 0 0 0 4px #000, 0 0 20px rgba(0, 128, 255, 0.6); backdrop-filter: blur(3px); }
+    .dq-button { cursor: pointer; padding: .75rem 1.5rem; border: 2px solid #fff; background-image: linear-gradient(to bottom, #0055dd, #0033aa); text-shadow: 1px 1px 2px #000; transition: all 0.2s; }
+    .dq-button:hover { background-image: linear-gradient(to bottom, #4488ff, #0055dd); box-shadow: 0 0 10px #fff; }
     .video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
     .bg-video { width: 100%; height: 100%; object-fit: cover; }
     #title-screen h1 { font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px #00aaff; animation: fadeInTitle 2s ease-out forwards; }
@@ -33,7 +33,7 @@
     @keyframes boss-defeat-anim { 0% { opacity: 1; transform: rotate(0deg); } 50% { opacity: 1; transform: rotate(10deg); } 100% { opacity: 0; transform: translateY(100px) rotate(-20deg) scale(0.5); } }
     .shake { animation: shake .35s; }
     @keyframes shake { 10%,90% { transform: translate(-2px, -2px); } 20%,80% { transform: translate(3px, 2px); } 30%,50%,70% { transform: translate(-3px, 3px); } 40%,60% { transform: translate(3px, -2px); } }
-    .forest-glow { filter: drop-shadow(0 0 8px #aaff00) drop-shadow(0 0 16px #33dd00) contrast(1.5); }
+    .gov-glow { filter: drop-shadow(0 0 8px #00aaff) drop-shadow(0 0 16px #00ffff) contrast(1.5); }
     #boss-img { width: 100%; max-width: 320px; height: auto; }
     .correct-answer { background-image: linear-gradient(to bottom, #ffdd00, #ffaa00) !important; color: #000; }
     .incorrect-answer { background-image: linear-gradient(to bottom, #888888, #555555) !important; opacity: 0.7; }
@@ -45,12 +45,12 @@
     <video id="opening-video" class="bg-video" src="./opening_movie.mp4" autoplay loop playsinline onerror="handleMediaError(this)"></video>
   </div>
   <div id="game-video-container" class="video-container hidden">
-    <video id="game-bg-video" class="bg-video" src="./GameBackground2.mp4" autoplay muted loop playsinline onerror="handleMediaError(this)"></video>
+    <video id="game-bg-video" class="bg-video" src="./GameBackground3.mp4" autoplay muted loop playsinline onerror="handleMediaError(this)"></video>
   </div>
 
   <div class="w-full max-w-3xl mx-auto">
     <div id="boss-area" class="mb-4 h-64 flex justify-center items-end relative hidden">
-      <div id="boss-container"><img id="boss-img" src="./Stage2_dragon.png" alt="ボスの画像" class="forest-glow" onerror="handleMediaError(this)"/></div>
+      <div id="boss-container"><img id="boss-img" src="./Stage3_dragon.png" alt="ボスの画像" class="gov-glow" onerror="handleMediaError(this)"/></div>
     </div>
     <div id="game-container" class="w-full dq-window relative">
       <div id="title-screen" class="text-center py-8">
@@ -111,17 +111,17 @@
       </div>
     </div>
   </div>
-  <audio id="bgm" src="./BS2_BGM.wav" loop onerror="handleMediaError(this)"></audio>
+  <audio id="bgm" src="./BS3_BGM.wav" loop onerror="handleMediaError(this)"></audio>
   <audio id="correct-sound" src="./correct_answer.mp3" onerror="handleMediaError(this)"></audio>
   <script>
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbyJ-jSH9YdU0ltF9O2Y_LJJmqd24l5PNve_ZtTze0qj6Iv4OIT8Iz77YAoh705-fAuJgg/exec';
-    const STAGE_NUMBER = '2';
+    const STAGE_NUMBER = '3';
     const TEXTS = {
       ja: {
         instructionTitle: "冒険の心得",
         instructions: ["・サステナビリティに関する5つの問題が出題されるぞ。", "・4問以上正解でボスを討伐できる！", "・各ステージの最初の挑戦結果のみが記録されるぞ。", "・クイズの途中で画面を閉じると、その時点までのスコアがあなたの記録となるぞ。", "・健闘を祈る！"],
         instructionOk: "わかった",
-        title: "多様性",
+        title: "NKCのサステナビリティ活動",
         employeeIdPlaceholder: "社員番号(半角5桁)を入力",
         employeeIdNote: "社員番号4桁以下の方は、先頭に「0」を入力（例：111→00111)",
         companySelectDefault: "所属会社を選択してください",
@@ -130,13 +130,13 @@
         msgCheckingId: "挑戦資格を確認中...",
         msgIdNotFound: "ステージ1の記録が見つかりません。会社名と社員番号を確認してください。",
         msgCheckError: "確認エラー。時間をおいて再試行してください。",
-        theme: "テーマ：多様性",
+        theme: "テーマ：NKCのサステナビリティ活動",
         progress: (q, t) => `${q}/${t}問目`,
         bossHp: "ボス HP",
         resultWinTitle: "勝利！",
-        resultWinMsg: "ステージクリア！多様性への理解が深まった！",
+        resultWinMsg: "ステージクリア！NKCのサステナビリティ活動への理解が深まった！",
         resultLoseTitle: "ゲームオーバー",
-        resultLoseMsg: "竜の守りは固かった…",
+        resultLoseMsg: "竜の活動は積極的だった…",
         submitting: "結果を送信中...",
         submitSuccess: "結果を送信しました！",
         submitError: "エラー：結果を送信できませんでした。",
@@ -149,18 +149,18 @@
         reviewAnswerLabel: "正解",
         reviewUserAnswerLabel: "あなたの回答",
         quiz: [
-            { q: "私たちの世界の「見え方」は文化や言語によって異なり、例えば虹の色の数にも差があると言われます。この事実は「多様性」について、どのような本質的な気づきを与えてくれるでしょうか？", o: ["文化というフィルターを通して私たちの「認識」が多様な「現実」を生み出しているということ。", "文化の違いを乗り越え、世界で「唯一の正しい認識」を共有することが最終目的であること。", "認識は歴史と共に進歩するため、現代文化は古代文化より世界を正確に捉えていること。", "多様な文化の根底には、言語を超えた「全人類共通の真実」が隠されていること。"], a: "文化というフィルターを通して私たちの「認識」が多様な「現実」を生み出しているということ。", ex: "以下のように、虹の色の数についても文化によって認識にちがいがあります。自分が当たり前と思っていることが相手にとって当たり前ではないかもという意識を持つことが大事です。（参考）7色: 日本、スウェーデン、フィリピンほか。17世紀にアイザック・ニュートンが音階や惑星の数と結びつけスペクトルを7色（赤・橙・黄・緑・青・藍・紫）に分類したことが由来と言われています。6色: アメリカ、イギリス、ドイツなど。一般的に「藍色（インディゴ）」を青の一部として区別しないため、6色とされることも多いです。5色: (古代の)中国、ドイツなど。古代の中国では、五行思想と結びつき、虹は「五色の橋」と考えられていました。2色: アフリカや南アジアの一部の部族。例えば、暖色系をまとめて「赤」、寒色系をまとめて「黒」と表現する人たちもいます。" },
-            { q: "NKCグループの拠点のある各国の発酵食品に関連して、誤っているものは次のうちどれでしょうか？", o: ["「東洋のチーズ」とも呼ばれる中国の「腐乳」は豆腐にカビを植え付けてつくる。", "フィリピン発祥の「ナタ・デ・ココ」は、ココナツミルクを発酵させてつくる。", "スウェーデンの「シュールストレミング」は、マスを発酵させてつくる。", "アメリカでは、「Kombucha」と呼ばれる紅茶を発酵させた酸味と微炭酸のある飲み物が飲まれている。"], a: "スウェーデンの「シュールストレミング」は、マスを発酵させてつくる。", ex: "スウェーデンの「シュールストレミング」は「マス」ではなく「ニシン」を発酵させてつくられます。その臭さは、納豆の約18倍ともされ、「世界で最も臭い食べ物」との呼び声も高いです。（なお、Dの「Kombucha」は日本の海藻の昆布を使った「昆布茶」とは全く別のものです）" },
-            { q: "多くの研究で、多様な人財(人材)で構成されたチームは、メンバーの背景が似たチームよりも、複雑な問題解決において高い成果を出すことが示されています。その最も重要な理由と考えられるのは次のうちどれでしょうか？", o: ["マイノリティ人材は、本質的に創造性が豊かだから。", "様々な視点や知識が組み合わさることで、個人の「視点の死角」を補い合えるから。", "対立を避けることで、穏便に結論を出せるから。", "チーム内の人間関係が円滑になり、協力しやすくなるから。"], a: "様々な視点や知識が組み合わさることで、個人の「視点の死角」を補い合えるから。", ex: "多様なチームの真価は、異なる視点の存在が、チーム全体の思考プロセスにおける「死角（均質的な価値観のチームメンバーが見落としがちな事柄）を減らし総合的に物事を考慮して対処できるようになる点にあります。多様な人材をチームに引き入れるだけでなく、自由な意見を引き出し、多数派とちがった少数意見にも耳を傾ける組織風土の醸成も大切になります。" },
-            { q: "英語のことわざに \"Variety is the spice of life.\" (多様性は人生のスパイスだ) というものがあります。このことわざが伝えたい、最も重要なメッセージは次のうちどれでしょうか？", o: ["新しい経験や変化、違いがあることによって、人生はより面白く、豊かな味わいになる。", "多様な知識があれば、人生の困難を乗り越えるための近道が見つかる。", "多様な価値観に触れることで、人生における唯一の正しい道がわかる。", "多様な選択肢がありすぎると、かえって人生の重要な決断を迷わせてしまう。"], a: "新しい経験や変化、違いがあることによって、人生はより面白く、豊かな味わいになる。", ex: "このことわざは、新しい経験や変化が人生をより面白くする、という意味です。スパイスは、単独で味わっても美味しくないし時に辛かったり苦かったりかもしれませんが、さまざまな食材や他のスパイスと複雑に混ざり合うことで重層的な味わいを増していく、というのは、多様な価値観や経験に触れる人生の豊かさと、たしかに似ているかもしれません。" },
-            { q: "時間の捉え方も国や文化によって多様です。各国の特徴（一般論）として言われているもので、誤っているものは次のうちどれでしょうか？", o: ["スウェーデンでは仕事とプライベートのバランスを重視し、午後に「Fika(フィーカ)」と呼ばれるコーヒーブレイクをとる。", "アメリカでは「Time is money.(時は金なり)」のように、効率的で素早い意思決定や成果を求められる。", "中国では「長期志向」が強く、将来の大成功のためには現在の利益や快適さを犠牲にすることも厭わない。", "フィリピンでは人間関係を大切にすることから、約束された時間への遅刻に対して厳格である。"], a: "フィリピンでは人間関係を大切にすることから、約束された時間への遅刻に対して厳格である。", ex: "先のタイムスケジュールよりもその場の人間関係を優先する傾向があり、時間に寛容な「Filipino Time」という言葉も存在するほどです。親しい間柄の集まりでは、時間通りに行くとかえって早すぎると見なされることさえあります。（あくまでも、文化による価値観の多様性を示すための一般論としての設問であり、「あの人は〇〇国人だからきっと△△だ」というような過度な「ステレオタイプ」に陥らないようにも注意しましょう）" }
+          { q: "企業がESG(環境・社会・企業統治）に取り組むことによって得られるメリットとして、誤っているものは次のうちどれでしょうか？", o: ["顧客・市場から品質や価格以外の要素でも選ばれるような事業競争力を得られること。", "社会課題起点の新たなビジネス創出等により、事業成長とよりよい環境や社会との両立を実現できること。", "補助金等を得やすくなることで、短期的な利益を最大化できること。", "優秀な人財の採用や資金調達において有利に働くこと。"], a: "補助金等を得やすくなることで、短期的な利益を最大化できること。", ex: "ESGへの取り組みは、長期的な企業価値の向上と持続可能な成長を目指すものです。短期的な利益の最大化を唯一の目的とすることは、ESGの本来の目的とは異なります。NKCグループでも「NKC Sustainability Vision 2024」において、サステナビリティ戦略を事業戦略と融合させ新たな「成長戦略」とすることを目指すことを示しています。" },
+          { q: "NKCグループにおいて、社員に積極的に社会貢献活動に参加することを推奨している目的として、誤っているものは次のうちどれでしょうか？", o: ["（会社の外の）社会に必要とされる役割を得ることで、より幸せで充実した人生を過ごしてもらうため。", "会社の業務以外から、さまざまな知見やスキルを獲得する機会の一つにしてもらいたいため。", "人事評価やボーナスの評価に直結させる要素として考慮するため。", "社会課題を起点に、新たな事業を生み出すきっかけにしてもらいたいため。"], a: "人事評価やボーナスの評価に直結させる要素として考慮するため。", ex: "第一義的には、会社の外でも必要とされる役割を得ることで、より幸せで充した人生を過ごしてもらいたいということですが、結果的にスキルアップや事業創出等が会社に跳ね返ってくるメリットもあると考えています。ただ、価値観は人それぞれですし、あくまでも任意での活動なので人事評価やボーナスに直結させるということはありません。" },
+          { q: "NKCグループでは、「NKC Sustainability Vision 2024」において、ESG領域における目には見えにくいさまざまな要素を「可視化・定量化」するという方針を示しています。これにより狙っている効果は次のうちどれでしょうか？", o: ["非財務的な情報収集が不要になる", "会社の売上や利益が自動的に増加する", "すべての社会課題を一度に解決できる", "事業戦略の意思決定において社会的な価値を考慮しやすくなる"], a: "事業戦略の意思決定において社会的な価値を考慮しやすくなる", ex: "投資対効果等の事業戦略上の意思決定において、「環境負荷」「社会的価値」「法的リスク」等のさまざまなESG領域の要素も、一体的な考慮をしやすくなる（会社の利益とよりよい社会の両立を目指しやすい）という効果を狙っています。" },
+          { q: "NKCグループのとある事業部門が、前例のない新たな事業アイディアを検討しています。この時、NKCグループの掲げる「ポジティブ志向型コンプライアンス」の精神に最も合致する行動は、次のうちどれでしょうか？", o: ["前例がなくリスクが高いことは明白なので、面倒になる前に計画を中止する。", "まずは小さく試してみて、問題が起きなければ本格的に進める。管理部門には後から報告する。", "関連部署を早期に巻き込み、リスクを客観的に評価した上で、どうすれば挑戦を実現できるかを建設的に議論する。", "経営陣にリスクの大きさを強調して説明し、事業を進めるかどうかの判断をすべて委ねる。"], a: "関連部署を早期に巻き込み、リスクを客観的に評価した上で、どうすれば挑戦を実現できるかを建設的に議論する。", ex: "「ポジティブ志向型コンプライアンス」では、リスクから「目を背けず、向き合い、克服することで、ワクワクする未来を自分たちの手で切り拓いていく」ことを目指しています。選択肢Cは、リスクを過剰評価して萎縮することなく、社員一人ひとりが「経営者目線」を持ったうえで「リスクをチャンスに」変えようとする実践的な行動です。" },
+          { q: "NKCグループが大阪府（日本）等の行政自治体と連携協定を締結している主な目的として誤っているものは、次のうちどれでしょうか？", o: ["社会的な信頼性を高めることによる企業ブランド・企業価値の向上", "NKCグループを育んでくれた地域社会への恩返し", "行政と民間企業のそれぞれの強みを活かした社会課題解決の加速", "公的な補助金等を受けやすくすることでの短期的な収益性の向上"], a: "公的な補助金等を受けやすくすることでの短期的な収益性の向上", ex: "2022年3月に中西金属工業㈱と大阪府との間で締結した包括連携協定等に基づき、A～Cのような効果を狙っています。補助金等の獲得で有利に働く可能性もありますが、これを主たる目的とするものではありません。近時では、大阪府と連携協定を締結している他の民間企業との事業でのコラボレーションの検討も始まっています。" }
         ]
       },
       en: {
         instructionTitle: "Rules of the Quest",
         instructions: ["- You will be asked 5 questions about sustainability.", "- Answer 4 or more correctly to defeat the boss!", "- Only your first attempt on each stage will be recorded.", "- If you close the screen mid-quiz, your score up to that point will be recorded.", "- Good luck!"],
         instructionOk: "Got it",
-        title: "Diversity",
+        title: "NKC's Sustainability Activities",
         employeeIdPlaceholder: "Enter 5-digit Employee ID",
         employeeIdNote: "For IDs with 4 or fewer digits, add leading '0's (e.g., 111 -> 00111).",
         companySelectDefault: "Select your company",
@@ -169,13 +169,13 @@
         msgCheckingId: "Checking eligibility...",
         msgIdNotFound: "Stage 1 record not found. Please check your Company and Employee ID.",
         msgCheckError: "Verification error. Please try again later.",
-        theme: "Theme: Diversity",
+        theme: "Theme: NKC's Sustainability Activities",
         progress: (q, t) => `Q ${q}/${t}`,
         bossHp: "Boss HP",
         resultWinTitle: "Victory!",
-        resultWinMsg: "Stage Clear! Your understanding of diversity has deepened!",
+        resultWinMsg: "Stage Clear! Your understanding of NKC's sustainability activities has deepened!",
         resultLoseTitle: "Game Over",
-        resultLoseMsg: "The dragon's defense was solid...",
+        resultLoseMsg: "The dragon's activities were overwhelming...",
         submitting: "Submitting results...",
         submitSuccess: "Results submitted!",
         submitError: "Error: Could not submit results.",
@@ -188,18 +188,18 @@
         reviewAnswerLabel: "Answer",
         reviewUserAnswerLabel: "Your Answer",
         quiz: [
-            { q: "The way we 'see' the world differs by culture. For example, the number of colors in a rainbow. What essential insight does this give us about diversity?", o: ["Our 'perception' creates diverse 'realities' through the filter of culture.", "The ultimate goal is to share a 'single correct perception' of the world.", "Modern cultures perceive the world more accurately than ancient ones.", "A 'common human truth' is hidden beneath diverse cultures."], a: "Our 'perception' creates diverse 'realities' through the filter of culture.", ex: "The perception of the number of colors in a rainbow differs by culture. It is important to be aware that what you take for granted may not be so for others. (Ref) 7 colors: Japan, Sweden, etc. Newton classified the spectrum into 7 colors in the 17th century. 6 colors: USA, UK, etc. 'Indigo' is often not distinguished from blue. 5 colors: Ancient China, etc. Linked to the Five Elements theory, the rainbow was a 'five-colored bridge.' 2 colors: Some tribes in Africa. They might group warm colors as 'red' and cool colors as 'black.'" },
-            { q: "Regarding fermented foods from countries where the NKC Group has locations, which of the following is incorrect?", o: ["Chinese 'furu' (fermented tofu), also called 'oriental cheese,' is made by inoculating tofu with mold.", "Filipino 'nata de coco' is made by fermenting coconut milk.", "Swedish 'surströmming' is made by fermenting trout.", "In the US, a sour, slightly carbonated drink called 'Kombucha,' made from fermented tea, is popular."], a: "Swedish 'surströmming' is made by fermenting trout.", ex: "Swedish 'surströmming' is made by fermenting 'herring,' not 'trout.' Its smell is said to be about 18 times stronger than natto, earning it the reputation of being the 'world's smelliest food.' (Note: The 'Kombucha' is completely different from the Japanese 'Kombucha,' which is made from kelp seaweed.)" },
-            { q: "Many studies show that diverse teams outperform homogeneous teams in complex problem-solving. What is the most important reason for this?", o: ["Minority individuals are inherently more creative.", "Various perspectives and knowledge compensate for individual 'blind spots.'", "They can reach conclusions amicably by avoiding conflict.", "Interpersonal relationships within the team become smoother, making cooperation easier."], a: "Various perspectives and knowledge compensate for individual 'blind spots.'", ex: "The true value of a diverse team lies in how different perspectives reduce 'blind spots' in the team's overall thought process, enabling them to address issues more comprehensively. It is also important to foster a culture that encourages free expression and listens to minority opinions." },
-            { q: "What is the most important message of the English proverb, 'Variety is the spice of life'?", o: ["New experiences, changes, and differences make life more interesting and rich.", "Diverse knowledge provides shortcuts to overcome life's difficulties.", "Experiencing diverse values reveals the one true path in life.", "Too many options can make important life decisions more difficult."], a: "New experiences, changes, and differences make life more interesting and rich.", ex: "This proverb means that new experiences and changes make life more interesting. A spice might not be tasty on its own, but when mixed with various ingredients, it creates a complex flavor. This is similar to the richness of a life filled with diverse values and experiences." },
-            { q: "The perception of time also varies by culture. Which of the following generalizations is incorrect?", o: ["In Sweden, people value work-life balance and have a coffee break called 'Fika.'", "In the US, efficiency is valued, as in 'Time is money.'", "In China, there is a strong 'long-term orientation' for future success.", "In the Philippines, people are strict about punctuality out of respect for relationships."], a: "In the Philippines, people are strict about punctuality out of respect for relationships.", ex: "There is a tendency to prioritize immediate personal relationships over schedules, so much so that the term 'Filipino Time' exists to describe this relaxed attitude toward time. Arriving on time can even be considered too early. (This is a generalization and one should be careful not to fall into excessive stereotyping.)" }
+          { q: "Which of the following is an incorrect benefit for a company engaging in ESG (Environmental, Social, and Governance)?", o: ["Gaining a competitive advantage by being chosen for factors other than quality and price.", "Achieving both business growth and a better society through new, socially-driven business creation.", "Maximizing short-term profits by making it easier to obtain subsidies.", "Gaining an advantage in recruiting talented personnel and in fundraising."], a: "Maximizing short-term profits by making it easier to obtain subsidies.", ex: "ESG initiatives aim for long-term corporate value enhancement and sustainable growth. Maximizing short-term profit as the sole objective is contrary to the original purpose of ESG. The NKC Group's 'NKC Sustainability Vision 2024' also aims to integrate sustainability strategy with business strategy to create a new 'growth strategy'." },
+          { q: "Which of the following is an incorrect reason for the NKC Group to encourage employees to actively participate in social contribution activities?", o: ["To help them lead happier, more fulfilling lives by gaining roles needed by society (outside the company).", "To provide them with an opportunity to acquire diverse knowledge and skills from outside their regular work.", "To consider it as a direct factor in performance reviews and bonus evaluations.", "To inspire them to create new businesses based on social issues."], a: "To consider it as a direct factor in performance reviews and bonus evaluations.", ex: "Primarily, we want employees to lead happier lives by finding fulfilling roles outside the company. However, we also believe there are benefits for the company, such as skill enhancement and business creation. Since values differ and participation is voluntary, it is not directly linked to performance reviews or bonuses." },
+          { q: "In 'NKC Sustainability Vision 2024,' the NKC Group aims to 'visualize and quantify' various intangible ESG factors. What is the intended effect of this policy?", o: ["It eliminates the need to collect non-financial information.", "It automatically increases company sales and profits.", "It can solve all social issues at once.", "It makes it easier to consider social value in business strategy decisions."], a: "It makes it easier to consider social value in business strategy decisions.", ex: "The goal is to make it easier to integrally consider various ESG factors such as 'environmental impact,' 'social value,' and 'legal risks' in business strategy decisions like return on investment, aiming for a balance between company profit and a better society." },
+          { q: "A business unit within the NKC Group is considering an unprecedented new business idea. Which action best aligns with the NKC Group's 'Positive-Oriented Compliance' spirit?", o: ["Cancel the plan before it becomes troublesome, as it is clearly high-risk with no precedent.", "Try it on a small scale first, and if no problems arise, proceed fully, reporting to management later.", "Involve relevant departments early, objectively assess the risks, and constructively discuss how to make the challenge a reality.", "Emphasize the magnitude of the risks to management and leave the entire decision of whether to proceed to them."], a: "Involve relevant departments early, objectively assess the risks, and constructively discuss how to make the challenge a reality.", ex: "'Positive-Oriented Compliance' aims to 'not turn away from risks, but face them and overcome them to build an exciting future with our own hands.' Option C is a practical action that avoids being paralyzed by overestimating risks and instead seeks to turn 'risks into opportunities' with each employee having a 'manager's perspective'." },
+          { q: "Which of the following is an incorrect primary purpose for the NKC Group's collaboration agreements with administrative bodies like Osaka Prefecture (Japan)?", o: ["Enhancing corporate brand and value by increasing social credibility.", "Giving back to the local community that has nurtured the NKC Group.", "Accelerating the resolution of social issues by leveraging the respective strengths of government and private companies.", "Improving short-term profitability by making it easier to receive public subsidies."], a: "Improving short-term profitability by making it easier to receive public subsidies.", ex: "Based on the comprehensive collaboration agreement signed between Nakanishi Metal Works Co., Ltd. and Osaka Prefecture in March 2022, we aim for effects A through C. While it may be advantageous for obtaining subsidies, this is not the primary goal. Recently, we have also begun exploring business collaborations with other private companies that have agreements with Osaka Prefecture." }
         ]
       },
       zh: {
         instructionTitle: "冒险须知",
         instructions: ["・将提出5个关于可持续性的问题。", "・正确回答4个以上问题即可击敗头目！", "・每个关卡只有第一次挑战的结果会被记录。", "・如果您在测验中途关闭屏幕，您到那时为止的分数将成为您的记录。", "・祝你好运！"],
         instructionOk: "知道了",
-        title: "多样性",
+        title: "NKC的可持续发展活动",
         employeeIdPlaceholder: "输入员工编号(5位半角数字)",
         employeeIdNote: "员工编号为4位数或以下者，请在开头输入“0”（例：111→00111）",
         companySelectDefault: "请选择所属公司",
@@ -208,13 +208,13 @@
         msgCheckingId: "正在确认挑战资格...",
         msgIdNotFound: "未找到第一关的记录。请检查公司名称和员工编号。",
         msgCheckError: "确认出错。请稍后再试。",
-        theme: "主题：多样性",
+        theme: "主题：NKC的可持续发展活动",
         progress: (q, t) => `第${q}/${t}题`,
         bossHp: "头目 HP",
         resultWinTitle: "胜利！",
-        resultWinMsg: "关卡完成！加深了对多样性的理解！",
+        resultWinMsg: "关卡完成！加深了对NKC可持续发展活动的理解！",
         resultLoseTitle: "游戏结束",
-        resultLoseMsg: "龙的防御很坚固…",
+        resultLoseMsg: "龙的活动是积极的…",
         submitting: "正在发送结果...",
         submitSuccess: "结果已发送！",
         submitError: "错误：无法发送结果。",
@@ -227,11 +227,11 @@
         reviewAnswerLabel: "正确答案",
         reviewUserAnswerLabel: "你的答案",
         quiz: [
-            { q: "我们“看待”世界的方式因文化而异，例如对彩虹颜色的认知。这一事实为我们提供了关于“多样性”的何种本质性启示？", o: ["我们的“认知”通过文化的滤镜创造出多样的“现实”。", "最终目标是共享一个“唯一正确的全球认知”。", "现代文化比古代文化更准确地把握世界。", "多样文化的根基下隐藏着“全人类共通的真理”。"], a: "我们的“认知”通过文化的滤镜创造出多样的“现实”。", ex: "如下所示，不同文化对彩虹颜色的数量认知也存在差异。重要的是要意识到，自己认为理所当然的事情，对他人来说可能并非如此。（参考）7色：日本、瑞典等。据说起源于17世纪牛顿将其分为七种颜色。6色：美国、英国等。通常不将“靛色”与蓝色区分。5色：（古代）中国等。与五行思想相结合，彩虹被认为是“五色彩桥”。2色：非洲和南亚的一些部落。例如，将暖色系统称为“红”，冷色系统称为“黑”。" },
-            { q: "关于NKC集团设有据点的各国的发酵食品，以下哪项是错误的？", o: ["被称为“东方奶酪”的中国“腐乳”是通过在豆腐上接种霉菌制成的。", "源自菲律宾的“椰果”是通过发酵椰奶制成的。", "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", "在美国，一种名为“康普茶”的发酵红茶饮料很受欢迎。"], a: "瑞典的“瑞典盐腌鲱鱼”是通过发酵鳟鱼制成的。", ex: "瑞典的“瑞典盐腌鲱鱼”是使用“鲱鱼”而非“鳟鱼”发酵制成的。其臭味据说是纳豆的约18倍，被誉为“世界上最臭的食物”。（另外，“康普茶”与日本用海带制作的“昆布茶”完全是两回事。）" },
-            { q: "许多研究表明，多元化团队在解决复杂问题时通常优于同质化团队。其最重要的原因是什么？", o: ["少数群体成员天生更具创造力。", "不同的视角和知识能弥补个人的“盲点”。", "通过避免冲突，能和平地得出结论。", "团队内部的人际关系更顺畅，更容易合作。"], a: "不同的视角和知识能弥补个人的“盲点”。", ex: "多元化团队的真正价值在于，不同视角的存在可以减少整个团队思维过程中的“盲点”，从而能够更全面地考虑和处理问题。营造一个能够引出自由意见、并倾听少数派意见的组织文化也至关重要。" },
-            { q: "英语谚语“Variety is the spice of life.”（多样性是生活的调味品）传达的最重要的信息是什么？", o: ["新的经历、变化和差异使生活更有趣、更丰富。", "丰富的知识能为克服生活困难提供捷径。", "接触多样的价值观能揭示生活中唯一正确的道路。", "过多的选择会使人生的重要决策更加困难。"], a: "新的经历、变化和差异使生活更有趣、更丰富。", ex: "这句谚语的意思是，新的经历和变化会让生活变得更有趣。香料单独品尝可能并不美味，但当与各种食材混合时，就会增添层次丰富的味道。这与接触多元价值观和经历所带来的人生丰富性有相似之处。" },
-            { q: "对时间的看法也因文化而异。以下关于不同国家普遍特征的说法中，哪项是错误的？", o: ["在瑞典，人们重视工作与生活的平衡，有称为“Fika”的咖啡休息时间。", "在美国，效率受到重视，如“时间就是金钱”。", "在中国，为未来成功有强烈的“长期导向”。", "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。"], a: "在菲律宾，出于对人际关系的尊重，人们对守时要求严格。", ex: "菲律宾人倾向于优先考虑当下的人际关系而非预定的时间表，甚至有“菲律宾时间”（Filipino Time）这个词来形容这种对时间宽容的态度。准时到达甚至可能被认为太早了。（这只是为了说明文化多样性的一般性问题，应注意避免陷入过度“刻板印象”。）" }
+          { q: "企业致力于ESG（环境、社会和公司治理）所能获得的益处中，以下哪项是错误的？", o: ["获得除质量和价格外，也能被顾客和市场选择的业务竞争力。", "通过源于社会课题的新业务创造等，实现业务增长与更美好环境和社会的双赢。", "通过更容易获得补助金等，实现短期利益最大化。", "在招聘优秀人才和资金筹措方面处于有利地位。"], a: "通过更容易获得补助金等，实现短期利益最大化。", ex: "致力于ESG是为了提升长期企业价值和实现可持续发展。将短期利益最大化作为唯一目的，与ESG的初衷不符。NKC集团在《NKC可持续发展愿景2024》中也提出，旨在将可持续发展战略与业务战略相融合，形成新的“增长战略”。" },
+          { q: "NKC集团鼓励员工积极参与社会贡献活动的目的中，以下哪项是错误的？", o: ["通过在公司外部获得社会所需的角色，让他们度过更幸福、更充实的人生。", "希望这能成为他们从公司业务之外获得各种知识和技能的机会之一。", "作为直接关系到人事评价和奖金评估的因素加以考虑。", "希望这能成为他们以社会课题为起点，创造新业务的契机。"], a: "作为直接关系到人事评价和奖金评估的因素加以考虑。", ex: "首要目的是希望员工通过在公司外部获得被需要的角色，从而度过更幸福充实的人生。但我们认为，这最终也会为公司带来技能提升和业务创造等好处。不过，价值观因人而异，这纯属自愿活动，因此不会与人事评价或奖金直接挂钩。" },
+          { q: "NKC集团在《NKC可持续发展愿景2024》中提出了将ESG领域中难以看见的各种要素“可视化、定量化”的方针。此举旨在达到以下哪种效果？", o: ["不再需要收集非财务信息", "公司销售额和利润将自动增长", "能够一次性解决所有社会问题", "在业务战略决策中更容易考虑社会价值"], a: "在业务战略决策中更容易考虑社会价值", ex: "此举旨在使“环境负荷”、“社会价值”、“法律风险”等各种ESG领域的要素，在投资回报率等业务战略决策中更容易被综合考虑，从而力求实现公司利益与更美好社会的双赢。" },
+          { q: "NKC集团的某个业务部门正在探讨一个史无前例的新业务构想。此时，最符合NKC集团所倡导的“积极导向型合规”精神的行动是以下哪一项？", o: ["因为没有先例且风险明显很高，所以在变得麻烦之前中止计划。", "先进行小规模尝试，如果没有问题再正式推进。事后再向管理部门报告。", "尽早让相关部门参与进来，在客观评估风险的基础上，建设性地讨论如何才能实现这一挑战。", "向经营层强调风险的巨大，并将是否推进业务的判断全部委托给他们。"], a: "尽早让相关部门参与进来，在客观评估风险的基础上，建设性地讨论如何才能实现这一挑战。", ex: "“积极导向型合规”旨在“不回避风险，而是直面并克服它，用我们自己的双手开创激动人心的未来”。选项C是一种务实的行动，它不因过高评估风险而退缩，而是让每位员工都具备“经营者视角”，努力将“风险变为机遇”。" },
+          { q: "NKC集团与大阪府（日本）等行政自治体签订合作协议的主要目的中，以下哪项是错误的？", o: ["通过提高社会信誉来提升企业品牌和企业价值", "回报培育了NKC集团的地区社会", "发挥行政和民营企业各自的优势，加速解决社会课题", "通过更容易获得公共补助金等来提高短期盈利能力"], a: "通过更容易获得公共补助金等来提高短期盈利能力", ex: "基于2022年3月中西金属工业株式会社与大阪府签订的全面合作协议等，我们旨在实现A至C的效果。虽然这可能有助于获得补助金等，但这并非主要目的。近期，我们也开始探讨与其他已同大阪府签订合作协议的民营企业进行业务合作。" }
         ]
       }
     };
@@ -290,6 +290,7 @@
 
     function setupAudio() {
       if (audioStarted) return;
+      bgm.volume = 0.2;
       clickSound = () => new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 3, envelope: { attack: 0.001, decay: 0.3, sustain: 0 } }).toDestination().triggerAttackRelease("C2", "8n");
       hitSound = () => {
         correctSound.currentTime = 0;
