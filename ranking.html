@@ -106,7 +106,9 @@
     }
 
     function escapeHtml(unsafe) {
-        return unsafe
+        // もしデータがnullやundefinedだった場合、空の文字列に変換してから処理する
+        const safeString = String(unsafe || '');
+        return safeString
              .replace(/&/g, "&amp;")
              .replace(/</g, "&lt;")
              .replace(/>/g, "&gt;")
